@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 firms = {
     "SenseNova": ["llm", "embedding"],
@@ -610,16 +606,6 @@ ams_model_list = [
         "endpoint": "/v1/chat/interactive",
     },
     {
-        "name": "TYY-VL-70b",
-        "model_type": "local",
-        "model_status": 3,
-        "is_finetune_model": False,
-        "can_finetune_model": False,
-        "model_kind": "VQA",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-    },
-    {
         "name": "QwQ-32B",
         "model_type": "local",
         "model_status": 3,
@@ -656,16 +642,6 @@ ams_model_list = [
         "is_finetune_model": False,
         "can_finetune_model": False,
         "model_kind": "VQA",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-    },
-    {
-        "name": "TYY-70b",
-        "model_type": "local",
-        "model_status": 3,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
     },
