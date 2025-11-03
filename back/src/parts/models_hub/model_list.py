@@ -755,7 +755,6 @@ ams_model_list = [
         "endpoint": "/generate",
         "model_brand": "BAAI"
     },
-
     # STT 模型
     {
         "name": "sensevoicesmall",
