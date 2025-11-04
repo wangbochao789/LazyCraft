@@ -796,7 +796,7 @@ class ModelHubModelFinetuneDeleteApi(Resource):
 
 class ModelHubModelFinetuneListApi(Resource):
     @login_required
-    def get(self):
+    def post(self):
         """获取微调模型分页列表。
         
         Args:
@@ -810,12 +810,12 @@ class ModelHubModelFinetuneListApi(Resource):
             dict: 包含微调模型列表的分页数据，使用 finetune_pagination_fields 格式。
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("model_id", type=str, default=0, location="args")
-        parser.add_argument("online_model_id", type=str, default=0, location="args")
-        parser.add_argument("page", type=int, default=1, location="args")
-        parser.add_argument("page_size", type=int, default=20, location="args")
+        parser.add_argument("model_id", type=str, default=0, location="json")
+        parser.add_argument("online_model_id", type=str, default=0, location="json")
+        parser.add_argument("page", type=int, default=1, location="json")
+        parser.add_argument("page_size", type=int, default=20, location="json")
         parser.add_argument(
-            "qtype", type=str, default="already", location="args", required=False
+            "qtype", type=str, default="already", location="json", required=False
         )
         args = parser.parse_args()
         g.qtype = args["qtype"]
