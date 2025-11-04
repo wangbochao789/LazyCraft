@@ -53,7 +53,6 @@ const TagContainer = ({ tags }) => {
     window.addEventListener('resize', calculateVisibleTags)
     return () => window.removeEventListener('resize', calculateVisibleTags)
   }, [tags])
-  console.log(tags)
   return (
     <div ref={wrapperRef} className={styles.tagContainer}>
       {tags.map((tag, index) => {
