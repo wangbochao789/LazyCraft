@@ -9,7 +9,7 @@ import ModelList from './ModelListModal'
 import CreateModal from './CreateModule'
 import EditModel from './EditModel'
 import styles from './page.module.scss'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import HoverGuide from '@/app/components/base/hover-tip-pro'
 import IconFont from '@/app/components/base/iconFont'
 import { deleteModel, getModelListNew } from '@/infrastructure/api/modelWarehouse'
@@ -53,7 +53,7 @@ const TagContainer = ({ tags }) => {
     window.addEventListener('resize', calculateVisibleTags)
     return () => window.removeEventListener('resize', calculateVisibleTags)
   }, [tags])
-
+  console.log(tags)
   return (
     <div ref={wrapperRef} className={styles.tagContainer}>
       {tags.map((tag, index) => {
@@ -112,7 +112,7 @@ const ModelWarehouse = () => {
   const handleDelete = async (item: any, e) => {
     e.stopPropagation()
     await deleteModel({ url: '/mh/delete', body: { model_id: item.id, qtype: category, namespace: isMine } })
-    Toast.notify({ type: 'success', message: '删除成功' })
+    Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
     getCardList()
   }
   const onChange = ({ target: { value } }: RadioChangeEvent) => {
@@ -198,7 +198,6 @@ const ModelWarehouse = () => {
         <Form.Item label='类别'>
           <Radio.Group style={{ marginLeft: 30 }} value={kind} onChange={onKindChange}>
             <Radio.Button value="all" style={{ marginRight: 10, borderRadius: 4 }}>全部</Radio.Button>
-            {/* <Radio.Button value="localLLM" style={{ marginRight: 10, borderRadius: 4 }}>本地大模型</Radio.Button> */}
             <Radio.Button value="VQA" style={{ marginRight: 10, borderRadius: 4 }}>图文理解模型</Radio.Button>
             <Radio.Button value="SD" style={{ marginRight: 10, borderRadius: 4 }}>文生图模型</Radio.Button>
             <Radio.Button value="TTS" style={{ marginRight: 10, borderRadius: 4 }}>文字转语音模型</Radio.Button>
