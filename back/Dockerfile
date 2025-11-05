@@ -1,4 +1,4 @@
-#FROM registry.cn-hangzhou.aliyuncs.com/lazyllm/python:3.10-slim
+#FROM registry.cn-hangzhou.aliyuncs.com/lazyllm/python:3.10-slim 
 FROM python:3.10-slim
 
 ARG COMMIT_SHA  
