@@ -1148,7 +1148,7 @@ class ModelService:
     def update_model(self, model_id, api_key, proxy_url="", proxy_auth_info=None):
         model = Lazymodel.query.get(model_id)
         if not model:
-            return ValueError("模型不存在")
+            raise CommonError("模型不存在")
         if model.model_type != "online":
             raise CommonError("只有在线模型支持配置 api_key")
         engine = LightEngine()

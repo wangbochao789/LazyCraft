@@ -380,7 +380,7 @@ class FinetuneService:
         """
         task = db.session.query(FinetuneTask).filter(FinetuneTask.id == task_id).first()
         if task is None:
-            return ValueError("not exists")
+            raise ValueError("任务不存在")
         t = marshal(task, fields.finetune_detail_fields)
         t["base_model_name"] = task.base_model_key
         t.pop("log_path")

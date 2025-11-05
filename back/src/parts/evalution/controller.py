@@ -34,6 +34,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.filetools import FileTools
 from libs.helper import build_response
 from libs.login import login_required
@@ -568,6 +569,7 @@ class Evaluate(Resource):
     """
 
     @login_required
+    @require_internet_feature("模型评测")
     def post(self):
         """执行评估任务。
 

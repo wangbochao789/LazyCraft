@@ -30,6 +30,7 @@ from lazyllm.engine import LightEngine
 import parts.data.data_reflux_service as reflux
 from core.restful import Resource
 from libs import helper
+from libs.feature_gate import require_internet_feature
 from libs.login import login_required
 from libs.timetools import TimeTools
 from parts.app.node_run.app_run_service import AppRunService, EventHandler
@@ -307,6 +308,7 @@ class AppDetailApi(Resource):
 
 class AppEnableApi(Resource):
     @login_required
+    @require_internet_feature("应用服务启停")
     def post(self, app_id):
         """启用或禁用应用服务。
 

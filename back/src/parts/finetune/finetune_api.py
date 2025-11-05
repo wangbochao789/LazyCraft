@@ -20,6 +20,7 @@ from flask_login import current_user
 from flask_restful import inputs, marshal, reqparse
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.login import login_required
 from parts.finetune.finetune_service import FinetuneService
 from parts.logs import Action, LogService, Module
@@ -35,6 +36,7 @@ from .schema import FinetuneCreateSchema
 
 class FinetuneListApi(Resource):
     @login_required
+    @require_internet_feature("发布模型微调")
     def post(self):
         """创建微调任务。
 

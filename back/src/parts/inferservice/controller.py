@@ -19,6 +19,7 @@ from flask import jsonify, request
 from flask_login import current_user
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.helper import build_response
 from libs.login import login_required
 from models.model_account import Account
@@ -125,6 +126,7 @@ class CreateServiceGroup(Resource):
         self.infer_service = InferService()
 
     @login_required
+    @require_internet_feature("推理服务")
     def post(self):
         """处理POST请求，创建推理服务组。
 
@@ -193,6 +195,7 @@ class CreateService(Resource):
         self.infer_service = InferService()
 
     @login_required
+    @require_internet_feature("推理服务")
     def post(self):
         """处理POST请求，创建推理服务。
 
@@ -243,6 +246,7 @@ class StartServiceGroup(Resource):
         self.infer_service = InferService()
 
     @login_required
+    @require_internet_feature("推理服务")
     def post(self):
         """处理POST请求，启动推理服务组。
 
@@ -294,6 +298,7 @@ class StartService(Resource):
         self.infer_service = InferService()
 
     @login_required
+    @require_internet_feature("推理服务")
     def post(self):
         """处理POST请求，启动推理服务。
 
