@@ -1675,10 +1675,7 @@ class ModelService:
                             LazyModelConfigInfo.user_id == self.account.id,
                             LazyModelConfigInfo.tenant_id
                             == self.account.current_tenant_id,
-                             or_(
-                                LazyModelConfigInfo.api_key != "",
-                                LazyModelConfigInfo.proxy_url != "",
-                            ),
+                            LazyModelConfigInfo.api_key != "",
                         ),
                     ),
                 )
@@ -1699,7 +1696,10 @@ class ModelService:
                             LazyModelConfigInfo.model_id == Lazymodel.id,
                             LazyModelConfigInfo.tenant_id
                             == self.account.current_tenant_id,
-                            LazyModelConfigInfo.api_key != "",
+                             or_(
+                                LazyModelConfigInfo.api_key != "",
+                                LazyModelConfigInfo.proxy_url != "",
+                            ),
                         ),
                     ),
                 )
