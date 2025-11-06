@@ -39,11 +39,8 @@ const ModelDetail = (req) => {
   }
 
   const getTableData = ({ current, pageSize }): Promise<any> => {
-    return getModelList({ url: '/mh/finetune_model_page', options: { params: { page: current, page_size: pageSize, model_id: id, online_model_id: type, qtype, namespace: isMine } } }).then((res) => {
-      return {
-        total: res.total,
-        list: res.data,
-      }
+    return getModelList({ url: '/mh/finetune_model_page', body: { page: current, page_size: pageSize, model_id: id, online_model_id: type, qtype, namespace: isMine } }).then((res) => {
+      return res
     })
   }
   const fixData = (data: any) => {
