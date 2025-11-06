@@ -10,7 +10,7 @@ import AddModal from './AddModal'
 import AddModelList from './AddModelList'
 import Toast from '@/app/components/base/flash-notice'
 import { getModelInfo, reDown } from '@/infrastructure/api/modelWarehouse'
-import { deleteModel } from '@/infrastructure/api/modelAdjust'
+import { deleteModel, getModelList } from '@/infrastructure/api/modelAdjust'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { usePermitCheck } from '@/app/components/app/permit-check'
 
