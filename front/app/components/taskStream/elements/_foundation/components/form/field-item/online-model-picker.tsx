@@ -98,6 +98,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
           item.keys = isRoot ? [] : (parent?.keys || []).concat(item?.value)
           item.model_brand = item.model_brand || parent?.model_brand
           item.model_url = item.model_url || parent?.model_url
+          item.proxy_url = item.proxy_url || parent?.proxy_url
           item.model_key = item.model_key || parent?.model_key
 
           return {
@@ -111,6 +112,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             model_name: item.model_name,
             model_key: item.model_key,
             model_url: item.model_url,
+            proxy_url: item.proxy_url,
             id: item.id,
             can_finetune: item.can_finetune,
           }
@@ -262,7 +264,9 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             value={inputs?.payload__source}
             onChange={(_value) => {
               const targetItem = onlineModelList?.find((item: any) => `${item?.id}___${item?.model_brand}` === _value)
-              const targetModelUrl = targetItem?.model_url
+              const targetModelUrl = targetItem?.model_brand?.toLowerCase() === 'openai'
+                ? (targetItem?.proxy_url || targetItem?.model_url)
+                : targetItem?.model_url
               const targetId = targetItem?.id
               onChange && onChange({
                 ...inputs,
@@ -313,12 +317,17 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
                 expandTrigger="click"
                 value={inputs?.payload__base_model_selected_keys}
                 onChange={(val) => {
+                  const selectedModel = onlineModelList?.find(child => child.value === val?.[val?.length - 1])
+                  const modelUrl = selectedModel?.model_brand?.toLowerCase() === 'openai'
+                    ? (selectedModel?.proxy_url || selectedModel?.model_url)
+                    : selectedModel?.model_url
                   onChange && onChange({
                     ...inputs,
                     payload__base_model: val?.[val?.length - 1],
                     payload__model_id: onlineModelList?.find((item: any) => item?.model_key === val?.[val?.length - 1])?.id,
                     payload__base_model_selected_keys: val,
-                    payload__url: onlineModelList?.find(child => child.value === val?.[val?.length - 1])?.model_url,
+                    payload__url: modelUrl,
+                    payload__base_url: modelUrl,
                     payload__can_finetune: onlineModelList?.find(child => child.value === val?.[val?.length - 1])?.can_finetune,
                     payload__model_generate_control: {
                       payload__temperature: 0.8,
@@ -354,7 +363,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
       </div>
 
       {
-        inputs?.payload__source === 'openai' && model_kind === 'OnlineLLM' && (
+        inputs?.payload__source?.toLowerCase() === 'openai' && model_kind === 'OnlineLLM' && (
           <div className='space-y-3'>
             <Field
               label="URL"
@@ -366,8 +375,8 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             >
               <Input
                 className={classNames('w-full')}
-                readOnly
-                disabled={disabled || !inputs?.payload__base_url}
+                // readOnly
+                // disabled={disabled || !inputs?.payload__base_url}
                 value={inputs?.payload__base_url}
                 onChange={(val) => {
                   onChange && onChange({
