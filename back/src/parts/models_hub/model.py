@@ -256,6 +256,31 @@ class Lazymodel(db.Model):
         return ""
 
     @property
+    def proxy_url(self):
+        """获取模型的代理URL。
+
+        对于在线模型，从配置信息中获取代理URL。
+
+        Returns:
+            str: 代理URL，如果不存在则返回空字符串。
+        """
+        if self.model_type == "online":
+            if g.current_user:
+                config_info = (
+                    db.session.query(LazyModelConfigInfo)
+                    .filter(
+                        LazyModelConfigInfo.model_id == self.id,
+                        LazyModelConfigInfo.tenant_id
+                        == g.current_user.current_tenant_id,
+                    )
+                    .first()
+                )
+                if config_info:
+                    return config_info.proxy_url or ""
+
+        return ""
+
+    @property
     def proxy_info(self):
         """获取模型的代理信息。
 
@@ -266,9 +291,13 @@ class Lazymodel(db.Model):
         """
         if self.model_type == "online":
             if g.current_user:
-                config_info = db.session.query(LazyModelConfigInfo).filter(
-                    LazyModelConfigInfo.model_id == self.id,
-                    LazyModelConfigInfo.tenant_id == g.current_user.current_tenant_id,
+                config_info = (
+                    db.session.query(LazyModelConfigInfo)
+                    .filter(
+                        LazyModelConfigInfo.model_id == self.id,
+                        LazyModelConfigInfo.tenant_id == g.current_user.current_tenant_id,
+                    )
+                    .first()
                 )
                 if config_info:
                     return {
