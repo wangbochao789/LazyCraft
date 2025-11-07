@@ -148,7 +148,7 @@ const performEncryption = async (aesKey: CryptoKey, payload: Record<string, any>
 
 const buildKeyExchangeUrl = (): string => {
   const base = API_PREFIX.endsWith('/') ? API_PREFIX.slice(0, -1) : API_PREFIX
-  return `${base}/key-exchange`
+  return `${base}/key_exchange`
 }
 
 const shouldUseInternalProxy = (): boolean => {
@@ -164,7 +164,7 @@ const shouldUseInternalProxy = (): boolean => {
 }
 
 const exchangeKeyWithBackend = async (frontendPublicKey: string): Promise<KeyExchangeResult> => {
-  const url = shouldUseInternalProxy() ? '/api/internal/key-exchange' : buildKeyExchangeUrl()
+  const url = shouldUseInternalProxy() ? '/api/internal/key_exchange' : buildKeyExchangeUrl()
 
   const response = await fetch(url, {
     method: 'POST',
