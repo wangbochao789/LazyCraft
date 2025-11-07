@@ -1,3 +1,5 @@
+import { API_PREFIX } from '@/app-specs'
+
 const HKDF_INFO = 'ecdh-aes-key-exchange'
 const AES_KEY_LENGTH = 256
 const NONCE_LENGTH = 12
@@ -144,8 +146,27 @@ const performEncryption = async (aesKey: CryptoKey, payload: Record<string, any>
   return arrayBufferToBase64(combined.buffer)
 }
 
+const buildKeyExchangeUrl = (): string => {
+  const base = API_PREFIX.endsWith('/') ? API_PREFIX.slice(0, -1) : API_PREFIX
+  return `${base}/key-exchange`
+}
+
+const shouldUseInternalProxy = (): boolean => {
+  const flag = process.env.NEXT_PUBLIC_USE_INTERNAL_ECDH_PROXY
+
+  if (flag === 'true')
+    return true
+
+  if (flag === 'false')
+    return false
+
+  return process.env.NODE_ENV === 'development'
+}
+
 const exchangeKeyWithBackend = async (frontendPublicKey: string): Promise<KeyExchangeResult> => {
-  const response = await fetch('/api/internal/key-exchange', {
+  const url = shouldUseInternalProxy() ? '/api/internal/key-exchange' : buildKeyExchangeUrl()
+
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -158,7 +179,15 @@ const exchangeKeyWithBackend = async (frontendPublicKey: string): Promise<KeyExc
     throw new Error(errorText ? `密钥交换失败：${errorText}` : `密钥交换失败，状态码 ${response.status}`)
   }
 
-  const result = (await response.json()) as KeyExchangeAPIResponse
+  let result: KeyExchangeAPIResponse
+  try {
+    result = await response.json() as KeyExchangeAPIResponse
+  }
+  catch (error) {
+    const message = error instanceof Error ? error.message : String(error || '未知错误')
+    throw new Error(`密钥交换失败：响应解析错误 - ${message}`)
+  }
+
   return normalizeKeyExchangeResponse(result)
 }
 

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   try {
     const origin = req.nextUrl.origin
     const upstreamBase = buildAbsoluteApiUrl(origin)
-    const targetUrl = new URL('key-exchange', upstreamBase).toString()
+    const targetUrl = new URL('key_exchange', upstreamBase).toString()
 
     const requestBody = await req.text()
 
