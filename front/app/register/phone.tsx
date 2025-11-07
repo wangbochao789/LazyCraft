@@ -7,6 +7,7 @@ import IconFont from '../components/base/iconFont'
 import Captcha from './captcha'
 import style from './phone.module.scss'
 import { checkExist, commonPost } from '@/infrastructure/api/common'
+import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
 import { userEmailValidationRegex } from '@/app-specs'
 
 const Register_phone = () => {
@@ -32,15 +33,32 @@ const Register_phone = () => {
   const handleSubmit = async (values: any) => {
     try {
       setLoading(true)
+      const encryptedPayload = await encryptPayloadWithECDH(values)
       const res: any = await commonPost({
         url: '/register',
-        body: values,
+        body: encryptedPayload,
       })
       if (res.result == 'success') {
         message.success('注册成功')
         localStorage.setItem('console_token', res.data)
         // router.push('/signin')
         router.push('/apps')
+      }
+    }
+    catch (error: any) {
+      if (error?.json) {
+        try {
+          const errorData = await error.json()
+          const errorMessage = errorData?.message || '注册失败，请稍后重试'
+          message.error(errorMessage)
+        }
+        catch {
+          message.error('注册失败，请稍后重试')
+        }
+      }
+      else {
+        const errorMessage = error instanceof Error ? error.message : String(error || '注册失败，请稍后重试')
+        message.error(errorMessage)
       }
     }
     finally {
