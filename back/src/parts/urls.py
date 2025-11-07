@@ -22,7 +22,7 @@ api = HandleErrorApi(bp)
 
 from parts.apikey import apikey_api  # noqa
 from parts.app import app_api, workflow_api  # noqa
-from parts.auth import forgot_password, login, oauth  # noqa
+from parts.auth import forgot_password, key_exchange, login, oauth  # noqa
 from parts.conversation import speak_api  # noqa
 from parts.cost_audit import controller  # noqa
 from parts.data import controller  # noqa

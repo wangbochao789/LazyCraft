@@ -40,11 +40,13 @@ Markdown
 markdown-it-py
 tokenizers
 pycryptodome
+cryptography
 safetensors
 # app
 # uvicorn
 # gradio<5.0.0
 typer
+filetype
 # docx2txt
 # EbookLib
 # html2text

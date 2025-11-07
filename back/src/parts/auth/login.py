@@ -31,6 +31,7 @@ from models.model_account import Account, TenantAccountJoin
 from parts.logs import Action, LogService, Module
 from parts.urls import api
 from utils.util_database import db
+from utils.util_ecdh import decrypt_ecdh_encrypted_data
 
 from .sms import SmsChecker
 
@@ -39,8 +40,8 @@ class RegisterApi(Resource):
     def post(self):
         """注册新用户账号。
 
-        处理用户注册请求，验证用户输入信息并创建新账号。
-        包括验证短信验证码、检查密码一致性、创建账号和租户等。
+        接收 encrypted_data 和 session_id 参数，使用 ECDH 会话密钥解密。
+        请求数据应包含：name, email, phone, password, confirm_password, verify_code
 
         Returns:
             dict: 登录成功后的令牌信息
@@ -49,25 +50,37 @@ class RegisterApi(Resource):
             ValueError: 当输入信息无效或密码不一致时抛出
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("name", type=str, required=True, location="json")
-        parser.add_argument("email", type=EmailType, required=True, location="json")
-        parser.add_argument("phone", type=str, required=True, location="json")
-        parser.add_argument("password", type=str, required=True, location="json")
-        parser.add_argument(
-            "confirm_password", type=str, required=True, location="json"
-        )
-        parser.add_argument("verify_code", type=str, required=True, location="json")
+        parser.add_argument("encrypted_data", type=str, required=True, location="json")
+        parser.add_argument("session_id", type=str, required=True, location="json")
         body = parser.parse_args()
 
-        AccountService.validate_name_email_phone(body.name, body.email, body.phone)
-        if body.password != body.confirm_password:
+        # 解密请求数据
+        try:
+            decrypted_data = decrypt_ecdh_encrypted_data(body.encrypted_data, body.session_id)
+        except ValueError as e:
+            raise ValueError(f"请求数据解密失败: {str(e)}")
+        
+        # 从解密后的数据中提取参数
+        name = decrypted_data.get("name")
+        email = decrypted_data.get("email")
+        phone = decrypted_data.get("phone")
+        password = decrypted_data.get("password")
+        confirm_password = decrypted_data.get("confirm_password")
+        verify_code = decrypted_data.get("verify_code")
+
+        # 验证必需参数
+        if not all([name, email, phone, password, confirm_password, verify_code]):
+            raise ValueError("缺少必需参数：name, email, phone, password, confirm_password, verify_code")
+
+        AccountService.validate_name_email_phone(name, email, phone)
+        if password != confirm_password:
             raise ValueError("两次输入的密码不相同")
 
         # 校验验证码
-        SmsChecker("register").check(body.phone, body.verify_code)
+        SmsChecker("register").check(phone, verify_code)
 
         account = RegisterService.register(
-            body.email, body.phone, body.name, password=body.password
+            email, phone, name, password=password
         )
         TenantService.create_private_tenant(account)
 
@@ -199,6 +212,9 @@ class LoginApi(Resource):
     def post(self):
         """用户密码登录。
 
+        接收 encrypted_data 和 session_id 参数，使用 ECDH 会话密钥解密。
+        请求数据应包含：name 或 email 或 phone（至少一个），以及 password
+
         使用用户名/邮箱和密码进行身份验证并登录系统。
         验证成功后记录登录日志并返回访问令牌。
 
@@ -209,16 +225,31 @@ class LoginApi(Resource):
             ValueError: 当身份验证失败时抛出
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("name", type=str, required=False, location="json")
-        parser.add_argument("email", type=str, required=False, location="json")
-        parser.add_argument("password", type=str, required=True, location="json")
-        parser.add_argument(
-            "remember_me", type=bool, required=False, default=False, location="json"
-        )
+        parser.add_argument("encrypted_data", type=str, required=True, location="json")
+        parser.add_argument("session_id", type=str, required=True, location="json")
         body = parser.parse_args()
 
+        # 解密请求数据
+        try:
+            decrypted_data = decrypt_ecdh_encrypted_data(body.encrypted_data, body.session_id)
+        except ValueError as e:
+            raise ValueError(f"请求数据解密失败: {str(e)}")
+        
+        # 从解密后的数据中提取参数
+        name = decrypted_data.get("name")
+        email = decrypted_data.get("email")
+        phone = decrypted_data.get("phone", "")
+        password = decrypted_data.get("password")
+        remember_me = decrypted_data.get("remember_me", False)
+
+        # 验证必需参数
+        if not password:
+            raise ValueError("密码不能为空")
+        if not any([name, email, phone]):
+            raise ValueError("必须提供用户名/邮箱/手机号")
+
         account = AccountService.authenticate_by_password(
-            body.name, body.email, "", body.password
+            name, email, phone, password
         )
         LogService().add(
             Module.USER_MANAGEMENT,
@@ -233,6 +264,9 @@ class LoginSmsApi(Resource):
     def post(self):
         """短信验证码登录。
 
+        接收 encrypted_data 和 session_id 参数，使用 ECDH 会话密钥解密。
+        请求数据应包含：phone, verify_code
+
         使用手机号和短信验证码进行身份验证并登录系统。
         如果用户账号不存在，会缓存验证码用于后续注册流程。
 
@@ -243,20 +277,36 @@ class LoginSmsApi(Resource):
             ValueError: 当验证码验证失败或用户认证失败时抛出
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("phone", type=str, required=True, location="json")
-        parser.add_argument("verify_code", type=str, required=True, location="json")
+        parser.add_argument("encrypted_data", type=str, required=True, location="json")
+        parser.add_argument("session_id", type=str, required=True, location="json")
         body = parser.parse_args()
 
-        # 校验登录验证码
-        SmsChecker("login").check(body.phone, body.verify_code)
+        # 解密请求数据
+        try:
+            decrypted_data = decrypt_ecdh_encrypted_data(body.encrypted_data, body.session_id)
+        except ValueError as e:
+            raise ValueError(f"请求数据解密失败: {str(e)}")
+        
+        # 从解密后的数据中提取参数
+        phone = decrypted_data.get("phone")
+        verify_code = decrypted_data.get("verify_code")
 
-        account = Account.query.filter_by(phone=body.phone).first()
+        # 验证必需参数
+        if not phone:
+            raise ValueError("手机号不能为空")
+        if not verify_code:
+            raise ValueError("验证码不能为空")
+
+        # 校验登录验证码
+        SmsChecker("login").check(phone, verify_code)
+
+        account = Account.query.filter_by(phone=phone).first()
         if not account:
             SmsChecker("register").cached_phone_code_for_registration(
-                body.phone, body.verify_code
+                phone, verify_code
             )
 
-        account = AccountService.authenticate_by_sms(body.phone, body.verify_code)
+        account = AccountService.authenticate_by_sms(phone, verify_code)
 
         LogService().add(
             Module.USER_MANAGEMENT,
