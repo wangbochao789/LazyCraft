@@ -252,47 +252,6 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
     })) || [])
     : []
 
-  const providerSelector = (
-    <Select
-      className={classNames('w-full')}
-      allowClear
-      // disabled={disabled || !hasProviders}
-      readOnly={readOnly}
-      value={inputs?.payload__source}
-      placeholder={hasProviders ? '请选择服务提供商' : '暂无可用供应商'}
-      options={selectOptions}
-      onChange={(_value) => {
-        const targetItem = onlineModelList?.find((item: any) => `${item?.id}___${item?.model_brand}` === _value)
-        const targetModelUrl = targetItem?.model_brand?.toLowerCase() === 'openai'
-          ? (targetItem?.proxy_url || targetItem?.model_url)
-          : targetItem?.model_url
-        const targetId = targetItem?.id
-        onChange && onChange({
-          ...inputs,
-          payload__source: targetItem?.model_brand,
-          payload__base_url: formatValueByType(targetModelUrl, ValueType.String),
-          payload__source_id: formatValueByType(targetId, ValueType.String),
-          payload__base_model_selected_keys: undefined,
-          payload__base_model: undefined,
-          payload__can_finetune: undefined,
-        })
-      }}
-      dropdownRender={(menu) => {
-        if (hasProviders)
-          return menu
-
-        return (
-          <div className='px-3 py-2 text-xs text-text-tertiary'>
-            没有找到可用的供应商，请先
-            {' '}
-            <Link href='/inferenceService/cloud' className='text-primary'>云服务</Link>
-            {' '}配置 API Key。
-          </div>
-        )
-      }}
-    />
-  )
-
   return (
     <>
       <div className='space-y-3'>
@@ -312,9 +271,11 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
           <Select
             className={classNames('w-full')}
             allowClear
-            disabled={disabled}
+            // disabled={disabled || !hasProviders}
             readOnly={readOnly}
             value={inputs?.payload__source}
+            placeholder={hasProviders ? '请选择服务提供商' : '暂无可用供应商'}
+            options={selectOptions}
             onChange={(_value) => {
               const targetItem = onlineModelList?.find((item: any) => `${item?.id}___${item?.model_brand}` === _value)
               const targetModelUrl = targetItem?.model_brand?.toLowerCase() === 'openai'
@@ -331,11 +292,19 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
                 payload__can_finetune: undefined,
               })
             }}
-            placeholder="请选择服务提供商"
-            options={originTreeData?.map((item: any) => ({
-              label: item?.model_brand,
-              value: `${item?.id}___${item?.model_brand}`,
-            })) || []}
+            dropdownRender={(menu) => {
+              if (hasProviders)
+                return menu
+
+              return (
+                <div className='px-3 py-2 text-xs text-text-tertiary'>
+                  没有找到可用的供应商，请先
+                  {' '}
+                  <Link href='/inferenceService/cloud' className='text-primary'>云服务</Link>
+                  {' '}配置 API Key。
+                </div>
+              )
+            }}
           />
         </Field>
       </div>
@@ -355,53 +324,40 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             nodeData={nodeData}
             tooltip="选择大语言模型"
           >
-            <div className="flex items-center">
-              <Cascader
-                placeholder={(!inputs?.payload__source || !inputs?.llm?.payload__source || !inputs?.embed)
-                  ? '请先选择服务提供商'
-                  : '请选择模型（API-KEY已配置模型可正常使用）'}
-                allowClear={allowClear}
-                loading={loadingTreeData}
-                showSearch
-                disabled={disabled}
-                readOnly={readOnly}
-                options={modelTreeData || []}
-                placement='bottomLeft'
-                expandTrigger="click"
-                value={inputs?.payload__base_model_selected_keys}
-                onChange={(val) => {
-                  const selectedModel = onlineModelList?.find(child => child.value === val?.[val?.length - 1])
-                  const modelUrl = selectedModel?.model_brand?.toLowerCase() === 'openai'
-                    ? (selectedModel?.proxy_url || selectedModel?.model_url)
-                    : selectedModel?.model_url
-                  onChange && onChange({
-                    ...inputs,
-                    payload__base_model: val?.[val?.length - 1],
-                    payload__model_id: onlineModelList?.find((item: any) => item?.model_key === val?.[val?.length - 1])?.id,
-                    payload__base_model_selected_keys: val,
-                    payload__url: modelUrl,
-                    payload__base_url: modelUrl,
-                    payload__can_finetune: onlineModelList?.find(child => child.value === val?.[val?.length - 1])?.can_finetune,
-                    payload__model_generate_control: {
-                      payload__temperature: 0.8,
-                      payload__top_p: 0.7,
-                      payload__max_tokens: 4096,
-                    },
-                  })
-                }}
-                className="flex-1"
-              />
-              {
-                // (model_kind === 'OnlineLLM' || model_kind === 'TTS')
-                (model_kind === 'OnlineLLM')
-                && <Button
-                  type='link'
-                  size='small'
-                  onClick={() => {
-                    if (model_kind === 'OnlineLLM')
-                      setIsModalVisible(true)
-                    else if (model_kind === 'TTS')
-                      setIsTTSSettingsModalVisible(true)
+            <div>
+              <div className="flex items-center">
+                <Cascader
+                  placeholder={(!inputs?.payload__source || !inputs?.llm?.payload__source || !inputs?.embed)
+                    ? '请先选择服务提供商'
+                    : '请选择模型（API-KEY已配置模型可正常使用）'}
+                  allowClear={allowClear}
+                  loading={loadingTreeData}
+                  showSearch
+                  disabled={disabled}
+                  readOnly={readOnly}
+                  options={modelTreeData || []}
+                  placement='bottomLeft'
+                  expandTrigger="click"
+                  value={inputs?.payload__base_model_selected_keys}
+                  onChange={(val) => {
+                    const selectedModel = onlineModelList?.find(child => child.value === val?.[val?.length - 1])
+                    const modelUrl = selectedModel?.model_brand?.toLowerCase() === 'openai'
+                      ? (selectedModel?.proxy_url || selectedModel?.model_url)
+                      : selectedModel?.model_url
+                    onChange && onChange({
+                      ...inputs,
+                      payload__base_model: val?.[val?.length - 1],
+                      payload__model_id: onlineModelList?.find((item: any) => item?.model_key === val?.[val?.length - 1])?.id,
+                      payload__base_model_selected_keys: val,
+                      payload__url: modelUrl,
+                      payload__base_url: modelUrl,
+                      payload__can_finetune: onlineModelList?.find(child => child.value === val?.[val?.length - 1])?.can_finetune,
+                      payload__model_generate_control: {
+                        payload__temperature: 0.8,
+                        payload__top_p: 0.7,
+                        payload__max_tokens: 4096,
+                      },
+                    })
                   }}
                   className="flex-1"
                 />

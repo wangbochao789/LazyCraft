@@ -14,6 +14,9 @@
 # limitations under the License.
 
 
+import os
+import re
+
 from core.account_manager import CommonError
 from libs.timetools import TimeTools
 from utils.util_database import db
@@ -204,38 +207,107 @@ class DocService:
             index = index + 1
         db.session.commit()
 
+    def _parse_readme_headings(self):
+        """从 README.md 文件中解析标题结构生成导航菜单。
+        
+        只解析 README.md 文件中的一级（#）和二级（##）标题，生成目录结构。
+        确保每个二级标题只属于它应该属于的一级标题，维护正确的层级关系。
+        严格按照文档中的顺序提取标题，不缺失、不错位、不多出。
+
+        Returns:
+            list: 标题菜单列表，每个元素包含 title、id、level 和 children（二级标题列表）
+        """
+        # 获取 README.md 文件路径（只从 template 目录读取）
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        readme_path = os.path.join(current_dir, "template", "README.md")
+        
+        if not os.path.exists(readme_path):
+            return []
+        
+        menus = []
+        current_level1 = None
+        first_heading_found = False
+        
+        try:
+            # 只读取 README.md 文件的内容
+            with open(readme_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            
+            heading_pattern = r'^(#{1,2})(?!#)\s+(.+)$'
+            lines = content.split('\n')
+            in_code_block = False
+            
+            for line in lines:
+                if line.strip().startswith('```'):
+                    in_code_block = not in_code_block
+                    continue
+
+                if in_code_block:
+                    continue
+                
+                match = re.match(heading_pattern, line.strip())
+                if match:
+                    level = len(match.group(1))
+                    title = match.group(2).strip()
+                    
+                    title_text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', title)
+                    if not title_text or title_text.strip() == '':
+                        continue
+                    
+                    anchor_text = title_text.lower()
+                    anchor_text = re.sub(r'^[一二三四五六七八九十\d]+[、.]\s*', '', anchor_text)
+                    anchor = re.sub(r'[^\w\u4e00-\u9fa5]+', '-', anchor_text)
+                    anchor = re.sub(r'-+', '-', anchor).strip('-')
+                    if level == 1 and not first_heading_found:
+                        first_heading_found = True
+                        if "帮助文档" in title_text or len(title_text) > 20:
+                            continue
+                    
+                    if level == 1:
+                        current_level1 = {
+                            "title": title_text,
+                            "id": f"#{anchor}" if anchor else "#",
+                            "level": 1,
+                            "children": []
+                        }
+                        menus.append(current_level1)
+                    elif level == 2:
+                        if current_level1 is not None:
+                            current_level1["children"].append({
+                                "title": title_text,
+                                "id": f"#{anchor}" if anchor else "#",
+                                "level": 2
+                            })
+                        
+        except Exception as e:
+            print(f"Error parsing README.md: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        return menus
+
     def doc_menu(self):
         """获取文档菜单列表。
 
+        始终从 README.md 解析标题生成导航栏，确保导航栏反映 README.md 的文档结构。
+        只返回 README.md 中的标题，不包含数据库中的其他文档。
+
         Returns:
-            list: 已发布文档的菜单列表，每个元素包含 title 和 id
+            list: 文档菜单列表，每个元素包含 title、id 和可选的 children
         """
-        filters = [
-            Documents.deleted_flag == 0,
-            Documents.status == DocStatus.PUBLISH.value,
-        ]
-        items = (
-            db.session.query(Documents)
-            .filter(*filters)
-            .order_by(Documents.index.asc(), Documents.updated_at.desc())
-            .all()
-        )
-        return [{"title": item.title, "id": f"doc_{item.id}"} for item in items]
+        readme_menus = self._parse_readme_headings()
+        if readme_menus:
+            return readme_menus
+        return []
 
     def home_page(self):
         """获取首页文档。
 
+        始终返回 None，以便使用模板目录下的 README.md 文件。
+        这样可以避免数据库中的旧文档内容与 README.md 冲突，
+        确保只显示 README.md 中的内容。
+
         Returns:
-            Documents: 首页显示的文档对象，如果没有则返回 None
+            None: 始终返回 None，使用模板文件
         """
-        filters = [
-            Documents.deleted_flag == 0,
-            Documents.status == DocStatus.PUBLISH.value,
-        ]
-        item = (
-            db.session.query(Documents)
-            .filter(*filters)
-            .order_by(Documents.index.asc(), Documents.updated_at.desc())
-            .first()
-        )
-        return item
+        return None
