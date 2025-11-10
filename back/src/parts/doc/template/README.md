@@ -417,8 +417,6 @@ LLM兼容本地和云算力协同工作，无需额外购买maas平台即可直�
 
 ![](./media/media/okbg0c70abcjrco_najqk.png)
 
-### 
-
 ## 2、平台组件介绍
 
 平台主要是基于工作流搭建
@@ -889,7 +887,6 @@ HTTP 请求节点的作用如下：
 
 ![](./media/media/11vvphjb3gregrrnkirjc.png)
 
-  - 
 #### OCR文字识别
 
 文字识别，需要确认推理服务开启
