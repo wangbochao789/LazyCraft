@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form, Input, Modal } from 'antd'
 import { editModel } from '@/infrastructure/api/modelWarehouse'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 
 const ModalList = (props: any) => {
   const { visible, onClose, onSuccess, data, kind } = props
@@ -11,7 +11,7 @@ const ModalList = (props: any) => {
     try {
       const values = await form.validateFields()
       await editModel({ url: '/mh/update_apikey', body: { ...values } })
-      Toast.notify({ type: 'success', message: '设置成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '设置成功' })
       onSuccess()
       form.resetFields()
     }
@@ -26,6 +26,17 @@ const ModalList = (props: any) => {
 
   const modelName = data?.model_type === 'local' ? data?.model_name : data?.model_brand
   const modelTips = modelName === 'sensenova' ? '请按照以下格式输入：ak:sk' : '请输入API Key'
+  const isOpenAI = kind?.toLowerCase() === 'openai'
+
+  // OpenAI 的自定义验证规则：URL 和 API Key 至少填写一个
+  const validateUrlOrApiKey = (_: any, _value: any) => {
+    const apiKey = form.getFieldValue('api_key')
+    const proxyUrl = form.getFieldValue('proxy_url')
+    if (!apiKey && !proxyUrl)
+      return Promise.reject(new Error('URL 和 API Key 至少需要填写一个'))
+
+    return Promise.resolve()
+  }
 
   return (
     <Modal title="设置" destroyOnClose open={visible} onOk={handleOk} onCancel={handleCancel} cancelText='取消' okText='保存'>
@@ -41,10 +52,28 @@ const ModalList = (props: any) => {
         <Form.Item name="model_brand" label="厂商名字" initialValue={kind}>
           <Input disabled value={kind} />
         </Form.Item>
+        {isOpenAI && (
+          <Form.Item
+            name="proxy_url"
+            label="URL"
+            dependencies={['api_key']}
+            rules={[
+              // { required: true, message: 'URL 和 API Key 至少需要填写一个' },
+              { validator: validateUrlOrApiKey },
+            ]}
+          >
+            <Input placeholder="代理服务地址，或其他兼容openai api接口的云服务商地址" />
+          </Form.Item>
+        )}
         <Form.Item
           name="api_key"
           label="API Key"
-          rules={[{ required: true, message: modelTips }]}
+          dependencies={isOpenAI ? ['proxy_url'] : []}
+          rules={[
+            ...(isOpenAI
+              ? [{ validator: validateUrlOrApiKey }]
+              : [{ required: true, message: modelTips }]),
+          ]}
         >
           <Input placeholder={modelTips} />
         </Form.Item>

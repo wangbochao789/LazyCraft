@@ -4,7 +4,7 @@ import type { GetProp, UploadFile, UploadProps } from 'antd'
 import { Form, Modal, Upload } from 'antd'
 import { addFile } from '@/infrastructure/api/knowledgeBase' // , uploadData
 import { API_PREFIX } from '@/app-specs'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { useModalContext } from '@/shared/hooks/modal-context'
 import Iconfont from '@/app/components/base/iconFont'
 
@@ -19,7 +19,6 @@ const UploadModal = (props: any) => {
   const selfRef = useRef({ uploadTasks: {} })
   const [form] = Form.useForm()
   const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [confirmLoading, setConfirmLoading] = useState(false)
 
   const requestEvent = ({ formData, options, onSuccess, onFail, onProgress }) => {
     const xhr = new XMLHttpRequest()
@@ -66,18 +65,17 @@ const UploadModal = (props: any) => {
         if (!nextFileData) {
           const file_ids = Object.values(selfRef.current.uploadTasks).map((item: any) => item.serverId) || []
           Promise.resolve(addFile({ url: '/kb/file/add', body: { knowledge_base_id: id, file_ids } })).then(() => {
-            Toast.notify({ type: 'success', message: '上传成功' })
+            Toast.notify({ type: ToastTypeEnum.Success, message: '上传成功' })
             successEvent()
             setFileList([])
             form.setFieldValue('file', [])
-            // setConfirmLoading(false)
           })
         }
         else {
           startUpload(nextFileData)
         }
       },
-      onFail: ({ uid, name }) => {
+      onFail: ({ uid }) => {
         const { uploadTasks } = selfRef.current
         const failTasks = uploadTasks[uid]
         if (failTasks) {
@@ -116,8 +114,7 @@ const UploadModal = (props: any) => {
     name: 'file',
     accept: allowedTypes.join(','),
     multiple: true,
-    maxCount: 1,
-    onDelete: (file) => {
+    onRemove: (file) => {
       const index = fileList.indexOf(file)
       const newFileList = fileList.slice()
       newFileList.splice(index, 1)
@@ -127,18 +124,18 @@ const UploadModal = (props: any) => {
     beforeUpload: (file) => {
       const isAllowedType = allowedTypes.some(type => file.name.endsWith(type))
       if (!isAllowedType) {
-        Toast.notify({ type: 'error', message: '不支持该类型文件' })
+        Toast.notify({ type: ToastTypeEnum.Error, message: '不支持该类型文件' })
         return false
       }
       if ((file.type === 'application/zip' || file.type === 'application/x-zip-compressed') && file.size > 500 * 1024 * 1024) {
-        Toast.notify({ type: 'error', message: '压缩包文件大小不能超过500MB' })
+        Toast.notify({ type: ToastTypeEnum.Error, message: '压缩包文件大小不能超过500MB' })
         return false
       }
       if (file.type !== 'application/zip' && file.type !== 'application/x-zip-compressed' && file.size > 50 * 1024 * 1024) {
-        Toast.notify({ type: 'error', message: '文件大小不能超过50MB' })
+        Toast.notify({ type: ToastTypeEnum.Error, message: '文件大小不能超过50MB' })
         return false
       }
-      const currentFiles = [file]
+      const currentFiles = [...fileList, file]
       setFileList(currentFiles)
       selfRef.current.uploadTasks = Object.fromEntries(currentFiles.map(item => ([item.uid, {
         progress: 0,
@@ -160,7 +157,7 @@ const UploadModal = (props: any) => {
           filesName.push(file.name)
       }
       if (filesName.length > 0)
-        Toast.notify({ type: 'error', message: `不支持的文件上传: ${filesName.join(', ')}` })
+        Toast.notify({ type: ToastTypeEnum.Error, message: `不支持的文件上传: ${filesName.join(', ')}` })
     },
     fileList,
   }
@@ -173,7 +170,7 @@ const UploadModal = (props: any) => {
   }
 
   return (
-    <Modal title="上传知识库文件" destroyOnClose open={visible} onOk={handleOk} onCancel={handleCancel} confirmLoading={confirmLoading} cancelText='取消' okText='下一步'>
+    <Modal title="上传知识库文件" destroyOnClose open={visible} onOk={handleOk} onCancel={handleCancel} cancelText='取消' okText='下一步'>
       <Form
         form={form}
         layout="vertical"
@@ -188,9 +185,9 @@ const UploadModal = (props: any) => {
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
-            <p className="ant-upload-text">将文件拖拽至此区域或选择文件上传</p>
+            <p className="ant-upload-text">将文件拖拽至此区域或选择文件上传（支持多文件上传）</p>
             <p className="ant-upload-hint">
-              支持使用 pdf、word、ppt、excel、csv、 txt、json、html、markdown、latex，编码格式为utf-8,导入的数据要求单个大小50MB以内。
+              支持使用 pdf、word、ppt、excel、csv、 txt、json、html、markdown、latex，编码格式为utf-8，可一次上传多个文件，每个文件大小50MB以内。
             </p>
           </Dragger>
 
