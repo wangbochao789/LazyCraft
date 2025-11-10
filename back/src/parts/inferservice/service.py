@@ -88,6 +88,15 @@ class InferService:
     def __init__(self):
         self.supplier = os.getenv("CLOUD_SUPPLIER", "lazyllm")
 
+    def _get_used_infer_model_ids(self):
+        rows = (
+            db.session.query(InferModelServiceGroup.model_id)
+            .filter(InferModelServiceGroup.model_id.isnot(None))
+            .distinct()
+            .all()
+        )
+        return {row[0] for row in rows if row[0]}
+
     def check_gpu_quota(self, tenant_id, required_gpus=1):
         """检查GPU配额。
 
@@ -338,28 +347,33 @@ class InferService:
         Returns:
             list: 服务信息列表。
         """
-        service_info = [
-            {
-                "id": service.id,
-                "gid": service.gid,
-                "base_model": "",
-                "deploy_method": "",
-                "url": ams_service_endpoint.get(service.gid, ""),
-                "name": service.name,
-                "status": (
-                    ams_service_status.get(service.gid, "Cancelled")
-                    if service.gid
-                    else "Cancelled"
-                ),
-                "job_id": ams_service_endpoint.get(service.gid, ""),
-                "token": service.tenant_id,
-                "logs": service.logs,
-                "created_by": Account.query.get(service.created_by).name,
-                "created_at": service.created_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "updated_at": service.updated_time.strftime("%Y-%m-%d %H:%M:%S"),
-            }
-            for service in services
-        ]
+        service_info = []
+        for service in services:
+            service_status = (
+                ams_service_status.get(service.gid, "Cancelled")
+                if service.gid
+                else "Cancelled"
+            )
+            if status and service_status not in status:
+                continue
+
+            service_info.append(
+                {
+                    "id": service.id,
+                    "gid": service.gid,
+                    "base_model": "",
+                    "deploy_method": "",
+                    "url": ams_service_endpoint.get(service.gid, ""),
+                    "name": service.name,
+                    "status": service_status,
+                    "job_id": ams_service_endpoint.get(service.gid, ""),
+                    "token": service.tenant_id,
+                    "logs": service.logs,
+                    "created_by": Account.query.get(service.created_by).name,
+                    "created_at": service.created_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "updated_at": service.updated_time.strftime("%Y-%m-%d %H:%M:%S"),
+                }
+            )
 
         # 如果 service_info 为空，则跳过
         if not service_info:
@@ -449,6 +463,9 @@ class InferService:
                     user_id,
                 )
 
+                if not service_info:
+                    continue
+
                 user_name = ""
                 if (
                     infer_model_service_group.created_by
@@ -464,17 +481,18 @@ class InferService:
                     )
 
                 online_cnt = len(
-                    [
-                        service
-                        for service in services
-                        if ams_service_status.get(service.gid, "Cancelled") == "Ready"
-                    ]
+                    [info for info in service_info if info["status"] == "Ready"]
                 )
+                has_status_filter = bool(status)
                 if (
-                    online_cnt < 1
+                    not has_status_filter
+                    and online_cnt < 1
                     and (
-                        (infer_model_service_group.created_by == Account.get_admin_id()
-                        and current_user.id != Account.get_admin_id())
+                        (
+                            infer_model_service_group.created_by
+                            == Account.get_admin_id()
+                            and current_user.id != Account.get_admin_id()
+                        )
                         or is_draw
                     )
                 ):
@@ -490,7 +508,7 @@ class InferService:
                             infer_model_service_group.model_type,
                             infer_model_service_group.model_type,
                         ),
-                        "service_count": len(services),
+                        "service_count": len(service_info),
                         "online_count": online_cnt,
                         "created_at": infer_model_service_group.created_time.strftime(
                             "%Y-%m-%d %H:%M:%S"
@@ -846,10 +864,25 @@ class InferService:
         )
         logging.info(f"ams_delete_url: {ams_delete_url}")
         response = requests.delete(ams_delete_url)
-        response_data = response.json()
-        logging.info(f"ams delete response: {response.status_code}")
+        status_code = response.status_code
+        try:
+            response_data = response.json()
+        except ValueError:
+            response_data = {}
+
+        logging.info(f"ams delete response: {status_code}")
         logging.info(f"ams_stop_service response: {response.text}")
-        if response.status_code != 200:
+
+        if status_code == 404:
+            detail = response_data.get("message") or response_data.get("detail")
+            logging.info(
+                "ams_stop_service job absent (%s)，视为已删除: %s",
+                detail or "Job not found",
+                lws_release_name,
+            )
+            return True
+
+        if status_code != 200:
             logging.info(
                 f"ams_stop_service failed: {response_data.get('code')}, {response_data.get('message')}"
             )
@@ -927,6 +960,27 @@ class InferService:
             return False, ""
         return True, response_data.get("lwsName")
 
+    def is_cloud_service_available(self, timeout: float = 2.0):
+        """检查 cloud-service 是否可用。
+
+        Args:
+            timeout (float, optional): 请求超时时间，单位秒。默认 1.0 秒。
+
+        Returns:
+            tuple[bool, str]: (是否可用, 说明信息)
+        """
+        ams_endpoint = os.getenv("AMS_ENDPOINT")
+        if not ams_endpoint:
+            return False, "未配置 AMS_ENDPOINT，cloud-service 未启用"
+        url = ams_endpoint.rstrip("/") + "/v1/inference_services"
+        try:
+            resp = requests.get(url, timeout=timeout)
+            if resp.status_code == 200:
+                return True, "cloud-service 服务正常"
+            return False, f"cloud-service 返回异常状态码 {resp.status_code}"
+        except requests.RequestException as exc:
+            return False, f"无法连接 cloud-service：{exc}"
+
     def start_service(self, service_id):
         """启动推理服务。
 
@@ -959,13 +1013,9 @@ class InferService:
                 self.check_gpu_quota(service.tenant_id)
 
             model_info = Lazymodel.query.get(service.model_id)
-
+ 
             infer_model_name = model_info.model_name
             if model_info.model_from == "finetune":
-                if model_info.model_key_ams not in [
-                    model["model_name"] for model in ams_local_model_list_ams
-                ]:
-                    raise ValueError(f"基础模型 {model_info.model_key} 不支持推理")
                 infer_model_name = (
                     model_info.model_key_ams + ":" + model_info.model_name
                 )
@@ -1095,10 +1145,24 @@ class InferService:
             filters.append(Lazymodel.deleted_flag == 0)
             models = (
                 Lazymodel.query.filter(*filters)
-                .with_entities(Lazymodel.id, Lazymodel.model_name)
+                .with_entities(
+                    Lazymodel.id,
+                    Lazymodel.model_name,
+                    Lazymodel.builtin_flag,
+                )
                 .all()
             )
 
-            return [model._asdict() for model in models]
+            used_model_ids = self._get_used_infer_model_ids()
+
+            return [
+                {
+                    "id": model.id,
+                    "model_name": model.model_name,
+                    "need_confirm": (not model.builtin_flag)
+                    and (model.id not in used_model_ids),
+                }
+                for model in models
+            ]
         except Exception as e:
             raise ValueError("本地模型列表获取失败") from e
