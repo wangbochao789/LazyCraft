@@ -263,19 +263,29 @@ class DocView(Resource):
                 last = params[-1]
                 if last.endswith(".md"):
                     if last.startswith("_sidebar"):
-                        # 一级菜单
+                        # 一级菜单：动态生成侧边栏
                         try:
                             template = self.template_load.get_template("_sidebar.ft")
+                            menus = doc_service.doc_menu()
+                            print(f"[DEBUG] doc_menu returned {len(menus)} items")
                             data = {
-                                "menus": doc_service.doc_menu()
-                            }  # doc_menu 需要自定义实现
+                                "menus": menus
+                            }
                             rendered_content = template.render(data)
+                            print(f"[DEBUG] Rendered sidebar length: {len(rendered_content)}")
                             return Response(
                                 rendered_content,
                                 content_type="text/markdown; charset=utf-8",
                             )
                         except Exception as e:
-                            print(e)
+                            print(f"[ERROR] Failed to generate sidebar: {e}")
+                            import traceback
+                            traceback.print_exc()
+                            # 返回空的侧边栏而不是让它继续执行
+                            return Response(
+                                "<!-- 侧边栏生成失败 -->",
+                                content_type="text/markdown; charset=utf-8",
+                            )
 
                     if last.startswith("doc_"):
                         # 文档详情
