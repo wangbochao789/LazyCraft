@@ -272,21 +272,6 @@ def init_models():
                     }
                 )
 
-    # 内置本地模型
-    # for model_kind, model_list in local_model_builtins.items():
-    #   for model in model_list:
-    #       service.create_model(data={
-    #            "model_icon": "",
-    #            "model_type": "local",
-    #            "model_name": model["model_key"],
-    #            "model_key": model["model_key"],
-    #            "description": "",
-    #            "model_path": "",
-    #            "model_from": model["model_from"],
-    #            "model_kind": model_kind,
-    #            "model_brand": ''
-    #        })
-
 
 @click.command("test-redis", help="test redis connection")
 def test_redis():

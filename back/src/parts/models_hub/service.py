@@ -1247,7 +1247,23 @@ class ModelService:
                 db.session.remove()
                 model = Lazymodel.query.get(id)
                 if res:
-                    model.model_path = res
+                    base_model_path = os.getenv("LAZYLLM_MODEL_PATH")
+                    final_model_path = res
+                    if base_model_path:
+                        target_model_path = os.path.join(base_model_path, model.model_name)
+                        if os.path.exists(target_model_path):
+                            final_model_path = target_model_path
+                        else:
+                            os.makedirs(base_model_path, exist_ok=True)
+                            os.symlink(res, target_model_path)
+                            logging.info(
+                                "为模型 %s 创建软链接: %s -> %s",
+                                model.model_name,
+                                target_model_path,
+                                res,
+                            )
+                            final_model_path = target_model_path
+                    model.model_path = final_model_path
                     model.model_status = ModelStatus.SUCCESS.value
                     model.download_message = "Download successful"
                     db.session.commit()

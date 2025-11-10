@@ -46,37 +46,6 @@ model_card_kinds = {
     "STT": "语音转文字（STT）",
 }
 
-# local_finetune_model_list = [
-#     "Baichuan-13B-Chat",
-#     "Baichuan-7B",
-#     "Baichuan2-13B-Chat",
-#     "Baichuan2-7B-Chat",
-#     "chatglm3-6b",
-#     "glm-4-9b-chat",
-#     "internlm2-20b",
-#     "internlm2-7b",
-#     "internlm2-chat-1_8b",
-#     "internlm2-chat-1_8b-sft",
-#     "internlm2-chat-20b",
-#     "internlm2-chat-20b-sft",
-#     "internlm2-chat-7b",
-#     "internlm2_5-7b-chat",
-#     "Llama-2-13b",
-#     "Llama-2-70b",
-#     "Llama-2-7b",
-#     "Qwen-14B",
-#     "Qwen-1_8B",
-#     "Qwen-72B",
-#     "Qwen-7B",
-#     "Qwen1.5-0.5B-Chat",
-#     "Qwen1.5-1.8B",
-#     "Qwen1.5-14B",
-#     "Qwen1.5-14B-Chat",
-#     "Qwen1.5-4B",
-#     "Qwen1.5-72B",
-#     "Qwen1.5-7B"
-# ]
-
 online_model_list = {
     "SenseNova": {
         "llm_list": [
@@ -413,156 +382,6 @@ online_model_list = {
     },
 }
 
-local_model_list = {
-    "llm_list": [
-        "Baichuan-13B-Chat",
-        "Baichuan-7B",
-        "Baichuan2-13B-Chat",
-        "Baichuan2-13B-Chat-4bits",
-        "Baichuan2-7B-Chat",
-        "Baichuan2-7B-Chat-4bits",
-        "Baichuan2-7B-Intermediate-Checkpoints",
-        "chatglm3-6b",
-        "chatglm3-6b-128k",
-        "chatglm3-6b-32k",
-        "CodeLlama-13b-hf",
-        "CodeLlama-34b-hf",
-        "CodeLlama-70b-hf",
-        "CodeLlama-7b-hf",
-        "glm-4-9b-chat",
-        "internlm-20b",
-        "internlm-7b",
-        "internlm-chat-20b",
-        "internlm-chat-20b-4bit",
-        "internlm-chat-7b",
-        "internlm2-1_8b",
-        "internlm2-20b",
-        "internlm2-7b",
-        "internlm2-chat-1_8b",
-        "internlm2-chat-1_8b-sft",
-        "internlm2-chat-20b",
-        "internlm2-chat-20b-4bits",
-        "internlm2-chat-20b-sft",
-        "internlm2-chat-7b",
-        "internlm2-chat-7b-4bits",
-        "internlm2-chat-7b-sft",
-        "internlm2_5-7b-chat",
-        "internlm2-math-20b",
-        "internlm2-math-7b",
-        "Llama-2-13b",
-        "Llama-2-70b",
-        "Llama-2-7b",
-        "Meta-Llama-3-70B",
-        "Meta-Llama-3-8B",
-        "Qwen-14B",
-        "Qwen-1_8B",
-        "Qwen-72B",
-        "Qwen-7B",
-        "Qwen1.5-0.5B-Chat",
-        "Qwen1.5-1.8B",
-        "Qwen1.5-14B",
-        "Qwen1.5-14B-Chat",
-        "Qwen1.5-4B",
-        "Qwen1.5-72B",
-        "Qwen1.5-7B",
-        "Qwen2-72B-Instruct",
-        "Qwen2-72B-Instruct-AWQ",
-        "Qwen2-7B-Instruct",
-        "InternVL-Chat-V1-5",
-        "llava-1.5-13b-hf",
-        "llava-1.5-7b-hf",
-        "Mini-InternVL-Chat-2B-V1-5",
-        "bark",
-        "ChatTTS",
-        "musicgen-medium",
-        "musicgen-stereo-small",
-        "stable-diffusion-3-medium",
-        "SenseVoiceSmall",
-    ],
-    "embedding_list": ["bge-large-zh-v1.5", "bge-m3"],
-    "reranker_list": ["bge-reranker-large"],
-}
-
-local_model_builtins = {
-    "localLLM": [
-        {"model_key": "Baichuan-13B-Chat", "model_from": "modelscope"},
-        {"model_key": "Baichuan-7B", "model_from": "modelscope"},
-        {"model_key": "Baichuan2-13B-Chat", "model_from": "modelscope"},
-        {"model_key": "Baichuan2-13B-Chat-4bits", "model_from": "modelscope"},
-        {"model_key": "Baichuan2-7B-Chat", "model_from": "modelscope"},
-        {"model_key": "Baichuan2-7B-Chat-4bits", "model_from": "modelscope"},
-        {
-            "model_key": "Baichuan2-7B-Intermediate-Checkpoints",
-            "model_from": "modelscope",
-        },
-        {"model_key": "chatglm3-6b", "model_from": "modelscope"},
-        {"model_key": "chatglm3-6b-128k", "model_from": "modelscope"},
-        {"model_key": "chatglm3-6b-32k", "model_from": "modelscope"},
-        {"model_key": "CodeLlama-13b-hf", "model_from": "modelscope"},
-        {"model_key": "CodeLlama-34b-hf", "model_from": "modelscope"},
-        {"model_key": "CodeLlama-70b-hf", "model_from": "modelscope"},
-        {"model_key": "CodeLlama-7b-hf", "model_from": "modelscope"},
-        {"model_key": "glm-4-9b-chat", "model_from": "modelscope"},
-        {"model_key": "internlm-20b", "model_from": "modelscope"},
-        {"model_key": "internlm-7b", "model_from": "modelscope"},
-        {"model_key": "internlm-chat-20b", "model_from": "modelscope"},
-        {"model_key": "internlm-chat-20b-4bit", "model_from": "modelscope"},
-        {"model_key": "internlm-chat-7b", "model_from": "modelscope"},
-        {"model_key": "internlm2-1_8b", "model_from": "modelscope"},
-        {"model_key": "internlm2-20b", "model_from": "modelscope"},
-        {"model_key": "internlm2-7b", "model_from": "modelscope"},
-        {"model_key": "internlm2-chat-1_8b", "model_from": "modelscope"},
-        {"model_key": "internlm2-chat-1_8b-sft", "model_from": "modelscope"},
-        {"model_key": "internlm2-chat-20b", "model_from": "modelscope"},
-        {"model_key": "internlm2-chat-20b-4bits", "model_from": "modelscope"},
-        {"model_key": "internlm2-chat-20b-sft", "model_from": "modelscope"},
-        {"model_key": "internlm2-chat-7b", "model_from": "modelscope"},
-        {"model_key": "internlm2-chat-7b-4bits", "model_from": "modelscope"},
-        {"model_key": "internlm2-chat-7b-sft", "model_from": "modelscope"},
-        {"model_key": "internlm2_5-7b-chat", "model_from": "modelscope"},
-        {"model_key": "internlm2-math-20b", "model_from": "modelscope"},
-        {"model_key": "internlm2-math-7b", "model_from": "modelscope"},
-        {"model_key": "Llama-2-13b", "model_from": "modelscope"},
-        {"model_key": "Llama-2-70b", "model_from": "modelscope"},
-        {"model_key": "Llama-2-7b", "model_from": "modelscope"},
-        {"model_key": "Meta-Llama-3-70B", "model_from": "modelscope"},
-        {"model_key": "Meta-Llama-3-8B", "model_from": "modelscope"},
-        {"model_key": "Qwen-14B", "model_from": "modelscope"},
-        {"model_key": "Qwen-1_8B", "model_from": "modelscope"},
-        {"model_key": "Qwen-72B", "model_from": "modelscope"},
-        {"model_key": "Qwen-7B", "model_from": "modelscope"},
-        {"model_key": "Qwen1.5-0.5B-Chat", "model_from": "modelscope"},
-        {"model_key": "Qwen1.5-1.8B", "model_from": "modelscope"},
-        {"model_key": "Qwen1.5-14B", "model_from": "modelscope"},
-        {"model_key": "Qwen1.5-14B-Chat", "model_from": "modelscope"},
-        {"model_key": "Qwen1.5-4B", "model_from": "modelscope"},
-        {"model_key": "Qwen1.5-72B", "model_from": "modelscope"},
-        {"model_key": "Qwen1.5-7B", "model_from": "modelscope"},
-        {"model_key": "Qwen2-72B-Instruct", "model_from": "modelscope"},
-        {"model_key": "Qwen2-72B-Instruct-AWQ", "model_from": "modelscope"},
-        {"model_key": "Qwen2-7B-Instruct", "model_from": "modelscope"},
-    ],
-    "VQA": [
-        {"model_key": "InternVL-Chat-V1-5", "model_from": "modelscope"},
-        {"model_key": "Mini-InternVL-Chat-2B-V1-5", "model_from": "modelscope"},
-        {"model_key": "llava-1.5-13b-hf", "model_from": "modelscope"},
-        {"model_key": "llava-1.5-7b-hf", "model_from": "modelscope"},
-    ],
-    "SD": [{"model_key": "stable-diffusion-3-medium", "model_from": "modelscope"}],
-    "TTS": [
-        {"model_key": "ChatTTS", "model_from": "modelscope"},
-        {"model_key": "musicgen-stereo-small", "model_from": "modelscope"},
-        {"model_key": "musicgen-medium", "model_from": "modelscope"},
-        {"model_key": "bark", "model_from": "modelscope"},
-    ],
-    "STT": [{"model_key": "SenseVoiceSmall", "model_from": "modelscope"}],
-    "reranker": [{"model_key": "bge-reranker-large", "model_from": "modelscope"}],
-    "Embedding": [
-        {"model_key": "bge-large-zh-v1.5", "model_from": "modelscope"},
-        {"model_key": "bge-m3", "model_from": "modelscope"},
-    ],
-}
-
 # AMS内置的模型
 ams_model_list = [
     # localLLM 模型
@@ -593,6 +412,19 @@ ams_model_list = [
         "model_brand": "Baichuan"
     },
     {
+        "name": "Baichuan2-13B-Chat",
+        "key": "Baichuan2-13B-Chat",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": True,
+        "model_kind": "localLLM",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Baichuan"
+    },
+    {
         "name": "chatglm3-6b",
         "key": "chatglm3-6b",
         "model_type": "local",
@@ -603,7 +435,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "ChatGLM"
+        "model_brand": "ZhipuAI"
     },
     {
         "name": "ChatGLM2-6B",
@@ -616,72 +448,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "ChatGLM"
-    },
-    {
-        "name": "gpt-neox-20b",
-        "key": "EleutherAI/gpt-neox-20b",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "EleutherAI"
-    },
-    {
-        "name": "gpt-neo-2.7B",
-        "key": "EleutherAI/gpt-neo-2.7B",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "EleutherAI"
-    },
-    {
-        "name": "gpt-neo-1.3B",
-        "key": "EleutherAI/gpt-neo-1.3B",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "EleutherAI"
-    },
-    {
-        "name": "flan-t5-large",
-        "key": "google/flan-t5-large",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "Google"
-    },
-    {
-        "name": "flan-t5-base",
-        "key": "google/flan-t5-base",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "Google"
+        "model_brand": "ZhipuAI"
     },
     {
         "name": "internlm2_5-20b-chat",
@@ -694,7 +461,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "InternLM"
+        "model_brand": "Shanghai AI Lab"
     },
     {
         "name": "internlm2_5-7b-chat",
@@ -707,7 +474,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "InternLM"
+        "model_brand": "Shanghai AI Lab"
     },
     {
         "name": "Meta-Llama-3-8B-Instruct",
@@ -736,71 +503,6 @@ ams_model_list = [
         "model_brand": "Meta"
     },
     {
-        "name": "DialoGPT-small",
-        "key": "microsoft/DialoGPT-small",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "Microsoft"
-    },
-    {
-        "name": "QwQ-32B",
-        "key": "QwQ-32B",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
-    },
-    {
-        "name": "Qwen2.5-72B-Instruct",
-        "key": "Qwen2.5-72B-Instruct",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
-    },
-    {
-        "name": "Qwen3-32B",
-        "key": "Qwen3-32B",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "Mindie",
-        "endpoint": "/generate",
-        "model_brand": "Qwen"
-    },
-    {
-        "name": "Qwen2.5-72B-Instruct-AWQ",
-        "key": "Qwen2.5-72B-Instruct-AWQ",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": False,
-        "model_kind": "localLLM",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
-    },
-    {
         "name": "Qwen2.5-Coder-7B",
         "key": "Qwen2.5-Coder-7B",
         "model_type": "local",
@@ -811,7 +513,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
+        "model_brand": "Alibaba"
     },
     {
         "name": "Qwen2.5-7B-Instruct",
@@ -824,7 +526,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
+        "model_brand": "Alibaba"
     },
     {
         "name": "Qwen2.5-3B-Instruct",
@@ -837,7 +539,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
+        "model_brand": "Alibaba"
     },
     {
         "name": "Qwen2.5-1.5B-Instruct",
@@ -850,9 +552,100 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
+        "model_brand": "Alibaba"
     },
-    
+    {
+        "name": "Qwen/Qwen3-14B",
+        "key": "Qwen3-14B",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": True,
+        "model_kind": "localLLM",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Alibaba"
+    },
+    {
+        "name": "QwQ-32B",
+        "key": "QwQ-32B",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": True,
+        "model_kind": "localLLM",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Alibaba"
+    },
+    {
+        "name": "QwQ-32B-AWQ",
+        "key": "QwQ-32B-AWQ",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": False,
+        "model_kind": "localLLM",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Alibaba"
+    },
+    {
+        "name": "Qwen2.5-72B-Instruct",
+        "key": "Qwen2.5-72B-Instruct",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": True,
+        "model_kind": "localLLM",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Alibaba"
+    },
+    {
+        "name": "Qwen3-32B",
+        "key": "Qwen3-32B",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": True,
+        "model_kind": "localLLM",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Alibaba"
+    },
+    {
+        "name": "Qwen3-32B-AWQ",
+        "key": "Qwen3-32B-AWQ",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": False,
+        "model_kind": "localLLM",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Alibaba"
+    },
+    {
+        "name": "Qwen2.5-72B-Instruct-AWQ",
+        "key": "Qwen2.5-72B-Instruct-AWQ",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": False,
+        "model_kind": "localLLM",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Alibaba"
+    },
+
     # Embedding 模型
     {
         "name": "bge-m3",
@@ -893,7 +686,7 @@ ams_model_list = [
         "endpoint": "/generate",
         "model_brand": "BAAI"
     },
-    
+
     # STT 模型
     {
         "name": "sensevoicesmall",
@@ -906,9 +699,9 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "SenseVoiceDeploy",
         "endpoint": "/generate",
-        "model_brand": "SenseVoice"
+        "model_brand": "Alibaba"
     },
-    
+
     # TTS 模型
     {
         "name": "bark",
@@ -921,11 +714,11 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "BarkDeploy",
         "endpoint": "/generate",
-        "model_brand": "Bark"
+        "model_brand": "Suno"
     },
     {
-        "name": "ChatTTS-new",
-        "key": "ChatTTS-new",
+        "name": "ChatTTS",
+        "key": "ChatTTS",
         "model_type": "local",
         "model_status": 1,
         "is_finetune_model": False,
@@ -934,9 +727,9 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "ChatTTSDeploy",
         "endpoint": "/generate",
-        "model_brand": "ChatTTS"
+        "model_brand": "2noise"
     },
-    
+
     # VQA 模型
     {
         "name": "Mini-InternVL-Chat-2B-V1-5",
@@ -949,20 +742,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "InternVL"
-    },
-    {
-        "name": "Qwen2.5-VL-32B-Instruct",
-        "key": "Qwen2.5-VL-32B-Instruct",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": False,
-        "model_kind": "VQA",
-        "model_from": "modelscope",
-        "framework": "LMDeploy",
-        "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
+        "model_brand": "Shanghai AI Lab"
     },
     {
         "name": "Qwen2-VL-7B-Instruct",
@@ -975,7 +755,7 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
+        "model_brand": "Alibaba"
     },
     {
         "name": "qwen2.5-vl-3b-instruct",
@@ -988,9 +768,22 @@ ams_model_list = [
         "model_from": "modelscope",
         "framework": "LMDeploy",
         "endpoint": "/v1/chat/interactive",
-        "model_brand": "Qwen"
+        "model_brand": "Alibaba"
     },
-    
+    {
+        "name": "Qwen2.5-VL-32B-Instruct",
+        "key": "Qwen2.5-VL-32B-Instruct",
+        "model_type": "local",
+        "model_status": 1,
+        "is_finetune_model": False,
+        "can_finetune_model": False,
+        "model_kind": "VQA",
+        "model_from": "modelscope",
+        "framework": "LMDeploy",
+        "endpoint": "/v1/chat/interactive",
+        "model_brand": "Alibaba"
+    },
+
     # reranker 模型
     {
         "name": "bge-reranker-large",
