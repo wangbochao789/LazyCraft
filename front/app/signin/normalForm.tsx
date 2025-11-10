@@ -1,6 +1,6 @@
 'use client'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Checkbox, Form, Input, Modal, Tabs } from 'antd'
+import { Button, Checkbox, Form, Input, Modal, Tabs, message as antdMessage } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
@@ -10,6 +10,7 @@ import { AgreementButton, GitHubLoginButton, UserAgreementContent } from './comp
 import style from './page.module.scss'
 import { userEmailValidationRegex } from '@/app-specs'
 import { checkExist, login, sendForgotPasswordEmail } from '@/infrastructure/api/common'
+import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
 
 // 常量定义
 const PHONE_REGEX = /^1[3-9]\d{9}$/
@@ -39,17 +40,18 @@ const NormalForm = () => {
 
   // 处理登录提交
   const handleSubmit = useCallback(async (values: Record<string, any>) => {
-    const params = loginType === 'pwd' ? { ...values, remember_me: rememberMe } : { ...values }
+    const plainParams = loginType === 'pwd' ? { ...values, remember_me: rememberMe } : { ...values }
     const resUrl = loginType === 'pwd' ? '/login' : 'login_sms'
 
     try {
       setIsLoading(true)
-      const res = await login({ url: resUrl, body: params })
+      const encryptedPayload = await encryptPayloadWithECDH(plainParams)
+      const res = await login({ url: resUrl, body: encryptedPayload })
 
       if (res.result === 'success') {
         localStorage.setItem('console_token', res.data)
         if (loginType === 'pwd')
-          localStorage.setItem('loginData', JSON.stringify(params))
+          localStorage.setItem('loginData', JSON.stringify(plainParams))
         router.push('/apps')
       }
     }
@@ -57,8 +59,8 @@ const NormalForm = () => {
       if (error?.json) {
         try {
           const errorData = await error.json()
-          const message = errorData.message || ''
-          if (message.includes('该手机号未注册')) {
+          const errorMessage = errorData.message || ''
+          if (errorMessage.includes('该手机号未注册')) {
             const searchParams = new URLSearchParams()
             if (values.phone)
               searchParams.set('phone', values.phone)
@@ -70,6 +72,10 @@ const NormalForm = () => {
         catch {
           // 忽略 JSON 解析错误
         }
+      }
+      else {
+        const errorMessage = error instanceof Error ? error.message : String(error || '登录失败，请稍后重试')
+        antdMessage.error(errorMessage)
       }
     }
     finally {

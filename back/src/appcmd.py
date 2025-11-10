@@ -210,14 +210,33 @@ def init():
 
 @click.command("init-models", help="初始化内置模型清单")
 def init_models():
-    # 内置厂商
+    tenant_id = Account.get_administrator_id()
+    existing_choice_tags = {
+        (tag.type, tag.name)
+        for tag in db.session.query(ChoiceTag)
+        .filter(ChoiceTag.tenant_id == tenant_id)
+        .all()
+    }
+    
     choiseTags = []
     for firm, types in firms.items():
         for s in types:
-            choiseTags.append(
-                ChoiceTag(tenant_id=Account.get_administrator_id(), type=s, name=firm)
+            if (s, firm) not in existing_choice_tags:
+                choiseTags.append(
+                    ChoiceTag(tenant_id=tenant_id, type=s, name=firm)
+                )
+    
+    if choiseTags:
+        db.session.add_all(choiseTags)
+        db.session.commit()
+        click.echo(
+            click.style(
+                f"已添加 {len(choiseTags)} 个厂商标签", fg="green"
             )
-    db.session.add_all(choiseTags)
+        )
+    else:
+        click.echo(click.style("厂商标签已是最新，无需更新", fg="yellow"))
+    
     # local_kind = ["localLLM", "VAQ", "SD", "TTS", "STT", "Embedding"]
     online_kind = {
         "llm": "OnlineLLM",
@@ -243,49 +262,71 @@ def init_models():
     existing_model_names = {model.model_name for model in existing_models}
 
     # 内置在线模型
-    account = AccountService.load_user(user_id=Account.get_administrator_id())
+    account = AccountService.load_user(user_id=tenant_id)
     service = ModelService(account)
+    created_count = 0
+    error_count = 0
+    
     for firm, type_list in online_model_list.items():
         for type_key, models in type_list.items():
             model_kind = online_kind.get(type_key.split("_")[0], "")
             model_name = f"{firm}-{model_kind}"
             if model_kind != "" and model_name not in existing_model_names:
-                service.create_model(
-                    data={
-                        "model_icon": "",
-                        "model_type": "online",
-                        "model_name": model_name,
-                        "description": "",
-                        "model_path": "",
-                        "model_from": "",
-                        "model_kind": model_kind,
-                        "model_list": json.dumps(
-                            [
-                                {
-                                    "model_key": i["model_name"],
-                                    "can_finetune": 1 if i["support_finetune"] else 0,
-                                }
-                                for i in models
-                            ]
-                        ),
-                        "model_brand": firm,
-                    }
-                )
-
-    # 内置本地模型
-    # for model_kind, model_list in local_model_builtins.items():
-    #   for model in model_list:
-    #       service.create_model(data={
-    #            "model_icon": "",
-    #            "model_type": "local",
-    #            "model_name": model["model_key"],
-    #            "model_key": model["model_key"],
-    #            "description": "",
-    #            "model_path": "",
-    #            "model_from": model["model_from"],
-    #            "model_kind": model_kind,
-    #            "model_brand": ''
-    #        })
+                try:
+                    service.create_model(
+                        data={
+                            "model_icon": "",
+                            "model_type": "online",
+                            "model_name": model_name,
+                            "description": "",
+                            "model_path": "",
+                            "model_from": "",
+                            "model_kind": model_kind,
+                            "model_list": json.dumps(
+                                [
+                                    {
+                                        "model_key": i["model_name"],
+                                        "can_finetune": 1 if i["support_finetune"] else 0,
+                                    }
+                                    for i in models
+                                ]
+                            ),
+                            "model_brand": firm,
+                        }
+                    )
+                    created_count += 1
+                    click.echo(
+                        click.style(
+                            f"已创建模型: {model_name} ({firm})", fg="green"
+                        )
+                    )
+                except Exception as e:
+                    error_count += 1
+                    click.echo(
+                        click.style(
+                            f"创建模型失败 {model_name} ({firm}): {str(e)}",
+                            fg="red",
+                        )
+                    )
+                    logging.error(f"创建模型失败 {model_name} ({firm}): {e}", exc_info=True)
+    
+    # 提交所有数据库更改
+    try:
+        db.session.commit()
+        click.echo(
+            click.style(
+                f"模型初始化完成！成功创建 {created_count} 个模型，失败 {error_count} 个",
+                fg="green",
+            )
+        )
+    except Exception as e:
+        db.session.rollback()
+        click.echo(
+            click.style(
+                f"提交数据库更改时出错: {str(e)}", fg="red"
+            )
+        )
+        raise
 
 
 @click.command("test-redis", help="test redis connection")

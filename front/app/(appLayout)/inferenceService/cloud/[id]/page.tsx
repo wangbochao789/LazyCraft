@@ -8,9 +8,9 @@ import styles from './index.module.scss'
 import DrawInfo from './DrawInfo'
 import AddModal from './AddModal'
 import AddModelList from './AddModelList'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { getModelInfo, reDown } from '@/infrastructure/api/modelWarehouse'
-import { deleteModel } from '@/infrastructure/api/modelAdjust'
+import { deleteModel, getModelList } from '@/infrastructure/api/modelAdjust'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { usePermitCheck } from '@/app/components/app/permit-check'
 
@@ -39,11 +39,8 @@ const ModelDetail = (req) => {
   }
 
   const getTableData = ({ current, pageSize }): Promise<any> => {
-    return getModelList({ url: '/mh/finetune_model_page', options: { params: { page: current, page_size: pageSize, model_id: id, online_model_id: type, qtype, namespace: isMine } } }).then((res) => {
-      return {
-        total: res.total,
-        list: res.data,
-      }
+    return getModelList({ url: '/mh/finetune_model_page', body: { page: current, page_size: pageSize, model_id: id, online_model_id: type, qtype, namespace: isMine } }).then((res) => {
+      return res
     })
   }
   const fixData = (data: any) => {
@@ -72,14 +69,14 @@ const ModelDetail = (req) => {
   const handleDelete = async (record) => {
     const res = await deleteModel({ url: `/mh/delete_finetune_model/${id}/${record?.id}` })
     if (res) {
-      Toast.notify({ type: 'success', message: '删除成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
       search.submit()
     }
   }
   const reDownload = () => {
     reDown({ url: `/mh/retry_download/${id}` }).then((res) => {
       if (res) {
-        Toast.notify({ type: 'success', message: '操作成功' })
+        Toast.notify({ type: ToastTypeEnum.Success, message: '操作成功' })
         getInfo()
       }
     })

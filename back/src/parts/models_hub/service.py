@@ -450,21 +450,39 @@ class ModelService:
             CommonError: 当API密钥无效或认证异常时。
         """
 
-        res = False
-        try:
-            m = lazyllm.OnlineChatModule(source=model_brand.lower(), api_key=api_key)
-            res = m._validate_api_key()
-            if not res:
-                raise CommonError("key 无效！")
-        except Exception as e:
-            logging.error(f"update_or_create_api_key error: {e}")
-            raise CommonError("api_key 认证异常")
+        # 验证 api_key 和 proxy_url 至少有一个存在
+        if not (api_key or proxy_url):
+            raise CommonError("api_key 和 proxy_url 不能同时为空，至少需要提供一个")
+        
+        # 只有当 api_key 存在且非空时，才进行验证
+        if api_key and api_key.strip():
+            res = False
+            try:
+                split_keys = api_key.split(":")
+                secret_key = None
+                origin_key = api_key
+                if model_brand == "SenseNova" and len(split_keys) < 2:
+                    raise CommonError("key 无效！")
+                if len(split_keys) >= 2:
+                    origin_key = split_keys[0]
+                    secret_key = split_keys[1]
+
+                # OpenAI 跳过验证 api_key
+                if model_brand != "OpenAI":
+                    m = lazyllm.OnlineChatModule(source=model_brand.lower(),api_key=origin_key, secret_key=secret_key)
+                    res = m._validate_api_key()
+                
+                    if not res:
+                        raise CommonError("key 无效！")
+            except Exception as e:
+                logging.error(f"update_or_create_api_key error: {e}")
+                raise CommonError("api_key 认证异常")
 
         # 查找对应 model_brand 的模型
         models = Lazymodel.query.filter(
             Lazymodel.model_brand == model_brand, Lazymodel.model_type == "online"
         ).all()
-
+        api_key = api_key if api_key else ""
         for model in models:
             # 检查 LazyModelConfigInfo 中是否已有该模型的配置
             config = LazyModelConfigInfo.query.filter(
@@ -1545,15 +1563,21 @@ class ModelService:
         model_config = LazyModelConfigInfo.query.filter(
             LazyModelConfigInfo.model_id == online_id,
             LazyModelConfigInfo.tenant_id == tenant_id,
-            LazyModelConfigInfo.api_key != "",
+            or_(
+                LazyModelConfigInfo.api_key != "",
+                LazyModelConfigInfo.proxy_url != "",
+            ),
         ).first()
         if model_config is not None:
             split_keys = model_config.api_key.split(":")
+            proxy_url = model_config.proxy_url
             if len(split_keys) >= 2:
                 result = {"api_key": split_keys[0], "secret_key": split_keys[1]}
             else:
                 result = {"api_key": model_config.api_key}
 
+            if proxy_url:
+                result["proxy_url"] = proxy_url
             if model_brand:
                 result["source"] = model_brand
             return result
@@ -1672,7 +1696,10 @@ class ModelService:
                             LazyModelConfigInfo.model_id == Lazymodel.id,
                             LazyModelConfigInfo.tenant_id
                             == self.account.current_tenant_id,
-                            LazyModelConfigInfo.api_key != "",
+                             or_(
+                                LazyModelConfigInfo.api_key != "",
+                                LazyModelConfigInfo.proxy_url != "",
+                            ),
                         ),
                     ),
                 )

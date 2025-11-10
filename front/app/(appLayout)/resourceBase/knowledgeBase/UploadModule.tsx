@@ -27,14 +27,27 @@ const UploadModal = (props: any) => {
     xhr.open('POST', `${API_PREFIX}/kb/upload`, true)
     xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`)
     xhr.onreadystatechange = () => {
+      const safeParseResponse = () => {
+        if (!xhr.response)
+          return {}
+        try {
+          return typeof xhr.response === 'string' ? JSON.parse(xhr.response) : xhr.response
+        }
+        catch (error) {
+          return {
+            message: xhr.responseText || xhr.statusText,
+          }
+        }
+      }
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
-          onSuccess && onSuccess(JSON.parse(xhr.response))
+          onSuccess && onSuccess(safeParseResponse())
         }
         else {
           onFail && onFail({
             ...options,
-            response: JSON.parse(xhr.response),
+            status: xhr.status,
+            response: safeParseResponse(),
           })
         }
       }
@@ -54,12 +67,27 @@ const UploadModal = (props: any) => {
   const startUpload = (fileData) => {
     const formData = new FormData()
     formData.append('file', fileData as FileType)
+    const currentTask = selfRef.current.uploadTasks[fileData.uid] || {}
+    selfRef.current.uploadTasks[fileData.uid] = {
+      ...currentTask,
+      stateTag: '上传中',
+      errorMessage: '',
+      progress: currentTask.progress || 0,
+    }
+    runProgressMonitor({ list: Object.values(selfRef.current.uploadTasks) })
     requestEvent({
       formData,
       options: { uid: fileData.uid },
       onSuccess: (res) => {
-        const ids = res.files.map(item => item.id) || []
+        const ids = res?.files?.map(item => item.id) || []
         selfRef.current.uploadTasks[fileData.uid].serverId = ids[0]
+        selfRef.current.uploadTasks[fileData.uid] = {
+          ...selfRef.current.uploadTasks[fileData.uid],
+          progress: 100,
+          stateTag: '上传成功',
+          errorMessage: '',
+        }
+        runProgressMonitor({ list: Object.values(selfRef.current.uploadTasks) })
         const { uid }: any = Object.values(selfRef.current.uploadTasks).find((item: any) => !item.serverId) || {}
         const nextFileData = fileList.find((item: any) => item.uid === uid)
         if (!nextFileData) {
@@ -75,13 +103,14 @@ const UploadModal = (props: any) => {
           startUpload(nextFileData)
         }
       },
-      onFail: ({ uid }) => {
+      onFail: ({ uid, response }) => {
         const { uploadTasks } = selfRef.current
         const failTasks = uploadTasks[uid]
         if (failTasks) {
           selfRef.current.uploadTasks[uid] = {
             ...failTasks,
             stateTag: '上传失败',
+            errorMessage: response?.message || response?.msg || '上传失败，请重试',
           }
         }
         runProgressMonitor({ list: Object.values(selfRef.current.uploadTasks) })
@@ -142,6 +171,8 @@ const UploadModal = (props: any) => {
         uid: item.uid,
         name: item.name,
         icon: <Iconfont type="icon-zhishiku" />,
+        stateTag: '',
+        errorMessage: '',
       }])))
       form.setFieldValue('file', currentFiles)
       return false
