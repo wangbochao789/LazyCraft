@@ -252,47 +252,6 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
     })) || [])
     : []
 
-  const providerSelector = (
-    <Select
-      className={classNames('w-full')}
-      allowClear
-      // disabled={disabled || !hasProviders}
-      readOnly={readOnly}
-      value={inputs?.payload__source}
-      placeholder={hasProviders ? '请选择服务提供商' : '暂无可用供应商'}
-      options={selectOptions}
-      onChange={(_value) => {
-        const targetItem = onlineModelList?.find((item: any) => `${item?.id}___${item?.model_brand}` === _value)
-        const targetModelUrl = targetItem?.model_brand?.toLowerCase() === 'openai'
-          ? (targetItem?.proxy_url || targetItem?.model_url)
-          : targetItem?.model_url
-        const targetId = targetItem?.id
-        onChange && onChange({
-          ...inputs,
-          payload__source: targetItem?.model_brand,
-          payload__base_url: formatValueByType(targetModelUrl, ValueType.String),
-          payload__source_id: formatValueByType(targetId, ValueType.String),
-          payload__base_model_selected_keys: undefined,
-          payload__base_model: undefined,
-          payload__can_finetune: undefined,
-        })
-      }}
-      dropdownRender={(menu) => {
-        if (hasProviders)
-          return menu
-
-        return (
-          <div className='px-3 py-2 text-xs text-text-tertiary'>
-            没有找到可用的供应商，请先
-            {' '}
-            <Link href='/inferenceService/cloud' className='text-primary'>云服务</Link>
-            {' '}配置 API Key。
-          </div>
-        )
-      }}
-    />
-  )
-
   return (
     <>
       <div className='space-y-3'>
@@ -309,7 +268,44 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
           nodeData={nodeData}
           tooltip="主流在线大模型提供商"
         >
-          {providerSelector}
+          <Select
+            className={classNames('w-full')}
+            allowClear
+            // disabled={disabled || !hasProviders}
+            readOnly={readOnly}
+            value={inputs?.payload__source}
+            placeholder={hasProviders ? '请选择服务提供商' : '暂无可用供应商'}
+            options={selectOptions}
+            onChange={(_value) => {
+              const targetItem = onlineModelList?.find((item: any) => `${item?.id}___${item?.model_brand}` === _value)
+              const targetModelUrl = targetItem?.model_brand?.toLowerCase() === 'openai'
+                ? (targetItem?.proxy_url || targetItem?.model_url)
+                : targetItem?.model_url
+              const targetId = targetItem?.id
+              onChange && onChange({
+                ...inputs,
+                payload__source: targetItem?.model_brand,
+                payload__base_url: formatValueByType(targetModelUrl, ValueType.String),
+                payload__source_id: formatValueByType(targetId, ValueType.String),
+                payload__base_model_selected_keys: undefined,
+                payload__base_model: undefined,
+                payload__can_finetune: undefined,
+              })
+            }}
+            dropdownRender={(menu) => {
+              if (hasProviders)
+                return menu
+
+              return (
+                <div className='px-3 py-2 text-xs text-text-tertiary'>
+                  没有找到可用的供应商，请先
+                  {' '}
+                  <Link href='/inferenceService/cloud' className='text-primary'>云服务</Link>
+                  {' '}配置 API Key。
+                </div>
+              )
+            }}
+          />
         </Field>
       </div>
 
