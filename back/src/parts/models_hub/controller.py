@@ -398,7 +398,7 @@ class ModelHubUpdateApiKeyApi(Resource):
         self.check_can_write()       
         parser = reqparse.RequestParser()
         parser.add_argument("model_brand", type=str, required=True, location="json")
-        parser.add_argument("api_key", type=str, required=True, location="json")
+        parser.add_argument("api_key", type=str, required=False, location="json")
         parser.add_argument("proxy_url", type=str, location="json", required=False)
         parser.add_argument(
             "proxy_auth_info", type=dict, location="json", required=False

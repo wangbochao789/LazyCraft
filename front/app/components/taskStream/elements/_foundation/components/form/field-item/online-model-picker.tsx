@@ -1,6 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import Link from 'next/link'
 import { Button } from 'antd'
 import classNames from 'classnames'
 import type { FieldItemProps } from '../types'
@@ -98,6 +99,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
           item.keys = isRoot ? [] : (parent?.keys || []).concat(item?.value)
           item.model_brand = item.model_brand || parent?.model_brand
           item.model_url = item.model_url || parent?.model_url
+          item.proxy_url = item.proxy_url || parent?.proxy_url
           item.model_key = item.model_key || parent?.model_key
 
           return {
@@ -111,6 +113,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             model_name: item.model_name,
             model_key: item.model_key,
             model_url: item.model_url,
+            proxy_url: item.proxy_url,
             id: item.id,
             can_finetune: item.can_finetune,
           }
@@ -139,6 +142,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
         setLoadingTreeData(false)
       })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -152,6 +156,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
     catch (error) {
       setModelTreeData([])
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputs?.payload__source_id, originTreeData])
 
   // 处理设置保存
@@ -238,6 +243,56 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
     inputs?.payload__tts_settings?.randomTone,
   ])
 
+  const hasProviders = originTreeData?.length > 0
+
+  const selectOptions = hasProviders
+    ? (originTreeData?.map((item: any) => ({
+      label: item?.model_brand,
+      value: `${item?.id}___${item?.model_brand}`,
+    })) || [])
+    : []
+
+  const providerSelector = (
+    <Select
+      className={classNames('w-full')}
+      allowClear
+      // disabled={disabled || !hasProviders}
+      readOnly={readOnly}
+      value={inputs?.payload__source}
+      placeholder={hasProviders ? '请选择服务提供商' : '暂无可用供应商'}
+      options={selectOptions}
+      onChange={(_value) => {
+        const targetItem = onlineModelList?.find((item: any) => `${item?.id}___${item?.model_brand}` === _value)
+        const targetModelUrl = targetItem?.model_brand?.toLowerCase() === 'openai'
+          ? (targetItem?.proxy_url || targetItem?.model_url)
+          : targetItem?.model_url
+        const targetId = targetItem?.id
+        onChange && onChange({
+          ...inputs,
+          payload__source: targetItem?.model_brand,
+          payload__base_url: formatValueByType(targetModelUrl, ValueType.String),
+          payload__source_id: formatValueByType(targetId, ValueType.String),
+          payload__base_model_selected_keys: undefined,
+          payload__base_model: undefined,
+          payload__can_finetune: undefined,
+        })
+      }}
+      dropdownRender={(menu) => {
+        if (hasProviders)
+          return menu
+
+        return (
+          <div className='px-3 py-2 text-xs text-text-tertiary'>
+            没有找到可用的供应商，请先
+            {' '}
+            <Link href='/inferenceService/cloud' className='text-primary'>云服务</Link>
+            {' '}配置 API Key。
+          </div>
+        )
+      }}
+    />
+  )
+
   return (
     <>
       <div className='space-y-3'>
@@ -262,7 +317,9 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             value={inputs?.payload__source}
             onChange={(_value) => {
               const targetItem = onlineModelList?.find((item: any) => `${item?.id}___${item?.model_brand}` === _value)
-              const targetModelUrl = targetItem?.model_url
+              const targetModelUrl = targetItem?.model_brand?.toLowerCase() === 'openai'
+                ? (targetItem?.proxy_url || targetItem?.model_url)
+                : targetItem?.model_url
               const targetId = targetItem?.id
               onChange && onChange({
                 ...inputs,
@@ -313,12 +370,17 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
                 expandTrigger="click"
                 value={inputs?.payload__base_model_selected_keys}
                 onChange={(val) => {
+                  const selectedModel = onlineModelList?.find(child => child.value === val?.[val?.length - 1])
+                  const modelUrl = selectedModel?.model_brand?.toLowerCase() === 'openai'
+                    ? (selectedModel?.proxy_url || selectedModel?.model_url)
+                    : selectedModel?.model_url
                   onChange && onChange({
                     ...inputs,
                     payload__base_model: val?.[val?.length - 1],
                     payload__model_id: onlineModelList?.find((item: any) => item?.model_key === val?.[val?.length - 1])?.id,
                     payload__base_model_selected_keys: val,
-                    payload__url: onlineModelList?.find(child => child.value === val?.[val?.length - 1])?.model_url,
+                    payload__url: modelUrl,
+                    payload__base_url: modelUrl,
                     payload__can_finetune: onlineModelList?.find(child => child.value === val?.[val?.length - 1])?.can_finetune,
                     payload__model_generate_control: {
                       payload__temperature: 0.8,
@@ -341,20 +403,40 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
                     else if (model_kind === 'TTS')
                       setIsTTSSettingsModalVisible(true)
                   }}
-                  className={classNames('ml-2', is_hidden ? 'hidden' : 'block')}
-                  style={{ display: is_hidden ? 'none' : 'block' }}
-                >
-                  {/* 使用图标 */}
-                  <Icon type="icon-shezhi" style={{ fontSize: '22px', color: '#262626', cursor: 'pointer', display: is_hidden ? 'none' : 'block' }} />
-                </Button>
-              }
+                  className="flex-1"
+                />
+                {(model_kind === 'OnlineLLM') && (
+                  <Button
+                    type='link'
+                    size='small'
+                    onClick={() => {
+                      if (model_kind === 'OnlineLLM')
+                        setIsModalVisible(true)
+                      else if (model_kind === 'TTS')
+                        setIsTTSSettingsModalVisible(true)
+                    }}
+                    className={classNames('ml-2', is_hidden ? 'hidden' : 'block')}
+                    style={{ display: is_hidden ? 'none' : 'block' }}
+                  >
+                    <Icon type="icon-shezhi" style={{ fontSize: '22px', color: '#262626', cursor: 'pointer', display: is_hidden ? 'none' : 'block' }} />
+                  </Button>
+                )}
+              </div>
+              {Boolean(inputs?.payload__source) && !loadingTreeData && !(modelTreeData?.length) && (
+                <p className='mt-2 text-xs text-text-tertiary'>
+                  暂无可用模型，请前往
+                  {' '}
+                  <Link href={'/inferenceService/cloud'} className='text-primary'>云服务</Link>
+                  {' '}配置 API Key 后再试。
+                </p>
+              )}
             </div>
           </Field>
         </div>
       </div>
 
       {
-        inputs?.payload__source === 'openai' && model_kind === 'OnlineLLM' && (
+        inputs?.payload__source?.toLowerCase() === 'openai' && model_kind === 'OnlineLLM' && (
           <div className='space-y-3'>
             <Field
               label="URL"
@@ -366,8 +448,8 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             >
               <Input
                 className={classNames('w-full')}
-                readOnly
-                disabled={disabled || !inputs?.payload__base_url}
+                // readOnly
+                // disabled={disabled || !inputs?.payload__base_url}
                 value={inputs?.payload__base_url}
                 onChange={(val) => {
                   onChange && onChange({

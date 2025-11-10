@@ -81,7 +81,7 @@ class InferNode(BaseNode):
             None: 无返回值
 
         Raises:
-            ValueError: 当API key缺失时抛出
+            ValueError: 当API key 和 proxy_url 同时缺失时抛出
         """
         if len((self.get_data().get("payload__base_url", "")).strip()) > 0:
             self.base_url = (self.get_data().get("payload__base_url", "")).strip()
@@ -102,8 +102,13 @@ class InferNode(BaseNode):
 
         api_key = key_dict.get("api_key", "")
         secret_key = key_dict.get("secret_key", "")
-        if api_key:
+        proxy_url = key_dict.get("proxy_url", "")
+        if api_key or proxy_url:
             self.api_key = api_key
+            if proxy_url:
+                # 画布中的base_url优先级更高
+                base_url = (self.get_data().get("payload__base_url", "")).strip()
+                self.base_url = base_url if base_url else proxy_url
         else:
             raise ValueError("API key is required for online inference.")
         if secret_key:

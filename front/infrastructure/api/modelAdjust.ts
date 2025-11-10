@@ -10,7 +10,7 @@ export const getModelListFromFinetune: Fetcher<ModelListResponse, { url: string 
 }
 
 export const getModelList: Fetcher<BaseResponse, { url: string; body: any }> = ({ url, body }) => {
-  return get<BaseResponse>(url, { params: body })
+  return post<BaseResponse>(url, { body })
 }
 
 export const getModelListDraw: Fetcher<BaseResponse, { url: string; body: any }> = ({ url, body }) => {

@@ -21,7 +21,7 @@ import time
 import warnings
 from appcmd import register_commands
 from datetime import datetime
-from logging.handlers import RotatingFileHandler
+from logging.handlers import TimedRotatingFileHandler
 from zoneinfo import ZoneInfo
 
 from flask import Flask, Response, g, request
@@ -80,8 +80,11 @@ class MyApp:
             log_dir = os.path.dirname(log_file)
             os.makedirs(log_dir, exist_ok=True)
             log_handlers = [
-                RotatingFileHandler(
-                    filename=log_file, maxBytes=1024 * 1024 * 1024, backupCount=5
+                TimedRotatingFileHandler(
+                    filename=log_file,
+                    when="D",        # 按天分块
+                    interval=6,      # 每6天
+                    backupCount=30,  # 保留180天的日志
                 ),
                 logging.StreamHandler(sys.stdout),
             ]

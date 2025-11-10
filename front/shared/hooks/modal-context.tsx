@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Modal, Progress } from 'antd'
+import { Modal, Progress, Tooltip } from 'antd'
 import { createContext, useContext, useContextSelector } from 'use-context-selector'
 
 type ModalContextState = {
@@ -82,7 +82,13 @@ export const LayerStackContextProvider = ({
                         }}
                       >{item.name}</div>
                       <div style={{ flex: 1, textAlign: 'right', marginLeft: '10px' }}>{item.progress}%</div>
-                      <div style={{ color: '#8f8f8f', marginLeft: '12px' }}>{item.stateTag || ''}</div>
+                      {
+                        item.errorMessage
+                          ? <Tooltip title={item.errorMessage}>
+                            <div style={{ color: '#ff4d4f', marginLeft: '12px', cursor: 'pointer' }}>{item.stateTag || ''}</div>
+                          </Tooltip>
+                          : <div style={{ color: '#8f8f8f', marginLeft: '12px' }}>{item.stateTag || ''}</div>
+                      }
                     </div>
                     <div><Progress percent={item.progress} strokeColor='#0e5dd8' showInfo={false} /></div>
                   </div>
