@@ -8,8 +8,6 @@ import cn from '@/shared/utils/classnames'
 import type { ParamData } from '@/core/data/common'
 import './find-widget.css'
 
-loader.config({ paths: { vs: '/monaco-editor' } })
-
 const EDITOR_LINE_HEIGHT = 18
 
 type CodeEditorProps = {
@@ -56,6 +54,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
 }) => {
   const [isFocused, setIsFocused] = React.useState(false)
   const [isReady, setIsReady] = React.useState(false)
+  const [isLoaderConfigured, setIsLoaderConfigured] = useState(false)
   const minHeight = height || 200
   const [contentHeight, setContentHeight] = useState(56)
 
@@ -63,6 +62,14 @@ const CodeEditor: FC<CodeEditorProps> = ({
   useEffect(() => {
     valueRef.current = value
   }, [value])
+
+  // 在客户端环境中配置 Monaco Loader
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !isLoaderConfigured) {
+      loader.config({ paths: { vs: '/monaco-editor' } })
+      setIsLoaderConfigured(true)
+    }
+  }, [isLoaderConfigured])
 
   const compilerRef = useRef<any>(null)
 
@@ -376,32 +383,40 @@ const CodeEditor: FC<CodeEditorProps> = ({
 
   const editorContent = (
     <>
-      <Editor
-        language={language || 'phthon'}
-        theme={isReady ? currentTheme : 'default-theme'}
-        value={processedValue}
-        onChange={handleValueChange}
-        options={{
-          readOnly,
-          domReadOnly: true,
-          quickSuggestions: false,
-          minimap: {
-            enabled: false,
-          },
-          lineNumbersMinChars: 1,
-          wordWrap: 'on',
-          unicodeHighlight: {
-            ambiguousCharacters: false,
-          },
-          find: {
-            addExtraSpaceOnTop: false,
-            autoFindInSelection: 'never',
-            seedSearchStringFromSelection: 'never',
-          },
-        }}
-        onMount={onCompilerAttached}
-      />
-      {!processedValue && <div className='pointer-events-none absolute left-[36px] top-0 leading-[18px] text-[13px] font-normal text-gray-300'>{placeholder}</div>}
+      {isLoaderConfigured
+        ? (
+          <Editor
+            language={language || 'phthon'}
+            theme={isReady ? currentTheme : 'default-theme'}
+            value={processedValue}
+            onChange={handleValueChange}
+            options={{
+              readOnly,
+              domReadOnly: true,
+              quickSuggestions: false,
+              minimap: {
+                enabled: false,
+              },
+              lineNumbersMinChars: 1,
+              wordWrap: 'on',
+              unicodeHighlight: {
+                ambiguousCharacters: false,
+              },
+              find: {
+                addExtraSpaceOnTop: false,
+                autoFindInSelection: 'never',
+                seedSearchStringFromSelection: 'never',
+              },
+            }}
+            onMount={onCompilerAttached}
+          />
+        )
+        : (
+          <div className='flex items-center justify-center h-full text-gray-400'>
+            加载编辑器中...
+          </div>
+        )}
+      {!processedValue && isLoaderConfigured && <div className='pointer-events-none absolute left-[36px] top-0 leading-[18px] text-[13px] font-normal text-gray-300'>{placeholder}</div>}
     </>
   )
 
