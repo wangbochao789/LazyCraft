@@ -925,7 +925,7 @@ class InferService:
             db.session.rollback()
             raise ValueError(f"任务取消失败，id: {service.gid}") from e
 
-    def ams_start_service(self, service_name, model_name):
+    def ams_start_service(self, service_name, model_name, model_num_gpus=1):
         """通过AMS启动服务。
 
         调用AMS API启动指定的推理服务。
@@ -948,7 +948,7 @@ class InferService:
         )
         if self.supplier == "lazyllm":
             model_name = model_name.split(":")[-1]
-        json_data = {"service_name": service_name, "model_name": model_name}  # list
+        json_data = {"service_name": service_name, "model_name": model_name, "num_gpus": model_num_gpus}  # list
         response = requests.post(ams_start_server_url, json=json_data)
         time.sleep(1)  # 等待1秒，确保服务启动完成
         response_data = response.json()
@@ -1011,7 +1011,7 @@ class InferService:
             account = Account.default_getone(current_user.id)
             if not account.is_super:
                 # 非超级管理员需要检查GPU配额
-                self.check_gpu_quota(service.tenant_id,required_gpus=1 if service.model_num_gpus is None else service.model_num_gpus)
+                self.check_gpu_quota(service.tenant_id,required_gpus=1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus)
 
             model_info = Lazymodel.query.get(service.model_id)
  
@@ -1021,7 +1021,7 @@ class InferService:
                     model_info.model_key_ams + ":" + model_info.model_name
                 )
             ams_start_service_result, ams_start_service_return = self.ams_start_service(
-                service.name, infer_model_name
+                service.name, infer_model_name, 1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus
             )
             logging.info(
                 f"ams_start_service result: {ams_start_service_result}, {ams_start_service_return}"
@@ -1035,7 +1035,7 @@ class InferService:
 
             # 只有非超级管理员需要增加GPU使用量统计
             if not account.is_super:
-                Tenant.increment_gpu_usage(service.tenant_id, 1 if service.model_num_gpus is None else service.model_num_gpus)
+                Tenant.increment_gpu_usage(service.tenant_id, 1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus)
             db.session.commit()
             return True
         except Exception as e:
@@ -1084,7 +1084,7 @@ class InferService:
                 # 3. 计算需要的GPU总数
                 total_gpus = 0
                 for service in group.services:
-                    num = 1 if service.model_num_gpus is None else service.model_num_gpus 
+                    num = 1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus 
                     total_gpus += num
 
                 # 4. 检查租户的GPU配额
