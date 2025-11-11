@@ -507,8 +507,16 @@ const LazyLLMHeader: FC = () => {
       try {
         await sleep(1000)
         await startAppDebuggingEnableStatus(appID, {
-          onError: (data) => {
-            showMessage('error', data)
+          onError: (data, code) => {
+            // 423错误会有专门的弹窗提示，不需要重复显示message
+            if (code !== '423') {
+              showMessage('error', data)
+            }
+            else {
+              // 清除loading消息
+              messageApi.destroy()
+            }
+
             setDebugStatus('error')
             resetDebuggingState()
           },

@@ -98,12 +98,15 @@ const BatchRun: FC = () => {
           duration: 0,
         })
       await startAppDebuggingEnableStatus(String(params.appId), {
-        onError: (data) => {
+        onError: (data, code) => {
           messageApi.destroy()
-          messageApi.open({
-            type: 'error',
-            content: data,
-          })
+          // 423错误会有专门的弹窗提示，不需要重复显示message
+          if (code !== '423') {
+            messageApi.open({
+              type: 'error',
+              content: data,
+            })
+          }
         },
         onFinish: (result) => {
           refreshAppEnableDebuggingStatus()
