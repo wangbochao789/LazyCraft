@@ -84,7 +84,17 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
   // 在客户端环境中配置 Monaco Loader
   useEffect(() => {
     if (typeof window !== 'undefined' && !isLoaderConfigured) {
-      loader.config({ paths: { vs: '/monaco-editor' } })
+      // 配置 Monaco Editor 的路径，vs 应该指向包含 editor/、base/ 等文件夹的目录
+      loader.config({
+        'paths': {
+          vs: '/monaco-editor',
+        },
+        'vs/nls': {
+          availableLanguages: {
+            '*': 'zh-cn',
+          },
+        },
+      })
       setIsLoaderConfigured(true)
     }
   }, [isLoaderConfigured])
@@ -133,6 +143,12 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
     setTimeout(updateEditorHeight, 10)
   }
 
+  const handleBeforeMount = (monaco: any) => {
+    // 确保语言支持和 worker 在编辑器挂载前就已配置
+    // eslint-disable-next-line no-console
+    console.log('Monaco beforeMount, available languages:', monaco.languages.getLanguages())
+  }
+
   const handleEditorMount = (editor: any, monaco: any) => {
     monacoEditorRef.current = editor
     updateEditorHeight()
@@ -153,29 +169,30 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
     <>
       {isLoaderConfigured
         ? (
-            <Editor
-              language={LANGUAGE_MAPPING[language] || 'javascript'}
-              theme={isMounted ? activeTheme : 'lazyllm-default'}
-              value={processedValue}
-              onChange={handleValueChange}
-              options={{
-                readOnly,
-                domReadOnly: true,
-                quickSuggestions: false,
-                minimap: { enabled: false },
-                lineNumbersMinChars: 1,
-                wordWrap: 'on',
-                unicodeHighlight: { ambiguousCharacters: false },
-                suggestOnTriggerCharacters: false,
-              }}
-              onMount={handleEditorMount}
-            />
-          )
+          <Editor
+            language={LANGUAGE_MAPPING[language] || 'javascript'}
+            theme={isMounted ? activeTheme : 'lazyllm-default'}
+            value={processedValue}
+            onChange={handleValueChange}
+            beforeMount={handleBeforeMount}
+            options={{
+              readOnly,
+              domReadOnly: true,
+              quickSuggestions: false,
+              minimap: { enabled: false },
+              lineNumbersMinChars: 1,
+              wordWrap: 'on',
+              unicodeHighlight: { ambiguousCharacters: false },
+              suggestOnTriggerCharacters: false,
+            }}
+            onMount={handleEditorMount}
+          />
+        )
         : (
-            <div className='flex items-center justify-center h-full text-gray-400'>
-              加载编辑器中...
-            </div>
-          )}
+          <div className='flex items-center justify-center h-full text-gray-400'>
+            加载编辑器中...
+          </div>
+        )}
       {!processedValue && isLoaderConfigured && (
         <div className='pointer-events-none absolute left-[40px] top-0 leading-[18px] text-[13px] font-normal text-gray-300'>
           {placeholder}

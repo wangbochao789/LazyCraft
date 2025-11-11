@@ -66,7 +66,17 @@ const CodeEditor: FC<CodeEditorProps> = ({
   // 在客户端环境中配置 Monaco Loader
   useEffect(() => {
     if (typeof window !== 'undefined' && !isLoaderConfigured) {
-      loader.config({ paths: { vs: '/monaco-editor' } })
+      // 配置 Monaco Editor 的路径，vs 应该指向包含 editor/、base/ 等文件夹的目录
+      loader.config({
+        'paths': {
+          vs: '/monaco-editor',
+        },
+        'vs/nls': {
+          availableLanguages: {
+            '*': 'zh-cn',
+          },
+        },
+      })
       setIsLoaderConfigured(true)
     }
   }, [isLoaderConfigured])
@@ -212,6 +222,12 @@ const CodeEditor: FC<CodeEditorProps> = ({
     catch (error) {
       console.error('查找控制器监听器注册失败:', error)
     }
+  }
+
+  const handleBeforeMount = (monaco: any) => {
+    // 确保语言支持和 worker 在编辑器挂载前就已配置
+    // eslint-disable-next-line no-console
+    console.log('Monaco beforeMount, available languages:', monaco.languages.getLanguages())
   }
 
   const onCompilerAttached = (compiler: any, monacoEditor: any) => {
@@ -386,10 +402,11 @@ const CodeEditor: FC<CodeEditorProps> = ({
       {isLoaderConfigured
         ? (
           <Editor
-            language={language || 'phthon'}
+            language={language || 'python'}
             theme={isReady ? currentTheme : 'default-theme'}
             value={processedValue}
             onChange={handleValueChange}
+            beforeMount={handleBeforeMount}
             options={{
               readOnly,
               domReadOnly: true,
