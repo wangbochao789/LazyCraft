@@ -1,12 +1,31 @@
 'use client'
 import type { FC } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import Editor, { loader } from '@monaco-editor/react'
 import EditorBaseComponent from '../editor-base'
 import cn from '@/shared/utils/classnames'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
 
 import './lazy-editor.css'
+
+// 在模块加载时立即配置 Monaco，确保在浏览器环境中
+if (typeof window !== 'undefined') {
+  loader.config({
+    'paths': {
+      vs: '/monaco-editor',
+    },
+    'vs/nls': {
+      availableLanguages: {
+        '*': 'zh-cn',
+      },
+    },
+  })
+
+  // 立即初始化 Monaco，预加载所有必要的文件
+  // eslint-disable-next-line no-console
+  loader.init().then(monaco => console.log('Monaco Editor 预加载完成', monaco.editor.getModels().length))
+    .catch(error => console.error('Monaco Editor 预加载失败:', error))
+}
 
 const LINE_HEIGHT = 18
 
@@ -76,28 +95,9 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
   const [isFocused, setIsFocused] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [editorContentHeight, setEditorContentHeight] = useState(56)
-  const [isLoaderConfigured, setIsLoaderConfigured] = useState(false)
   const monacoEditorRef = useRef<any>(null)
   const editorMinHeight = height || 200
   const isWorkflowMode = inWorkflow || window.location.pathname.includes('/workflow')
-
-  // 在客户端环境中配置 Monaco Loader
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !isLoaderConfigured) {
-      // 配置 Monaco Editor 的路径，vs 应该指向包含 editor/、base/ 等文件夹的目录
-      loader.config({
-        'paths': {
-          vs: '/monaco-editor',
-        },
-        'vs/nls': {
-          availableLanguages: {
-            '*': 'zh-cn',
-          },
-        },
-      })
-      setIsLoaderConfigured(true)
-    }
-  }, [isLoaderConfigured])
 
   const processedValue = (() => {
     // 如果value是对象（包括数组），先序列化
@@ -167,33 +167,25 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
 
   const editorComponent = (
     <>
-      {isLoaderConfigured
-        ? (
-          <Editor
-            language={LANGUAGE_MAPPING[language] || 'javascript'}
-            theme={isMounted ? activeTheme : 'lazyllm-default'}
-            value={processedValue}
-            onChange={handleValueChange}
-            beforeMount={handleBeforeMount}
-            options={{
-              readOnly,
-              domReadOnly: true,
-              quickSuggestions: false,
-              minimap: { enabled: false },
-              lineNumbersMinChars: 1,
-              wordWrap: 'on',
-              unicodeHighlight: { ambiguousCharacters: false },
-              suggestOnTriggerCharacters: false,
-            }}
-            onMount={handleEditorMount}
-          />
-        )
-        : (
-          <div className='flex items-center justify-center h-full text-gray-400'>
-            加载编辑器中...
-          </div>
-        )}
-      {!processedValue && isLoaderConfigured && (
+      <Editor
+        language={LANGUAGE_MAPPING[language] || 'javascript'}
+        theme={isMounted ? activeTheme : 'lazyllm-default'}
+        value={processedValue}
+        onChange={handleValueChange}
+        beforeMount={handleBeforeMount}
+        options={{
+          readOnly,
+          domReadOnly: true,
+          quickSuggestions: false,
+          minimap: { enabled: false },
+          lineNumbersMinChars: 1,
+          wordWrap: 'on',
+          unicodeHighlight: { ambiguousCharacters: false },
+          suggestOnTriggerCharacters: false,
+        }}
+        onMount={handleEditorMount}
+      />
+      {!processedValue && (
         <div className='pointer-events-none absolute left-[40px] top-0 leading-[18px] text-[13px] font-normal text-gray-300'>
           {placeholder}
         </div>

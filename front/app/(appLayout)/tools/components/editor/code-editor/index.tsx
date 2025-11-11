@@ -1,12 +1,31 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import type { FC } from 'react'
 import Editor, { loader } from '@monaco-editor/react'
 import Base from '../base'
 import cn from '@/shared/utils/classnames'
 import type { ParamData } from '@/core/data/common'
 import './find-widget.css'
+
+// 在模块加载时立即配置 Monaco，确保在浏览器环境中
+if (typeof window !== 'undefined') {
+  loader.config({
+    'paths': {
+      vs: '/monaco-editor',
+    },
+    'vs/nls': {
+      availableLanguages: {
+        '*': 'zh-cn',
+      },
+    },
+  })
+
+  // 立即初始化 Monaco，预加载所有必要的文件
+  // eslint-disable-next-line no-console
+  loader.init().then(monaco => console.log('Monaco Editor 预加载完成', monaco.editor.getModels().length))
+    .catch(error => console.error('Monaco Editor 预加载失败:', error))
+}
 
 const EDITOR_LINE_HEIGHT = 18
 
@@ -54,32 +73,13 @@ const CodeEditor: FC<CodeEditorProps> = ({
 }) => {
   const [isFocused, setIsFocused] = React.useState(false)
   const [isReady, setIsReady] = React.useState(false)
-  const [isLoaderConfigured, setIsLoaderConfigured] = useState(false)
   const minHeight = height || 200
   const [contentHeight, setContentHeight] = useState(56)
 
   const valueRef = useRef(value)
-  useEffect(() => {
+  React.useEffect(() => {
     valueRef.current = value
   }, [value])
-
-  // 在客户端环境中配置 Monaco Loader
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !isLoaderConfigured) {
-      // 配置 Monaco Editor 的路径，vs 应该指向包含 editor/、base/ 等文件夹的目录
-      loader.config({
-        'paths': {
-          vs: '/monaco-editor',
-        },
-        'vs/nls': {
-          availableLanguages: {
-            '*': 'zh-cn',
-          },
-        },
-      })
-      setIsLoaderConfigured(true)
-    }
-  }, [isLoaderConfigured])
 
   const compilerRef = useRef<any>(null)
 
@@ -399,41 +399,33 @@ const CodeEditor: FC<CodeEditorProps> = ({
 
   const editorContent = (
     <>
-      {isLoaderConfigured
-        ? (
-          <Editor
-            language={language || 'python'}
-            theme={isReady ? currentTheme : 'default-theme'}
-            value={processedValue}
-            onChange={handleValueChange}
-            beforeMount={handleBeforeMount}
-            options={{
-              readOnly,
-              domReadOnly: true,
-              quickSuggestions: false,
-              minimap: {
-                enabled: false,
-              },
-              lineNumbersMinChars: 1,
-              wordWrap: 'on',
-              unicodeHighlight: {
-                ambiguousCharacters: false,
-              },
-              find: {
-                addExtraSpaceOnTop: false,
-                autoFindInSelection: 'never',
-                seedSearchStringFromSelection: 'never',
-              },
-            }}
-            onMount={onCompilerAttached}
-          />
-        )
-        : (
-          <div className='flex items-center justify-center h-full text-gray-400'>
-            加载编辑器中...
-          </div>
-        )}
-      {!processedValue && isLoaderConfigured && <div className='pointer-events-none absolute left-[36px] top-0 leading-[18px] text-[13px] font-normal text-gray-300'>{placeholder}</div>}
+      <Editor
+        language={language || 'python'}
+        theme={isReady ? currentTheme : 'default-theme'}
+        value={processedValue}
+        onChange={handleValueChange}
+        beforeMount={handleBeforeMount}
+        options={{
+          readOnly,
+          domReadOnly: true,
+          quickSuggestions: false,
+          minimap: {
+            enabled: false,
+          },
+          lineNumbersMinChars: 1,
+          wordWrap: 'on',
+          unicodeHighlight: {
+            ambiguousCharacters: false,
+          },
+          find: {
+            addExtraSpaceOnTop: false,
+            autoFindInSelection: 'never',
+            seedSearchStringFromSelection: 'never',
+          },
+        }}
+        onMount={onCompilerAttached}
+      />
+      {!processedValue && <div className='pointer-events-none absolute left-[36px] top-0 leading-[18px] text-[13px] font-normal text-gray-300'>{placeholder}</div>}
     </>
   )
 
