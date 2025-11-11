@@ -1,14 +1,12 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import type { FC } from 'react'
-import Editor, { loader } from '@monaco-editor/react'
+import Editor from '@monaco-editor/react'
 import Base from '../base'
 import cn from '@/shared/utils/classnames'
 import type { ParamData } from '@/core/data/common'
 import './find-widget.css'
-
-loader.config({ paths: { vs: '/monaco-editor' } })
 
 const EDITOR_LINE_HEIGHT = 18
 
@@ -60,7 +58,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
   const [contentHeight, setContentHeight] = useState(56)
 
   const valueRef = useRef(value)
-  useEffect(() => {
+  React.useEffect(() => {
     valueRef.current = value
   }, [value])
 
@@ -205,6 +203,12 @@ const CodeEditor: FC<CodeEditorProps> = ({
     catch (error) {
       console.error('查找控制器监听器注册失败:', error)
     }
+  }
+
+  const handleBeforeMount = (monaco: any) => {
+    // 确保语言支持和 worker 在编辑器挂载前就已配置
+    // eslint-disable-next-line no-console
+    console.log('Monaco beforeMount, available languages:', monaco.languages.getLanguages())
   }
 
   const onCompilerAttached = (compiler: any, monacoEditor: any) => {
@@ -377,10 +381,11 @@ const CodeEditor: FC<CodeEditorProps> = ({
   const editorContent = (
     <>
       <Editor
-        language={language || 'phthon'}
+        language={language || 'python'}
         theme={isReady ? currentTheme : 'default-theme'}
         value={processedValue}
         onChange={handleValueChange}
+        beforeMount={handleBeforeMount}
         options={{
           readOnly,
           domReadOnly: true,
