@@ -289,7 +289,10 @@ const AppCirculator = ({
     }
     catch (error) {
       console.error('发布失败:', error)
-      messageApi.error('发布失败，请重试')
+      // 423错误会有专门的弹窗提示，不需要显示message
+      if (!(error instanceof Response && error.status === 423))
+        messageApi.error('发布失败，请重试')
+
       throw error
     }
     finally {

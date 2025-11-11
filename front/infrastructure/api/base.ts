@@ -145,6 +145,12 @@ class ErrorHandler {
     try {
       const data: ResponseError = await response.json()
 
+      // 处理 423 状态码 - 显示自定义弹窗
+      if (response.status === 423) {
+        this.handle423Locked(data)
+        return Promise.reject(resClone)
+      }
+
       if (!silent)
         Toast.notify({ type: ToastTypeEnum.Error, message: data.message })
 
@@ -192,6 +198,16 @@ class ErrorHandler {
       redirectToLogin()
     else if (data.code === 'no_perm' && !silent)
       Toast.notify({ type: ToastTypeEnum.Error, message: data.message })
+  }
+
+  private static handle423Locked(data: ResponseError): void {
+    // 触发自定义事件显示弹窗
+    const event = new CustomEvent('show423Modal', {
+      detail: {
+        message: data.message || '数据处理功能当前不可用,如需使用请私有化部署',
+      },
+    })
+    window.dispatchEvent(event)
   }
 }
 
@@ -412,7 +428,11 @@ const baseFetch = <T>(
 
         return needAllResponseContent ? res.clone() : res.json()
       })
-      .catch((err) => {
+      .catch(async (err) => {
+        // 如果是 423 状态码，不显示 Toast（已经显示了弹窗）
+        if (err instanceof Response && err.status === 423)
+          throw err
+
         if (!silent)
           Toast.notify({ type: ToastTypeEnum.Error, message: err })
 
@@ -463,6 +483,19 @@ export const upload = (
           // 处理错误状态码，与 baseFetch 保持一致
           try {
             const errorData = xhr.response
+
+            // 处理 423 状态码 - 只显示弹窗，不显示 Toast
+            if (xhr.status === 423) {
+              const event = new CustomEvent('show423Modal', {
+                detail: {
+                  message: errorData?.message || '数据处理功能当前不可用,如需使用请私有化部署',
+                },
+              })
+              window.dispatchEvent(event)
+              reject(xhr)
+              return
+            }
+
             if (errorData && errorData.message) {
               // 处理特定的错误状态码
               if (xhr.status === 403 && errorData.code === 'no_perm') {
@@ -483,8 +516,9 @@ export const upload = (
             }
           }
           catch (e) {
-            // 如果解析响应失败，显示通用错误
-            Toast.notify({ type: ToastTypeEnum.Error, message: `HTTP ${xhr.status}: ${xhr.statusText}` })
+            // 如果解析响应失败，且不是 423，显示通用错误
+            if (xhr.status !== 423)
+              Toast.notify({ type: ToastTypeEnum.Error, message: `HTTP ${xhr.status}: ${xhr.statusText}` })
           }
           reject(xhr)
         }
@@ -540,6 +574,18 @@ export const ssePost = (
     .then((res) => {
       if (!/^(2|3)\d{2}$/.test(String(res.status))) {
         res.json().then((data: any) => {
+          // 处理 423 状态码
+          if (res.status === 423) {
+            const event = new CustomEvent('show423Modal', {
+              detail: {
+                message: data.message || '数据处理功能当前不可用,如需使用请私有化部署',
+              },
+            })
+            window.dispatchEvent(event)
+            onError?.(data.message || '数据处理功能当前不可用,如需使用请私有化部署', '423')
+            return
+          }
+
           const errorMessage = data.message || `HTTP ${res.status}: ${res.statusText}`
           Toast.notify({ type: ToastTypeEnum.Error, message: errorMessage })
 
@@ -554,6 +600,12 @@ export const ssePost = (
           }
           onError?.(errorMessage)
         }).catch(() => {
+          // 如果是 423 状态码，不显示 Toast（已经在 then 中处理了弹窗）
+          if (res.status === 423) {
+            onError?.('数据处理功能当前不可用,如需使用请私有化部署', '423')
+            return
+          }
+
           const errorMessage = `HTTP ${res.status}: ${res.statusText}`
           Toast.notify({ type: ToastTypeEnum.Error, message: errorMessage })
           onError?.(errorMessage)
@@ -578,6 +630,12 @@ export const ssePost = (
         onChunk,
       }, isAgent)
     }).catch((e) => {
+      // 如果是 423 状态码，不显示 Toast（已经显示了弹窗）
+      if (e instanceof Response && e.status === 423) {
+        onError?.('数据处理功能当前不可用,如需使用请私有化部署', '423')
+        return
+      }
+
       if (e.toString() !== 'AbortError: The user aborted a request.')
         Toast.notify({ type: ToastTypeEnum.Error, message: e })
 
