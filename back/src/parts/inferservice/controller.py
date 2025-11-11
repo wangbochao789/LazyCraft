@@ -154,14 +154,6 @@ class CreateServiceGroup(Resource):
             data = request.get_json()
             # 从JSON数据中获取模型名称
             model_id = data.get("model_id")
-            model_num_gpus = data.get("model_num_gpus")
-            if model_num_gpus is None:
-                logging.warning(f"平台服务-->创建模型服务组：model_num_gpus为空，设置为1")
-                model_num_gpus = 1  # 默认使用1张显卡
-
-            if model_num_gpus < 1:
-                logging.error(f"平台服务-->创建模型服务组：model_num_gpus小于1，model_num_gpus: {model_num_gpus}")
-                return build_response(status=400, message="模型显卡数量不能小于1")
             
             # 根据模型名称查询对应的模型记录
             model_info = Lazymodel.query.get(model_id)
@@ -176,7 +168,6 @@ class CreateServiceGroup(Resource):
                 data.get("model_id"),
                 model_info.model_name,
                 data.get("services"),
-                model_num_gpus,
             )
             return build_response(message="Group created successfully")
         except ValueError as e:
@@ -214,14 +205,7 @@ class CreateService(Resource):
         data = request.get_json()
         # 从JSON数据中获取模型名称
         group_id = data.get("group_id")
-        model_num_gpus = data.get("model_num_gpus")
-        if model_num_gpus is None:
-            logging.warning(f"平台服务-->创建模型服务组：model_num_gpus为空，设置为1")
-            model_num_gpus = 1  # 默认使用1张显卡
-
-        if model_num_gpus < 1:
-            logging.error(f"平台服务-->创建模型服务组：model_num_gpus小于1，model_num_gpus: {model_num_gpus}")
-            return build_response(status=400, message="模型显卡数量不能小于1")
+        
         # 根据模型名称查询对应的模型记录
         group_info = InferModelServiceGroup.query.get(group_id)
         self.check_can_write_object(group_info)

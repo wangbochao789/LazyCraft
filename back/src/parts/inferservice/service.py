@@ -365,6 +365,7 @@ class InferService:
                     "deploy_method": "",
                     "url": ams_service_endpoint.get(service.gid, ""),
                     "name": service.name,
+                    "model_num_gpus":service.model_num_gpus,
                     "status": service_status,
                     "job_id": ams_service_endpoint.get(service.gid, ""),
                     "token": service.tenant_id,
@@ -602,7 +603,7 @@ class InferService:
         return service_info_map
 
     def create_infer_model_service_group(
-        self, model_type, model_id, model_name, services,model_num_gpus=1
+        self, model_type, model_id, model_name, services
     ):
         """创建推理模型服务组。
 
@@ -645,14 +646,14 @@ class InferService:
             db.session.add(new_group)
             db.session.commit()
 
-            self.create_infer_model_service(new_group.id, model_id, services,model_num_gpus)
+            self.create_infer_model_service(new_group.id, model_id, services)
             return True
         except Exception as e:
             logging.error(f"创建推理模型服务组异常: {e}", exc_info=True)
             db.session.rollback()
             raise ValueError("失败：" + str(e)) from e
 
-    def create_infer_model_service(self, group_id, model_id, services,model_num_gpus=1):
+    def create_infer_model_service(self, group_id, model_id, services):
         """创建推理模型服务。
 
         Args:
@@ -689,6 +690,7 @@ class InferService:
                     .filter(InferModelService.name == service.get("name"))
                     .first()
                 )
+
                 if existing_service:
                     existing_service_names.add(service.get("name"))
             if existing_service_names:
@@ -699,7 +701,7 @@ class InferService:
             for service_data in services:
                 new_service = InferModelService(
                     group_id=group_id,
-                    model_num_gpus=model_num_gpus,
+                    model_num_gpus= 1 if service_data.get("model_num_gpus") is None or service_data.get("model_num_gpus") <1 else service_data.get("model_num_gpus"),
                     name=service_data.get("name"),
                     model_id=model_id,
                     created_by=current_user.id,
@@ -917,7 +919,7 @@ class InferService:
             # 只有非超级管理员需要释放GPU资源统计
             if not account.is_super:
                 # 释放GPU资源
-                Tenant.decrement_gpu_usage(service.tenant_id, 1)
+                Tenant.decrement_gpu_usage(service.tenant_id, 1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus)
 
             db.session.commit()
             return True
