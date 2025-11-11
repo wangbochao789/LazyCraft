@@ -23,6 +23,7 @@ from flask_login import current_user
 from flask_restful import marshal, reqparse
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.login import login_required
 from parts.logs import Action, LogService, Module
 from parts.tag.tag_service import TagService
@@ -375,6 +376,7 @@ class ToolCopyApi(Resource):
 
 class ToolTestApi(Resource):
     @login_required
+    @require_internet_feature("工具运行")
     def post(self):
         data = request.json
         if not data:
