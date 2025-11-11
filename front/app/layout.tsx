@@ -6,6 +6,7 @@ import theme from '../theme-skins/theme-config'
 import { NotificationProvider } from './components/base/flash-notice'
 import LazyLLMStorageInitor from './components/env-setup'
 import HeaderBar from './components/base/head-bar'
+import MonacoPreloader from './components/monaco-preloader'
 import './styles/antdUpdate.scss'
 import './styles/markdown.scss'
 import './styles/globals.css'
@@ -62,6 +63,7 @@ const MainLayoutComponent: React.FC<{ children: React.ReactNode }> = ({ children
         data-public-maintenance-message={SYSTEM_CONFIG.MAINTENANCE_MESSAGE}
         data-public-site-info={SYSTEM_CONFIG.SITE_INFO}
       >
+        <MonacoPreloader />
         <AntdRegistry>
           <ConfigProvider locale={zhCN} theme={theme}>
             <HeaderBar />
