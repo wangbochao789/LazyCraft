@@ -1,14 +1,12 @@
 'use client'
 import type { FC } from 'react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Editor, { loader } from '@monaco-editor/react'
 import EditorBaseComponent from '../editor-base'
 import cn from '@/shared/utils/classnames'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
 
 import './lazy-editor.css'
-
-loader.config({ paths: { vs: '/monaco-editor' } })
 
 const LINE_HEIGHT = 18
 
@@ -78,9 +76,18 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
   const [isFocused, setIsFocused] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [editorContentHeight, setEditorContentHeight] = useState(56)
+  const [isLoaderConfigured, setIsLoaderConfigured] = useState(false)
   const monacoEditorRef = useRef<any>(null)
   const editorMinHeight = height || 200
   const isWorkflowMode = inWorkflow || window.location.pathname.includes('/workflow')
+
+  // 在客户端环境中配置 Monaco Loader
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !isLoaderConfigured) {
+      loader.config({ paths: { vs: '/monaco-editor' } })
+      setIsLoaderConfigured(true)
+    }
+  }, [isLoaderConfigured])
 
   const processedValue = (() => {
     // 如果value是对象（包括数组），先序列化
@@ -144,24 +151,32 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
 
   const editorComponent = (
     <>
-      <Editor
-        language={LANGUAGE_MAPPING[language] || 'javascript'}
-        theme={isMounted ? activeTheme : 'lazyllm-default'}
-        value={processedValue}
-        onChange={handleValueChange}
-        options={{
-          readOnly,
-          domReadOnly: true,
-          quickSuggestions: false,
-          minimap: { enabled: false },
-          lineNumbersMinChars: 1,
-          wordWrap: 'on',
-          unicodeHighlight: { ambiguousCharacters: false },
-          suggestOnTriggerCharacters: false,
-        }}
-        onMount={handleEditorMount}
-      />
-      {!processedValue && (
+      {isLoaderConfigured
+        ? (
+            <Editor
+              language={LANGUAGE_MAPPING[language] || 'javascript'}
+              theme={isMounted ? activeTheme : 'lazyllm-default'}
+              value={processedValue}
+              onChange={handleValueChange}
+              options={{
+                readOnly,
+                domReadOnly: true,
+                quickSuggestions: false,
+                minimap: { enabled: false },
+                lineNumbersMinChars: 1,
+                wordWrap: 'on',
+                unicodeHighlight: { ambiguousCharacters: false },
+                suggestOnTriggerCharacters: false,
+              }}
+              onMount={handleEditorMount}
+            />
+          )
+        : (
+            <div className='flex items-center justify-center h-full text-gray-400'>
+              加载编辑器中...
+            </div>
+          )}
+      {!processedValue && isLoaderConfigured && (
         <div className='pointer-events-none absolute left-[40px] top-0 leading-[18px] text-[13px] font-normal text-gray-300'>
           {placeholder}
         </div>
