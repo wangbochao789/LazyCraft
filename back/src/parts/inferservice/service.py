@@ -602,7 +602,7 @@ class InferService:
         return service_info_map
 
     def create_infer_model_service_group(
-        self, model_type, model_id, model_name, services
+        self, model_type, model_id, model_name, services,model_num_gpus=1
     ):
         """创建推理模型服务组。
 
@@ -645,14 +645,14 @@ class InferService:
             db.session.add(new_group)
             db.session.commit()
 
-            self.create_infer_model_service(new_group.id, model_id, services)
+            self.create_infer_model_service(new_group.id, model_id, services,model_num_gpus)
             return True
         except Exception as e:
             logging.error(f"创建推理模型服务组异常: {e}", exc_info=True)
             db.session.rollback()
             raise ValueError("失败：" + str(e)) from e
 
-    def create_infer_model_service(self, group_id, model_id, services):
+    def create_infer_model_service(self, group_id, model_id, services,model_num_gpus=1):
         """创建推理模型服务。
 
         Args:
@@ -699,6 +699,7 @@ class InferService:
             for service_data in services:
                 new_service = InferModelService(
                     group_id=group_id,
+                    model_num_gpus=model_num_gpus,
                     name=service_data.get("name"),
                     model_id=model_id,
                     created_by=current_user.id,
@@ -1010,7 +1011,7 @@ class InferService:
             account = Account.default_getone(current_user.id)
             if not account.is_super:
                 # 非超级管理员需要检查GPU配额
-                self.check_gpu_quota(service.tenant_id)
+                self.check_gpu_quota(service.tenant_id,required_gpus=1 if service.model_num_gpus is None else service.model_num_gpus)
 
             model_info = Lazymodel.query.get(service.model_id)
  
@@ -1034,7 +1035,7 @@ class InferService:
 
             # 只有非超级管理员需要增加GPU使用量统计
             if not account.is_super:
-                Tenant.increment_gpu_usage(service.tenant_id, 1)
+                Tenant.increment_gpu_usage(service.tenant_id, 1 if service.model_num_gpus is None else service.model_num_gpus)
             db.session.commit()
             return True
         except Exception as e:
@@ -1081,7 +1082,10 @@ class InferService:
             account = Account.default_getone(current_user.id)
             if not account.is_super:
                 # 3. 计算需要的GPU总数
-                total_gpus = len(group.services)
+                total_gpus = 0
+                for service in group.services:
+                    num = 1 if service.model_num_gpus is None else service.model_num_gpus 
+                    total_gpus += num
 
                 # 4. 检查租户的GPU配额
                 tenant = db.session.query(Tenant).filter_by(id=group.tenant_id).first()
