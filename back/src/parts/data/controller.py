@@ -29,6 +29,7 @@ from flask_login import current_user
 from flask_restful import marshal, marshal_with, reqparse
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.filetools import FileTools
 from libs.json_utils import ensure_list_from_json
 from libs.login import login_required
@@ -1448,6 +1449,7 @@ class CleanOrAugmentDataSetVersion(Resource):
     """
 
     @login_required
+    @require_internet_feature("数据处理")
     def post(self):
         """对数据集版本进行数据清洗或增强处理。
 
@@ -1649,6 +1651,7 @@ class CleanOrAugmentDataSetVersionAsync(Resource):
     """
 
     @login_required
+    @require_internet_feature("数据处理")
     def post(self):
         """异步启动数据集版本的数据清洗或增强处理。
 
@@ -1720,6 +1723,7 @@ class CleanOrAugmentDataSetVersionAsyncWithItemCount(Resource):
     """
 
     @login_required
+    @require_internet_feature("数据处理")
     def post(self):
         """异步启动数据集版本的数据清洗或增强处理（基于数据条数统计）。
 

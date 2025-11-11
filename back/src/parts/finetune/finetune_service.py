@@ -232,6 +232,36 @@ class FinetuneService:
                 - list: 微调模型列表，失败时返回空列表
         """
         get_ft_model_list_result, get_ft_model_list_return = get_finetune_model_list(only_model_key=False)
+        if get_ft_model_list_result:
+            model_names = [item.get("model") for item in get_ft_model_list_return if item.get("model")]
+            builtin_map = {}
+            if model_names:
+                rows = (
+                    db.session.query(Lazymodel.model_name, Lazymodel.builtin_flag)
+                    .filter(Lazymodel.model_name.in_(model_names))
+                    .all()
+                )
+                builtin_map = {name: builtin for name, builtin in rows}
+
+            used_keys = {
+                row[0]
+                for row in db.session.query(FinetuneTask.base_model_key)
+                .filter(
+                    FinetuneTask.base_model_key.isnot(None),
+                    FinetuneTask.deleted_flag == 0,
+                )
+                .distinct()
+                .all()
+                if row[0]
+            }
+
+            for item in get_ft_model_list_return:
+                name = item.get("model")
+                if not name:
+                    item["need_confirm"] = False
+                    continue
+                builtin_flag = builtin_map.get(name, False)
+                item["need_confirm"] = False if builtin_flag else (name not in used_keys)
         return get_ft_model_list_result, get_ft_model_list_return
 
     def create_task(self, config):
@@ -380,7 +410,7 @@ class FinetuneService:
         """
         task = db.session.query(FinetuneTask).filter(FinetuneTask.id == task_id).first()
         if task is None:
-            return ValueError("not exists")
+            raise ValueError("任务不存在")
         t = marshal(task, fields.finetune_detail_fields)
         t["base_model_name"] = task.base_model_key
         t.pop("log_path")

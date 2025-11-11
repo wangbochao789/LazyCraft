@@ -485,8 +485,8 @@ const InferenceService = () => {
                             {
                               required: true,
                               whitespace: true,
-                              pattern: /^[a-zA-Z0-9]+$/,
-                              message: '只能输入大小英文和数字',
+                              pattern: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?\s]+$/,
+                              message: '支持大小写字母、数字和特殊符号',
                             },
                           ]}
                           noStyle

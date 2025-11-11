@@ -498,7 +498,10 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
               })
             }
           },
-          onError: (error) => {
+          onError: (_error, code) => {
+            // 如果是 423 错误，不显示额外的错误提示，因为已经有弹窗了
+            const is423Error = code === '423'
+
             updateNodeState(targetId, {
               uploadStatus: '数据解析失败',
               uploadProgress: 0,
@@ -514,7 +517,10 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
                 isLoading: false,
               },
             })
-            message.error('数据解析失败')
+
+            // 只有非 423 错误才显示 message.error
+            if (!is423Error)
+              message.error('数据解析失败')
           },
           onFinish: ({ data }) => {
             if (data.status === 'failed') {
@@ -564,6 +570,10 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
       setHasUnsavedChanges(false)
     }
     catch (error) {
+      // 如果是 423 错误，不显示额外的错误提示，因为已经有弹窗了
+      const is423Error = (error instanceof Response && error.status === 423)
+        || (typeof error === 'string' && error.includes('资源已被锁定'))
+
       updateNodeState(targetId, {
         uploadStatus: '数据解析失败',
         uploadProgress: 0,
@@ -574,7 +584,10 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
           showProgress: false,
         })
       }, 2000)
-      message.error('数据解析失败')
+
+      // 只有非 423 错误才显示 message.error
+      if (!is423Error)
+        message.error('数据解析失败')
     }
   }
 

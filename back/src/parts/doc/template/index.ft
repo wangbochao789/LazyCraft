@@ -21,13 +21,12 @@
             'cache-control': 'max-age=0',
         },
         name: '帮助文档',
-        loadSidebar: true,
-        loadSidebar: './_sidebar.md',
+        loadSidebar: false,  // 禁用外部侧边栏文件，使用自动生成
         loadNavbar: false,
         themeColor: '#3F51B5',
-        subMaxLevel: 2,
+        subMaxLevel: 2,  // 自动提取2级子标题到侧边栏
         auto2top: true,
-        maxLevel: 4,
+        maxLevel: 4,  // 解析4级标题
         gtag: 'G-H77Y58DS3L',
         markdown: {
             renderer: {

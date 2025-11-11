@@ -90,8 +90,11 @@ const CleanModal = (props: any) => {
       if (err?.errorFields)
         return
 
-      else
-        Toast.notify({ type: 'error', message: '操作失败，请重试' })
+      // 如果是 423 状态码，不显示额外的 Toast（已经显示了弹窗）
+      if (err instanceof Response && err.status === 423)
+        return
+
+      Toast.notify({ type: 'error', message: '操作失败，请重试' })
     }
     finally {
       setLoading(false)
