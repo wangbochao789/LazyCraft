@@ -197,8 +197,8 @@ export type EncryptedRequestPayload = {
 }
 
 export const encryptPayloadWithECDH = async (payload: Record<string, any>): Promise<EncryptedRequestPayload> => {
-  if (!globalThis.crypto?.subtle)
-    throw new Error('当前环境不支持 Web Crypto API，无法完成安全传输')
+  // if (!globalThis.crypto?.subtle)
+  //   throw new Error('当前环境不支持 Web Crypto API，无法完成安全传输')
 
   const keyPair = await generateFrontendKeyPair()
   const frontendPublicKey = await exportPublicKey(keyPair.publicKey)
