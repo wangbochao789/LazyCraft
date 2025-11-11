@@ -74,6 +74,7 @@ model_select_fields = {
     "model_url": fields.String,
     "can_finetune": fields.Boolean,
     "val_key": fields.String,
+    "proxy_url": fields.String,
 }
 
 model_pagination_fields = {

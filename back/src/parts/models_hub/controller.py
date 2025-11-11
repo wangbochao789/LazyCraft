@@ -33,7 +33,7 @@ from parts.urls import api
 
 from . import fields
 from .model import Lazymodel, LazymodelOnlineModels, ModelStatus
-from .model_list import local_model_list, online_model_list
+from .model_list import online_model_list
 from .service import ModelService
 
 
@@ -398,7 +398,7 @@ class ModelHubUpdateApiKeyApi(Resource):
         self.check_can_write()       
         parser = reqparse.RequestParser()
         parser.add_argument("model_brand", type=str, required=True, location="json")
-        parser.add_argument("api_key", type=str, required=True, location="json")
+        parser.add_argument("api_key", type=str, required=False, location="json")
         parser.add_argument("proxy_url", type=str, location="json", required=False)
         parser.add_argument(
             "proxy_auth_info", type=dict, location="json", required=False
@@ -832,17 +832,6 @@ class ModelHubOnlineModelSupportListApi(Resource):
         return online_model_list
 
 
-class ModelHubLocalModelSupportListApi(Resource):
-    @login_required
-    def get(self):
-        """获取支持的本地模型列表。
-        
-        Returns:
-            list: 支持的本地模型列表。
-        """
-        return local_model_list
-
-
 class ModelUpdateOnlineModelListApi(Resource):
     @login_required
     def post(self):
@@ -938,7 +927,6 @@ api.add_resource(
 )
 api.add_resource(ModelHubModelFinetuneListApi, "/mh/finetune_model_page")
 api.add_resource(ModelHubOnlineModelSupportListApi, "/mh/online_model_support_list")
-api.add_resource(ModelHubLocalModelSupportListApi, "/mh/local_model_support_list")
 api.add_resource(ModelUpdateOnlineModelListApi, "/mh/update_online_model_list")
 api.add_resource(ModelHubExistModelListApi, "/mh/exist_model_list")
 api.add_resource(ModelHubDefaultIconListApi, "/mh/default_icon_list")

@@ -29,12 +29,14 @@ from flask_login import current_user
 from flask_restful import marshal, marshal_with, reqparse
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.filetools import FileTools
 from libs.json_utils import ensure_list_from_json
 from libs.login import login_required
 from parts.logs import Action, LogService, Module
 from parts.urls import api
 from utils.util_database import db
+from utils.util_file_validation import validate_file_type_and_raise
 
 from . import fields
 from .data_service import DataService
@@ -488,24 +490,32 @@ class UploadDataSetFileApi(Resource):
         if type is None or type == "":
             raise ValueError("没有选择文件类型")
         if type == "pic":
-            if not file.filename.endswith(
-                (
-                    ".jpg",
-                    ".png",
-                    ".jpeg",
-                    ".gif",
-                    ".svg",
-                    ".webp",
-                    ".bmp",
-                    ".tiff",
-                    ".ico",
-                    ".tar.gz",
-                    ".zip",
-                )
-            ):
+            pic_extensions = [
+                ".jpg",
+                ".png",
+                ".jpeg",
+                ".gif",
+                ".svg",
+                ".webp",
+                ".bmp",
+                ".tiff",
+                ".ico",
+                ".tar.gz",
+                ".zip",
+            ]
+            if not file.filename.endswith(tuple(pic_extensions)):
                 raise ValueError("文件类型错误")
             if file.content_length > 2 * 1024 * 1024 * 1024:
                 raise ValueError("文件大小不能超过2GB")
+            
+            if not (file.filename.endswith(".zip") or file.filename.endswith(".tar.gz")):
+                is_strict = not file.filename.lower().endswith(".svg")
+                validate_file_type_and_raise(
+                    file,
+                    [ext.lstrip('.') for ext in pic_extensions if ext not in ['.tar.gz', '.zip']],
+                    strict=is_strict
+                )
+            
             # 检查压缩包内文件类型
             allowed_ext = (
                 ".jpg",
@@ -521,12 +531,29 @@ class UploadDataSetFileApi(Resource):
             self.check_compres_package(file, allowed_ext)
 
         if type == "doc":
-            if not file.filename.endswith(
-                (".json", ".csv", ".jsonl", ".txt", ".parquet", ".tar.gz", ".zip")
-            ):
+            doc_extensions = [
+                ".json",
+                ".csv",
+                ".jsonl",
+                ".txt",
+                ".parquet",
+                ".tar.gz",
+                ".zip",
+            ]
+            if not file.filename.endswith(tuple(doc_extensions)):
                 raise ValueError("文件类型错误")
             if file.content_length > 1024 * 1024 * 1024:
                 raise ValueError("文件大小不能超过1GB")
+
+            if not (file.filename.endswith(".zip") or file.filename.endswith(".tar.gz")):
+                # 对于文档文件，大部分是文本文件，使用非严格模式
+                # parquet 是二进制格式，需要特殊处理
+                is_strict = file.filename.lower().endswith(".parquet")
+                validate_file_type_and_raise(
+                    file,
+                    [ext.lstrip('.') for ext in doc_extensions if ext not in ['.tar.gz', '.zip']],
+                    strict=is_strict
+                )
 
             # 检查压缩包内文件类型
             allowed_ext = (".json", ".csv", ".jsonl", ".txt", ".parquet")
@@ -1422,6 +1449,7 @@ class CleanOrAugmentDataSetVersion(Resource):
     """
 
     @login_required
+    @require_internet_feature("数据处理")
     def post(self):
         """对数据集版本进行数据清洗或增强处理。
 
@@ -1623,6 +1651,7 @@ class CleanOrAugmentDataSetVersionAsync(Resource):
     """
 
     @login_required
+    @require_internet_feature("数据处理")
     def post(self):
         """异步启动数据集版本的数据清洗或增强处理。
 
@@ -1694,6 +1723,7 @@ class CleanOrAugmentDataSetVersionAsyncWithItemCount(Resource):
     """
 
     @login_required
+    @require_internet_feature("数据处理")
     def post(self):
         """异步启动数据集版本的数据清洗或增强处理（基于数据条数统计）。
 

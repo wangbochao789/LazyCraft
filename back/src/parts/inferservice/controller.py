@@ -19,6 +19,7 @@ from flask import jsonify, request
 from flask_login import current_user
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.helper import build_response
 from libs.login import login_required
 from models.model_account import Account
@@ -110,6 +111,16 @@ class ListService(Resource):
         )
 
 
+class CloudServiceStatusApi(Resource):
+    """cloud-service 状态查询接口。"""
+
+    @login_required
+    def get(self):
+        infer_service = InferService()
+        enabled, message = infer_service.is_cloud_service_available()
+        return {"enabled": enabled, "message": message}
+
+
 class CreateServiceGroup(Resource):
     """创建服务组控制器。
 
@@ -125,6 +136,7 @@ class CreateServiceGroup(Resource):
         self.infer_service = InferService()
 
     @login_required
+    @require_internet_feature("推理服务")
     def post(self):
         """处理POST请求，创建推理服务组。
 
@@ -147,25 +159,8 @@ class CreateServiceGroup(Resource):
             # 如果模型不存在，返回404错误
             if not model_info:
                 return build_response(status=400, message="model not found")
-            model_name = model_info.model_name
-            logging.info(f"CreateServiceGroup model_name: {model_name}")
+            logging.info(f"CreateServiceGroup model_name: {model_info.model_name}")
 
-            is_finetued_model = False
-            if model_info.model_from == "finetune":
-                infer_model_name = model_info.model_key_ams + ":" + model_name
-                logging.info(f"CreateServiceGroup infer_model_name: {infer_model_name}")
-                is_finetued_model = True
-
-            is_ams_support_model = False
-            for local_ams_model in ams_model_list:
-                if not is_finetued_model:
-                    if local_ams_model["model_name"] == model_name:
-                        is_ams_support_model = True
-                else:
-                    if local_ams_model["model_name"] in infer_model_name:
-                        is_ams_support_model = True
-            if not is_ams_support_model:
-                return build_response(status=400, message="底层暂不支持该模型推理。")
             # 将新建的服务信息以JSON格式返回
             self.infer_service.create_infer_model_service_group(
                 data.get("model_type"),
@@ -193,6 +188,7 @@ class CreateService(Resource):
         self.infer_service = InferService()
 
     @login_required
+    @require_internet_feature("推理服务")
     def post(self):
         """处理POST请求，创建推理服务。
 
@@ -243,6 +239,7 @@ class StartServiceGroup(Resource):
         self.infer_service = InferService()
 
     @login_required
+    @require_internet_feature("推理服务")
     def post(self):
         """处理POST请求，启动推理服务组。
 
@@ -294,6 +291,7 @@ class StartService(Resource):
         self.infer_service = InferService()
 
     @login_required
+    @require_internet_feature("推理服务")
     def post(self):
         """处理POST请求，启动推理服务。
 
@@ -504,17 +502,24 @@ class ModelListService(Resource):
         model_type = request.args.get("model_type", "local", type=str)
         model_kind = request.args.get("model_kind", "", type=str)
         qtype = request.args.get("qtype", "", type=str)
+ 
         res = self.infer_service.list_local_model(qtype, model_kind, model_type)
-
         ams_local_model_list_original = ams_local_model_list.get(model_type, [])
+        used_model_ids = self.infer_service._get_used_infer_model_ids()
+
         filters = []
         filters.append(Lazymodel.model_from == "finetune")
         models = (
             Lazymodel.query.filter(*filters)
-            .with_entities(Lazymodel.id, Lazymodel.model_name, Lazymodel.model_key)
+            .with_entities(
+                Lazymodel.id,
+                Lazymodel.model_name,
+                Lazymodel.model_key,
+                Lazymodel.builtin_flag,
+            )
             .all()
         )
-        for model_id, model_name, model_key in models:
+        for model_id, model_name, model_key, builtin_flag in models:
             logging.info(
                 f"ModelListService model_id: {model_id}, model_name: {model_name}, model_key: {model_key}"
             )
@@ -525,6 +530,9 @@ class ModelListService(Resource):
                     ams_support_model_map = {}
                     ams_support_model_map["model_name"] = ams_support_model_name
                     ams_support_model_map["id"] = ams_support_model_id
+                    ams_support_model_map["need_confirm"] = (not builtin_flag) and (
+                        model_id not in used_model_ids
+                    )
                     res.append(ams_support_model_map)
 
         logging.info(f"ModelListService res: {res}")
@@ -601,33 +609,48 @@ class AMSModelListService(Resource):
         model_type = request.args.get("model_type", "", type=str)
 
         if model_type == "localLLM":
-            res_list = ams_local_model_list.get(model_type, [])
+            used_model_ids = self.infer_service._get_used_infer_model_ids()
+
+            base_list = [
+                {**item, "need_confirm": False}
+                for item in ams_local_model_list.get(model_type, [])
+            ]
             ams_local_model_list_original = ams_local_model_list.get(model_type, [])
 
             filters = []
             filters.append(Lazymodel.model_from == "finetune")
             models = (
                 Lazymodel.query.filter(*filters)
-                .with_entities(Lazymodel.id, Lazymodel.model_name, Lazymodel.model_key)
+                .with_entities(
+                    Lazymodel.id,
+                    Lazymodel.model_name,
+                    Lazymodel.model_key,
+                    Lazymodel.builtin_flag,
+                )
                 .all()
             )
-            for model_id, model_name, model_key in models:
+            for model_id, model_name, model_key, builtin_flag in models:
                 logging.info(
                     f"AMSModelListService model_id: {model_id}, model_name: {model_name}, model_key: {model_key}"
                 )
                 for ams_model in ams_local_model_list_original:
                     if ams_model["model_name"] == model_key:
                         ams_support_model_name = model_key + ":" + model_name
-                        ams_support_model_id = model_id
-                        ams_support_model_map = {}
-                        ams_support_model_map["model_name"] = ams_support_model_name
-                        ams_support_model_map["id"] = ams_support_model_id
-                        res_list.append(ams_support_model_map)
+                        ams_support_model_map = {
+                            "model_name": ams_support_model_name,
+                            "id": model_id,
+                            "need_confirm": (not builtin_flag)
+                            and (model_id not in used_model_ids),
+                        }
+                        base_list.append(ams_support_model_map)
 
-            logging.info(f"AMSModelListService res_list: {res_list}")
-            return res_list
+            logging.info(f"AMSModelListService res_list: {base_list}")
+            return base_list
         else:
-            return ams_local_model_list.get(model_type, [])
+            return [
+                {**item, "need_confirm": False}
+                for item in ams_local_model_list.get(model_type, [])
+            ]
 
 
 api.add_resource(ListService, "/infer-service/list")
@@ -641,3 +664,4 @@ api.add_resource(StopService, "/infer-service/service/stop")
 api.add_resource(DeleteService, "/infer-service/service/delete")
 api.add_resource(ListForDrawService, "/infer-service/list/draw")
 api.add_resource(AMSModelListService, "/infer-service/model/list/ams")
+api.add_resource(CloudServiceStatusApi, "/infer-service/cloud/status")
