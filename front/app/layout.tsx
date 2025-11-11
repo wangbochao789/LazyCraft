@@ -7,6 +7,7 @@ import theme from '../theme-skins/theme-config'
 import { NotificationProvider } from './components/base/flash-notice'
 import LazyLLMStorageInitor from './components/env-setup'
 import HeaderBar from './components/base/head-bar'
+import ModelFont from './modelFont'
 import './styles/antdUpdate.scss'
 import './styles/markdown.scss'
 import './styles/globals.css'
@@ -84,6 +85,7 @@ const MainLayoutComponent: React.FC<{ children: React.ReactNode }> = ({ children
                 {children}
               </NotificationProvider>
             </LazyLLMStorageInitor>
+            <ModelFont />
           </ConfigProvider>
         </AntdRegistry>
       </body>
