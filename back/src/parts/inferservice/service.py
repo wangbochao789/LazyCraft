@@ -372,7 +372,6 @@ class InferService:
                     "deploy_method": "",
                     "url": ams_service_endpoint.get(service.gid, ""),
                     "name": service.name,
-                    "model_num_gpus":  1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus,
                     "status": service_status,
                     "job_id": ams_service_endpoint.get(service.gid, ""),
                     "token": service.tenant_id,

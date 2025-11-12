@@ -160,7 +160,7 @@ class CreateServiceGroup(Resource):
             # 如果模型不存在，返回404错误
             if not model_info:
                 return build_response(status=400, message="model not found")
-            logging.info(f"平台服务-->创建模型服务组：model_name: {model_info.model_name}")
+            logging.info(f"CreateServiceGroup model_name: {model_info.model_name}")
 
             # 将新建的服务信息以JSON格式返回
             self.infer_service.create_infer_model_service_group(
