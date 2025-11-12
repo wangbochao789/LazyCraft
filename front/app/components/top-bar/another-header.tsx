@@ -27,9 +27,9 @@ const AnotherHeader = () => {
     router.push('/apps')
   }
   return (
-    <div className='flex flex-1 items-center justify-between px-4'>
-      <div className='flex items-center'>
-        <Link href="/apps" className='flex items-center mr-4'>
+    <div className='flex flex-1 items-center justify-between px-6 py-2'>
+      <div className='flex items-center gap-4 flex-1 min-w-0 overflow-x-auto'>
+        <Link href="/apps" className='flex-shrink-0'>
           <BrandMark className='w-12 h-12' />
         </Link>
         <div className='flex items-center gap-4 min-w-0'>
@@ -43,7 +43,7 @@ const AnotherHeader = () => {
           <div className={`${styles.titleText} whitespace-nowrap`}>{showText[path.split('/')[1]]}</div>
         </div>
       </div>
-      <div className='flex items-center flex-shrink-0'>
+      <div className='flex items-center flex-shrink-0 gap-4'>
         {!isAgentPage() && <div className={styles.backWrap} onClick={goAppStore}>返回到应用商店 <IconFont type='icon-nav_fanhui' /></div>}
         {!isAgentPage() && <AccountDropdown isMobileView={isMobileView} />}
       </div>

@@ -26,7 +26,7 @@ export const viewport: viewport = {
  */
 export const metadata = {
   description: 'LazyLLM 是一个强大的AI应用开发和部署平台',
-  title: 'LazyLLM - 智能AI应用平台',
+  title: '机务培训模型训练与管理工具',
 }
 
 /**

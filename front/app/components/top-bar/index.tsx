@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { Tooltip } from 'antd'
-import { GithubOutlined } from '@ant-design/icons'
+// import { GithubOutlined } from '@ant-design/icons'
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { useBoolean } from 'ahooks'
 import { Bars3Icon } from '@heroicons/react/20/solid'
@@ -68,12 +68,16 @@ const Header = () => {
 
   const renderGithubLink = () => (
     <a href="https://github.com/LazyAGI/LazyLLM" target="_blank" className='flex mt-[-5px] text-[22px] items-center w-[1.3021vw]'>
-      <GithubOutlined />
+      {/* <GithubOutlined /> */}
     </a>
   )
 
   const renderDesktopNavigation = () => (
-    <div className='flex items-center'>
+    <div className={`flex items-center gap-1 overflow-x-auto flex-1 min-w-0 ${style.navigationScroll}`}
+      style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: '#D9DBE0 transparent',
+      }}>
       <AppNav />
       <ResourceBaseNav className={navigationItemClasses} />
       <PromptNav className={navigationItemClasses} />
