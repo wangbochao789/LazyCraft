@@ -178,7 +178,8 @@ docker build --build-arg COMMIT_SHA=$(git rev-parse HEAD) -t lazycraft-front:lat
 
 ```bash
 # HTTP 方式（默认）
-export WEB_CONSOLE_ENDPOINT="http://127.0.0.1:30382"
+# 设置环境变量为平台登录地址，例如 http://127.0.0.1:30382
+export WEB_CONSOLE_ENDPOINT="http://your-console-url"
 export BACK_IMAGE="lazycraft-back:latest"
 export FRONT_IMAGE="lazycraft-front:latest"
 
