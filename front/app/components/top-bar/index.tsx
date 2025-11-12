@@ -54,8 +54,15 @@ const Header = () => {
   )
 
   const renderLogoSection = () => (
-    <Link href="/apps" className='flex items-center mr-4 w-[8.9583vw]'>
-      <BrandMark className='object-contain' />
+    // <Link href="/apps" className='flex items-center mr-4 w-[8.9583vw]'>
+    //   <BrandMark className='object-contain' />
+    // </Link>
+    <Link href="/apps" className='flex items-center gap-3 mr-6 flex-shrink-0'>
+      <BrandMark className='w-10 h-10 flex-shrink-0' />
+      <div className='flex flex-col'>
+        <span className='text-lg font-bold text-[#071127]'>智能辅助培训课件开发环境</span>
+        <span className='text-sm font-semibold text-[#071127]'>机务培训模型训练与管理工具v1.0</span>
+      </div>
     </Link>
   )
 
