@@ -401,7 +401,7 @@ const InferenceService = () => {
                     {
                       item?.services?.map((ite: any) =>
                         <div className={style.colBody} key={ite?.id}>
-                          <div className={style.nameSty}>{ite?.name}</div>
+                          <div className={style.nameSty}>{ite?.name}（显卡：{ite?.model_num_gpus} 张）</div>
                           <div className={style.statuSty}><Tag color={showText[ite?.status]?.color}>{showText[ite?.status]?.text}</Tag></div>
                           <div className={style.creator}>创建者：{ite?.created_by}</div>
                           <div className={style.createTime}>创建时间: {ite?.updated_at}</div>
