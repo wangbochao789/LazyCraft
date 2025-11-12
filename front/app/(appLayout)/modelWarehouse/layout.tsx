@@ -17,28 +17,33 @@ const ModelWarehouseLayout = ({ children }: ModelWarehouseLayoutProps) => {
   useEffect(() => {
     const pathName = window.location.pathname
 
-    if (/\/modelWarehouse\/modelTest(?:\/.*)?$/.test(pathName)) {
+    if (/\/modelWarehouse\/modelTest(?:\/.*)?$/.test(pathName))
       setCurrentType('modelTest')
-    } else if (/\/modelWarehouse(?:\/modelManage)?(?:\/.*)?$/.test(pathName)) {
+    else if (/\/modelWarehouse\/algorithmDev(?:\/.*)?$/.test(pathName))
+      setCurrentType('algorithmDev')
+    else if (/\/modelWarehouse\/mirrorImage(?:\/.*)?$/.test(pathName))
+      setCurrentType('mirrorImage')
+    else if (/\/modelWarehouse(?:\/modelManage)?(?:\/.*)?$/.test(pathName))
       setCurrentType('modelManage')
-    }
   }, [currentPathname])
 
   const processNavigation = (type: string) => {
     setCurrentType(type)
-    if (type === 'modelManage') {
+    if (type === 'modelManage')
       navigationRouter.replace('/modelWarehouse/modelManage')
-    } else {
+    else if (type === 'modelTest')
       navigationRouter.replace('/modelWarehouse/modelTest')
-    }
+    else if (type === 'algorithmDev')
+      navigationRouter.replace('/modelWarehouse/algorithmDev')
+    else if (type === 'mirrorImage')
+      navigationRouter.replace('/modelWarehouse/mirrorImage')
   }
 
   const renderMenuItem = (type: string, iconType: string, label: string) => {
     const isActive = currentType === type
-    
     return (
-      <div 
-        className={`${styles.menuItem} ${isActive && styles.active}`} 
+      <div
+        className={`${styles.menuItem} ${isActive && styles.active}`}
         onClick={() => processNavigation(type)}
       >
         <div className={styles.icon}>
@@ -57,6 +62,8 @@ const ModelWarehouseLayout = ({ children }: ModelWarehouseLayoutProps) => {
         <div className={styles.menu}>
           {renderMenuItem('modelManage', 'icon-moxingweitiao1', '模型管理')}
           {renderMenuItem('modelTest', 'icon-moxingpingce', '模型测评')}
+          {renderMenuItem('algorithmDev', 'icon-shujujiguanli', '任务管理')}
+          {renderMenuItem('mirrorImage', 'icon-ToolsForLLM', '镜像管理')}
         </div>
       </div>
     )

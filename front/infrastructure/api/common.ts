@@ -3,7 +3,6 @@ import { get, post } from './base'
 import type {
   BaseResponse,
 } from '@/core/data/common'
-
 export const sendForgotPasswordEmail: Fetcher<BaseResponse, { url: string; body: { email: string } }> = ({ url, body }) =>
   post<BaseResponse>(url, { body })
 
@@ -43,4 +42,49 @@ export const getUserInfo = () => {
 
 export const logout: Fetcher<BaseResponse, { url: string; params: Record<string, any> }> = ({ url, params }) => {
   return get<BaseResponse>(url, params)
+}
+
+export const fetchBaiyunToken: Fetcher<BaseResponse, { url: string; body: any }> = async ({ url, body }) => {
+  // const token = localStorage.getItem('console_token') || ''
+
+  // 将 body 参数转换为查询参数
+  const queryParams = new URLSearchParams()
+  if (body && typeof body === 'object') {
+    Object.keys(body).forEach((key) => {
+      if (body[key] !== undefined && body[key] !== null)
+        queryParams.append(key, body[key])
+    })
+  }
+
+  const response = await fetch(`${url}?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Authorization': token ? `Bearer ${token}` : '',
+    },
+    credentials: 'include',
+  })
+
+  if (!response.ok)
+    throw new Error(`HTTP error! status: ${response.status}`)
+
+  return response.json()
+}
+export const fetchBaiyunLogin: Fetcher<BaseResponse, { url: string; body: any }> = async ({ url, body }) => {
+  // const token = localStorage.getItem('console_token') || ''
+
+  const response = await fetch(`${url}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Authorization': token ? `Bearer ${token}` : '',
+    },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok)
+    throw new Error(`HTTP error! status: ${response.status}`)
+
+  return response.json()
 }
