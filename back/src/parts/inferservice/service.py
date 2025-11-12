@@ -34,6 +34,7 @@ from parts.models_hub.model_list import \
 from parts.models_hub.model_list import model_kinds
 from utils.util_database import db
 
+logger = logging.getLogger(__name__)
 
 def get_service_info(service_id):
     """获取服务信息。
@@ -149,7 +150,13 @@ class InferService:
         logging.info(f"ams_get_url: {ams_get_url}")
         try:
             response = requests.get(ams_get_url, timeout=5)
-            response_data = response.json()
+            try:
+                response_data = response.json()
+            except ValueError:
+                logging.info(
+                    f"ams_get_service_status 响应非JSON，status={response.status_code}, text={response.text}"
+                )
+                return False, "", ""
             logging.info(f"ams get model status response: {response.status_code}")
             logging.info(f"ams_get_service_status response: {response.text}")
             if response.status_code != 200:
@@ -953,7 +960,13 @@ class InferService:
         json_data = {"service_name": service_name, "model_name": model_name, "num_gpus": model_num_gpus}  # list
         response = requests.post(ams_start_server_url, json=json_data)
         time.sleep(1)  # 等待1秒，确保服务启动完成
-        response_data = response.json()
+        try:
+            response_data = response.json()
+        except ValueError:
+            logging.info(
+                f"ams_start_service 响应非JSON，status={response.status_code}, text={response.text}"
+            )
+            return False, ""
         logging.info(f"ams_start_service response: {response.status_code}")
         logging.info(f"ams_start_service response: {response.text}")
         if response.status_code != 200:
@@ -1013,7 +1026,7 @@ class InferService:
             account = Account.default_getone(current_user.id)
             if not account.is_super:
                 # 非超级管理员需要检查GPU配额
-                self.check_gpu_quota(service.tenant_id,required_gpus=1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus)
+                self.check_gpu_quota(service.tenant_id,1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus)
 
             model_info = Lazymodel.query.get(service.model_id)
  
@@ -1045,7 +1058,7 @@ class InferService:
             error_msg = str(e)
             if "failed" in error_msg.lower():
                 error_msg = "服务启动失败，请通过日志查看详情"
-
+            logger.error(f"启动服务失败: {e}", stack_info=True)
             print(f"启动服务失败： {str(e)}")
             LogService().add(
                 Module.MODEL_INFERENCE,
