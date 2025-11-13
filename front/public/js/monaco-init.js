@@ -31,7 +31,7 @@
       // 配置 Monaco
       window.require.config({
         paths: {
-          vs: '/monaco-editor'
+          vs: '/vs'
         },
         'vs/nls': {
           availableLanguages: {

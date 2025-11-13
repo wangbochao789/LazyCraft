@@ -11,7 +11,7 @@ type HistoryDataFormat = {
     inputs: string
     outputs: string
     status: string
-    consumed_time: number
+    elapsed_time: number
     prompt_tokens: number
     completion_tokens: number
     sessionid: string
@@ -86,7 +86,7 @@ const convertHistoryDataToNodeMonitoring = (rawData: HistoryDataFormat): History
         process_record: null,
         outputs: item.outputs,
         status: item.status,
-        consumed_time: item.consumed_time,
+        elapsed_time: item.elapsed_time,
         execution_metadata: {
           total_tokens: item.prompt_tokens + item.completion_tokens,
           total_price: 0,
