@@ -367,7 +367,7 @@ class ModelService:
                     LazyModelConfigInfo.api_key.isnot(None),
                 )
             ),
-            asc(Lazymodel.id),
+            desc(Lazymodel.id),
         )
         pagination = query.paginate(
             page=data["page"],
