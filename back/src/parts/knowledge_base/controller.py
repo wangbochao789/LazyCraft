@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import os
 import urllib.parse
@@ -32,6 +28,7 @@ from libs.filetools import FileTools
 from libs.login import login_required
 from parts.logs import Action, LogService, Module
 from parts.urls import api
+from utils.util_file_validation import validate_file_type_and_raise
 
 from . import fields
 from .service import KnowledgeBaseService
@@ -248,6 +245,15 @@ class FileUploadApi(Resource):
         else:
             if file_size > 50 * 1024 * 1024:
                 raise ValueError("文件大小超过限制, 文件大小不能超过50MB")
+
+        if not file_obj.filename.lower().endswith(".zip"):
+            text_based_extensions = {'.txt', '.csv', '.json', '.html', '.xml', '.md', '.tex'}
+            is_strict = not any(file_obj.filename.lower().endswith(ext) for ext in text_based_extensions)
+            validate_file_type_and_raise(
+                file_obj,
+                [ext.lstrip('.') for ext in support_file_types if ext != '.zip'],
+                strict=is_strict
+            )
 
         upload_file = FileService(current_user).upload_file(file_obj)
         response = {"files": upload_file}

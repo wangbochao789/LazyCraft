@@ -159,28 +159,6 @@ const Logs = () => {
         <div className={styles.topWrap}>
           <Form layout='inline' form={form} style={{ width: '100%' }}>
             <Flex justify='space-between' style={{ width: '100%' }}>
-              {/* <Space>
-                {<PermitCheck value='AUTH_0000'><Form.Item
-                  name="organization_id"
-                  initialValue={'all'}
-                >
-                  <Select
-                    allowClear
-                    style={{ width: 226 }}
-                    loading={loadingUserGroupList}
-                    options={userGroupList?.length
-                      ? [{ label: '全部', value: 'all' }].concat(userGroupList?.map((item: any) => ({
-                        label: item?.name,
-                        value: item?.id,
-                      })) || [])
-                      : []}
-                    placeholder='请选择组织'
-                    onChange={() => {
-                      search.submit()
-                    }}
-                  />
-                </Form.Item></PermitCheck>}
-              </Space> */}
               <div></div>
               <Space>
                 <Form.Item name="dates" initialValue={[dayjs(), dayjs()]}>

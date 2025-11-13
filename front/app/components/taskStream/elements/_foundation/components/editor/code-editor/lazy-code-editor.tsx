@@ -1,14 +1,12 @@
 'use client'
 import type { FC } from 'react'
 import { useRef, useState } from 'react'
-import Editor, { loader } from '@monaco-editor/react'
+import Editor from '@monaco-editor/react'
 import EditorBaseComponent from '../editor-base'
 import cn from '@/shared/utils/classnames'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
 
 import './lazy-editor.css'
-
-loader.config({ paths: { vs: '/monaco-editor' } })
 
 const LINE_HEIGHT = 18
 
@@ -126,6 +124,12 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
     setTimeout(updateEditorHeight, 10)
   }
 
+  const handleBeforeMount = (monaco: any) => {
+    // 确保语言支持和 worker 在编辑器挂载前就已配置
+    // eslint-disable-next-line no-console
+    console.log('Monaco beforeMount, available languages:', monaco.languages.getLanguages())
+  }
+
   const handleEditorMount = (editor: any, monaco: any) => {
     monacoEditorRef.current = editor
     updateEditorHeight()
@@ -149,6 +153,7 @@ const CodeEditorComponent: FC<CodeEditorComponentProps> = ({
         theme={isMounted ? activeTheme : 'lazyllm-default'}
         value={processedValue}
         onChange={handleValueChange}
+        beforeMount={handleBeforeMount}
         options={{
           readOnly,
           domReadOnly: true,

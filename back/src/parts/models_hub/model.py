@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import logging
 import os
@@ -260,6 +256,31 @@ class Lazymodel(db.Model):
         return ""
 
     @property
+    def proxy_url(self):
+        """获取模型的代理URL。
+
+        对于在线模型，从配置信息中获取代理URL。
+
+        Returns:
+            str: 代理URL，如果不存在则返回空字符串。
+        """
+        if self.model_type == "online":
+            if g.current_user:
+                config_info = (
+                    db.session.query(LazyModelConfigInfo)
+                    .filter(
+                        LazyModelConfigInfo.model_id == self.id,
+                        LazyModelConfigInfo.tenant_id
+                        == g.current_user.current_tenant_id,
+                    )
+                    .first()
+                )
+                if config_info:
+                    return config_info.proxy_url or ""
+
+        return ""
+
+    @property
     def proxy_info(self):
         """获取模型的代理信息。
 
@@ -270,9 +291,13 @@ class Lazymodel(db.Model):
         """
         if self.model_type == "online":
             if g.current_user:
-                config_info = db.session.query(LazyModelConfigInfo).filter(
-                    LazyModelConfigInfo.model_id == self.id,
-                    LazyModelConfigInfo.tenant_id == g.current_user.current_tenant_id,
+                config_info = (
+                    db.session.query(LazyModelConfigInfo)
+                    .filter(
+                        LazyModelConfigInfo.model_id == self.id,
+                        LazyModelConfigInfo.tenant_id == g.current_user.current_tenant_id,
+                    )
+                    .first()
                 )
                 if config_info:
                     return {

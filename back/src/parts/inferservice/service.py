@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import logging
 import os
@@ -38,6 +34,7 @@ from parts.models_hub.model_list import \
 from parts.models_hub.model_list import model_kinds
 from utils.util_database import db
 
+logger = logging.getLogger(__name__)
 
 def get_service_info(service_id):
     """获取服务信息。
@@ -92,6 +89,15 @@ class InferService:
     def __init__(self):
         self.supplier = os.getenv("CLOUD_SUPPLIER", "lazyllm")
 
+    def _get_used_infer_model_ids(self):
+        rows = (
+            db.session.query(InferModelServiceGroup.model_id)
+            .filter(InferModelServiceGroup.model_id.isnot(None))
+            .distinct()
+            .all()
+        )
+        return {row[0] for row in rows if row[0]}
+
     def check_gpu_quota(self, tenant_id, required_gpus=1):
         """检查GPU配额。
 
@@ -144,7 +150,13 @@ class InferService:
         logging.info(f"ams_get_url: {ams_get_url}")
         try:
             response = requests.get(ams_get_url, timeout=5)
-            response_data = response.json()
+            try:
+                response_data = response.json()
+            except ValueError:
+                logging.info(
+                    f"ams_get_service_status 响应非JSON，status={response.status_code}, text={response.text}"
+                )
+                return False, "", ""
             logging.info(f"ams get model status response: {response.status_code}")
             logging.info(f"ams_get_service_status response: {response.text}")
             if response.status_code != 200:
@@ -342,28 +354,33 @@ class InferService:
         Returns:
             list: 服务信息列表。
         """
-        service_info = [
-            {
-                "id": service.id,
-                "gid": service.gid,
-                "base_model": "",
-                "deploy_method": "",
-                "url": ams_service_endpoint.get(service.gid, ""),
-                "name": service.name,
-                "status": (
-                    ams_service_status.get(service.gid, "Cancelled")
-                    if service.gid
-                    else "Cancelled"
-                ),
-                "job_id": ams_service_endpoint.get(service.gid, ""),
-                "token": service.tenant_id,
-                "logs": service.logs,
-                "created_by": Account.query.get(service.created_by).name,
-                "created_at": service.created_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "updated_at": service.updated_time.strftime("%Y-%m-%d %H:%M:%S"),
-            }
-            for service in services
-        ]
+        service_info = []
+        for service in services:
+            service_status = (
+                ams_service_status.get(service.gid, "Cancelled")
+                if service.gid
+                else "Cancelled"
+            )
+            if status and service_status not in status:
+                continue
+
+            service_info.append(
+                {
+                    "id": service.id,
+                    "gid": service.gid,
+                    "base_model": "",
+                    "deploy_method": "",
+                    "url": ams_service_endpoint.get(service.gid, ""),
+                    "name": service.name,
+                    "status": service_status,
+                    "job_id": ams_service_endpoint.get(service.gid, ""),
+                    "token": service.tenant_id,
+                    "logs": service.logs,
+                    "created_by": Account.query.get(service.created_by).name,
+                    "created_at": service.created_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "updated_at": service.updated_time.strftime("%Y-%m-%d %H:%M:%S"),
+                }
+            )
 
         # 如果 service_info 为空，则跳过
         if not service_info:
@@ -453,6 +470,9 @@ class InferService:
                     user_id,
                 )
 
+                if not service_info:
+                    continue
+
                 user_name = ""
                 if (
                     infer_model_service_group.created_by
@@ -468,17 +488,18 @@ class InferService:
                     )
 
                 online_cnt = len(
-                    [
-                        service
-                        for service in services
-                        if ams_service_status.get(service.gid, "Cancelled") == "Ready"
-                    ]
+                    [info for info in service_info if info["status"] == "Ready"]
                 )
+                has_status_filter = bool(status)
                 if (
-                    online_cnt < 1
+                    not has_status_filter
+                    and online_cnt < 1
                     and (
-                        (infer_model_service_group.created_by == Account.get_admin_id()
-                        and current_user.id != Account.get_admin_id())
+                        (
+                            infer_model_service_group.created_by
+                            == Account.get_admin_id()
+                            and current_user.id != Account.get_admin_id()
+                        )
                         or is_draw
                     )
                 ):
@@ -494,7 +515,7 @@ class InferService:
                             infer_model_service_group.model_type,
                             infer_model_service_group.model_type,
                         ),
-                        "service_count": len(services),
+                        "service_count": len(service_info),
                         "online_count": online_cnt,
                         "created_at": infer_model_service_group.created_time.strftime(
                             "%Y-%m-%d %H:%M:%S"
@@ -675,6 +696,7 @@ class InferService:
                     .filter(InferModelService.name == service.get("name"))
                     .first()
                 )
+
                 if existing_service:
                     existing_service_names.add(service.get("name"))
             if existing_service_names:
@@ -685,6 +707,7 @@ class InferService:
             for service_data in services:
                 new_service = InferModelService(
                     group_id=group_id,
+                    model_num_gpus= 1 if service_data.get("model_num_gpus") is None or service_data.get("model_num_gpus") <1 else service_data.get("model_num_gpus"),
                     name=service_data.get("name"),
                     model_id=model_id,
                     created_by=current_user.id,
@@ -850,10 +873,25 @@ class InferService:
         )
         logging.info(f"ams_delete_url: {ams_delete_url}")
         response = requests.delete(ams_delete_url)
-        response_data = response.json()
-        logging.info(f"ams delete response: {response.status_code}")
+        status_code = response.status_code
+        try:
+            response_data = response.json()
+        except ValueError:
+            response_data = {}
+
+        logging.info(f"ams delete response: {status_code}")
         logging.info(f"ams_stop_service response: {response.text}")
-        if response.status_code != 200:
+
+        if status_code == 404:
+            detail = response_data.get("message") or response_data.get("detail")
+            logging.info(
+                "ams_stop_service job absent (%s)，视为已删除: %s",
+                detail or "Job not found",
+                lws_release_name,
+            )
+            return True
+
+        if status_code != 200:
             logging.info(
                 f"ams_stop_service failed: {response_data.get('code')}, {response_data.get('message')}"
             )
@@ -887,7 +925,7 @@ class InferService:
             # 只有非超级管理员需要释放GPU资源统计
             if not account.is_super:
                 # 释放GPU资源
-                Tenant.decrement_gpu_usage(service.tenant_id, 1)
+                Tenant.decrement_gpu_usage(service.tenant_id, 1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus)
 
             db.session.commit()
             return True
@@ -895,7 +933,7 @@ class InferService:
             db.session.rollback()
             raise ValueError(f"任务取消失败，id: {service.gid}") from e
 
-    def ams_start_service(self, service_name, model_name):
+    def ams_start_service(self, service_name, model_name, model_num_gpus=1):
         """通过AMS启动服务。
 
         调用AMS API启动指定的推理服务。
@@ -918,10 +956,16 @@ class InferService:
         )
         if self.supplier == "lazyllm":
             model_name = model_name.split(":")[-1]
-        json_data = {"service_name": service_name, "model_name": model_name}  # list
+        json_data = {"service_name": service_name, "model_name": model_name, "num_gpus": model_num_gpus}  # list
         response = requests.post(ams_start_server_url, json=json_data)
         time.sleep(1)  # 等待1秒，确保服务启动完成
-        response_data = response.json()
+        try:
+            response_data = response.json()
+        except ValueError:
+            logging.info(
+                f"ams_start_service 响应非JSON，status={response.status_code}, text={response.text}"
+            )
+            return False, ""
         logging.info(f"ams_start_service response: {response.status_code}")
         logging.info(f"ams_start_service response: {response.text}")
         if response.status_code != 200:
@@ -930,6 +974,27 @@ class InferService:
             )
             return False, ""
         return True, response_data.get("lwsName")
+
+    def is_cloud_service_available(self, timeout: float = 2.0):
+        """检查 cloud-service 是否可用。
+
+        Args:
+            timeout (float, optional): 请求超时时间，单位秒。默认 1.0 秒。
+
+        Returns:
+            tuple[bool, str]: (是否可用, 说明信息)
+        """
+        ams_endpoint = os.getenv("AMS_ENDPOINT")
+        if not ams_endpoint:
+            return False, "未配置 AMS_ENDPOINT，cloud-service 未启用"
+        url = ams_endpoint.rstrip("/") + "/v1/inference_services"
+        try:
+            resp = requests.get(url, timeout=timeout)
+            if resp.status_code == 200:
+                return True, "cloud-service 服务正常"
+            return False, f"cloud-service 返回异常状态码 {resp.status_code}"
+        except requests.RequestException as exc:
+            return False, f"无法连接 cloud-service：{exc}"
 
     def start_service(self, service_id):
         """启动推理服务。
@@ -960,21 +1025,17 @@ class InferService:
             account = Account.default_getone(current_user.id)
             if not account.is_super:
                 # 非超级管理员需要检查GPU配额
-                self.check_gpu_quota(service.tenant_id)
+                self.check_gpu_quota(service.tenant_id,1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus)
 
             model_info = Lazymodel.query.get(service.model_id)
-
+ 
             infer_model_name = model_info.model_name
             if model_info.model_from == "finetune":
-                if model_info.model_key_ams not in [
-                    model["model_name"] for model in ams_local_model_list_ams
-                ]:
-                    raise ValueError(f"基础模型 {model_info.model_key} 不支持推理")
                 infer_model_name = (
                     model_info.model_key_ams + ":" + model_info.model_name
                 )
             ams_start_service_result, ams_start_service_return = self.ams_start_service(
-                service.name, infer_model_name
+                service.name, infer_model_name, 1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus
             )
             logging.info(
                 f"ams_start_service result: {ams_start_service_result}, {ams_start_service_return}"
@@ -988,7 +1049,7 @@ class InferService:
 
             # 只有非超级管理员需要增加GPU使用量统计
             if not account.is_super:
-                Tenant.increment_gpu_usage(service.tenant_id, 1)
+                Tenant.increment_gpu_usage(service.tenant_id, 1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus)
             db.session.commit()
             return True
         except Exception as e:
@@ -996,7 +1057,7 @@ class InferService:
             error_msg = str(e)
             if "failed" in error_msg.lower():
                 error_msg = "服务启动失败，请通过日志查看详情"
-
+            logger.error(f"启动服务失败: {e}", stack_info=True)
             print(f"启动服务失败： {str(e)}")
             LogService().add(
                 Module.MODEL_INFERENCE,
@@ -1035,7 +1096,10 @@ class InferService:
             account = Account.default_getone(current_user.id)
             if not account.is_super:
                 # 3. 计算需要的GPU总数
-                total_gpus = len(group.services)
+                total_gpus = 0
+                for service in group.services:
+                    num = 1 if service.model_num_gpus is None or service.model_num_gpus < 1 else service.model_num_gpus 
+                    total_gpus += num
 
                 # 4. 检查租户的GPU配额
                 tenant = db.session.query(Tenant).filter_by(id=group.tenant_id).first()
@@ -1099,10 +1163,24 @@ class InferService:
             filters.append(Lazymodel.deleted_flag == 0)
             models = (
                 Lazymodel.query.filter(*filters)
-                .with_entities(Lazymodel.id, Lazymodel.model_name)
+                .with_entities(
+                    Lazymodel.id,
+                    Lazymodel.model_name,
+                    Lazymodel.builtin_flag,
+                )
                 .all()
             )
 
-            return [model._asdict() for model in models]
+            used_model_ids = self._get_used_infer_model_ids()
+
+            return [
+                {
+                    "id": model.id,
+                    "model_name": model.model_name,
+                    "need_confirm": (not model.builtin_flag)
+                    and (model.id not in used_model_ids),
+                }
+                for model in models
+            ]
         except Exception as e:
             raise ValueError("本地模型列表获取失败") from e

@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import threading
 
@@ -24,6 +20,7 @@ from flask_login import current_user
 from flask_restful import inputs, marshal, reqparse
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.login import login_required
 from parts.finetune.finetune_service import FinetuneService
 from parts.logs import Action, LogService, Module
@@ -39,6 +36,7 @@ from .schema import FinetuneCreateSchema
 
 class FinetuneListApi(Resource):
     @login_required
+    @require_internet_feature("发布模型微调")
     def post(self):
         """创建微调任务。
 

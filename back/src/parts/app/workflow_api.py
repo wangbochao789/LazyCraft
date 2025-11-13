@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import json
 import re
@@ -31,6 +27,7 @@ from lazyllm.tools.rag.utils import DocListManager
 
 from core.restful import Resource
 from libs import helper
+from libs.feature_gate import require_internet_feature
 from libs.http_exception import BaseHTTPError
 from libs.login import login_required
 from parts.app.node_run.app_run_service import AppRunService, EventHandler
@@ -169,6 +166,7 @@ class DraftWorkflowStatusApi(Resource):
 
 class DraftWorkflowStartApi(Resource):
     @login_required
+    @require_internet_feature("应用调试启动")
     def post(self, app_id):
         """开始草稿调试"""
         workflow = WorkflowService().get_draft_workflow(app_id)
@@ -198,6 +196,7 @@ class DraftWorkflowStartApi(Resource):
 
 class DraftWorkflowRunApi(Resource):
     @login_required
+    @require_internet_feature("应用预览运行")
     def post(self, app_id):
         """运行草稿调试"""
         parser = reqparse.RequestParser()
@@ -271,6 +270,7 @@ class DraftWorkflowResetSessionApi(Resource):
 
 class NodeRunStreamApi(Resource):
     @login_required
+    @require_internet_feature("节点运行")
     def post(self, app_id, node_id):
         """运行单节点调试(流式输出)"""
         parser = reqparse.RequestParser()
@@ -311,6 +311,7 @@ class PublishedWorkflowApi(Resource):
         return marshal(workflow, fields.workflow_fields)
 
     @login_required
+    @require_internet_feature("应用发布")
     def post(self, app_id):
         """Publish workflow"""
         parser = reqparse.RequestParser()
@@ -473,6 +474,7 @@ class WorkflowAddLog(Resource):
 
 class WorkflowBatchLog(Resource):
     @login_required
+    @require_internet_feature("批量运行")
     def post(self):
         """批量调试时上报的结果日志"""
         parser = reqparse.RequestParser()
@@ -511,6 +513,7 @@ class WorkflowBatchLog(Resource):
 
 class DocParseApi(Resource):
     @login_required
+    @require_internet_feature("知识库数据解析")
     def post(self, app_id, doc_id):
         """Document节点数据解析"""
         parser = reqparse.RequestParser()

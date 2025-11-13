@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 
 from .node_base import BaseNode, copy, parse_to_bool, track_new_attrs
@@ -85,7 +81,7 @@ class InferNode(BaseNode):
             None: 无返回值
 
         Raises:
-            ValueError: 当API key缺失时抛出
+            ValueError: 当API key 和 proxy_url 同时缺失时抛出
         """
         if len((self.get_data().get("payload__base_url", "")).strip()) > 0:
             self.base_url = (self.get_data().get("payload__base_url", "")).strip()
@@ -106,8 +102,13 @@ class InferNode(BaseNode):
 
         api_key = key_dict.get("api_key", "")
         secret_key = key_dict.get("secret_key", "")
-        if api_key:
+        proxy_url = key_dict.get("proxy_url", "")
+        if api_key or proxy_url:
             self.api_key = api_key
+            if proxy_url:
+                # 画布中的base_url优先级更高
+                base_url = (self.get_data().get("payload__base_url", "")).strip()
+                self.base_url = base_url if base_url else proxy_url
         else:
             raise ValueError("API key is required for online inference.")
         if secret_key:

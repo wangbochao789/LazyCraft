@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import gzip
 import json
@@ -38,6 +34,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.filetools import FileTools
 from libs.helper import build_response
 from libs.login import login_required
@@ -572,6 +569,7 @@ class Evaluate(Resource):
     """
 
     @login_required
+    @require_internet_feature("模型评测")
     def post(self):
         """执行评估任务。
 

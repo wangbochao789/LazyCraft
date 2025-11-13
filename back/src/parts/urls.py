@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 from flask import Blueprint
 
@@ -26,7 +22,7 @@ api = HandleErrorApi(bp)
 
 from parts.apikey import apikey_api  # noqa
 from parts.app import app_api, workflow_api  # noqa
-from parts.auth import forgot_password, login, oauth  # noqa
+from parts.auth import forgot_password, key_exchange, login, oauth  # noqa
 from parts.conversation import speak_api  # noqa
 from parts.cost_audit import controller  # noqa
 from parts.data import controller  # noqa

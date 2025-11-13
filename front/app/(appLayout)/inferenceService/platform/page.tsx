@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Collapse, Empty, Form, Input, Modal, Pagination, Popconfirm, Select, Spin, Tag, message } from 'antd'
+import { Button, Collapse, Empty, Form, Input, InputNumber, Modal, Pagination, Popconfirm, Select, Spin, Tag, message } from 'antd'
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { useUpdateEffect } from 'ahooks'
 import style from './page.module.scss'
@@ -8,7 +8,7 @@ import ChatModal from './chatModal'
 import ClassifyMode from '@/app/components/tagSelect/ClassifyMode'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { createPrompt, deletePrompt, getAdjustList, getPromptList } from '@/infrastructure/api/prompt'
 
 const { Panel } = Collapse
@@ -261,7 +261,7 @@ const InferenceService = () => {
       message = '请求超时'
       refreshList()
     }
-    Toast.notify({ type: 'error', message })
+    Toast.notify({ type: ToastTypeEnum.Error, message })
   }
 
   const clickStartStopA = async (e, id, flag) => {
@@ -275,7 +275,7 @@ const InferenceService = () => {
         body: params,
       })
       if (res) {
-        Toast.notify({ type: 'success', message: '操作成功' })
+        Toast.notify({ type: ToastTypeEnum.Success, message: '操作成功' })
         refreshList()
       }
     }
@@ -299,11 +299,11 @@ const InferenceService = () => {
       })
       if (res) {
         if ((res as any).status === 0) {
-          Toast.notify({ type: 'success', message: '操作成功' })
+          Toast.notify({ type: ToastTypeEnum.Success, message: '操作成功' })
           refreshList()
         }
         else {
-          Toast.notify({ type: 'error', message: '操作失败' })
+          Toast.notify({ type: ToastTypeEnum.Error, message: '操作失败' })
         }
       }
     }
@@ -401,7 +401,7 @@ const InferenceService = () => {
                     {
                       item?.services?.map((ite: any) =>
                         <div className={style.colBody} key={ite?.id}>
-                          <div className={style.nameSty}>{ite?.name}</div>
+                          <div className={style.nameSty}>{ite?.name}（显卡：{ite?.model_num_gpus} 张）</div>
                           <div className={style.statuSty}><Tag color={showText[ite?.status]?.color}>{showText[ite?.status]?.text}</Tag></div>
                           <div className={style.creator}>创建者：{ite?.created_by}</div>
                           <div className={style.createTime}>创建时间: {ite?.updated_at}</div>
@@ -467,44 +467,71 @@ const InferenceService = () => {
                 </Form.Item>}
               <Form.List
                 name="services"
-                initialValue={[{ name: '' }]}
+                initialValue={[{ name: '', model_num_gpus: undefined }]}
               >
                 {(fields, { add, remove }) => (
                   <>
-                    {fields.map(({ key, name, ...restFieldA }, index) => (
+                    {fields.map(({ key, name }, index) => (
                       <Form.Item
                         {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                        label={index === 0 ? '服务名称' : ''}
+                        label={index === 0 ? '服务信息' : ''}
                         required
                         key={key}
                       >
-                        <Form.Item
-                          name={[name, 'name']}
-                          validateTrigger={['onChange', 'onBlur']}
-                          rules={[
-                            {
-                              required: true,
-                              whitespace: true,
-                              pattern: /^[a-zA-Z0-9]+$/,
-                              message: '只能输入大小英文和数字',
-                            },
-                          ]}
-                          noStyle
-                        >
-                          <Input placeholder="请输入" style={{ width: '80%' }} />
-                        </Form.Item>
-                        {index == 0
-                          ? <PlusCircleOutlined style={{ color: '#0E5DD8' }} className='ml-[5px]' onClick={() => add()} />
-                          : (<span>
-                            <PlusCircleOutlined style={{ color: '#0E5DD8' }} className='ml-[5px]' onClick={() => add()} />
-                            <MinusCircleOutlined
-                              className="dynamic-delete-button ml-[5px]"
+                        <div className='flex flex-col gap-[8px]'>
+                          <div className='flex items-center gap-[8px]'>
+                            <Form.Item
+                              name={[name, 'name']}
+                              validateTrigger={['onChange', 'onBlur']}
+                              rules={[
+                                {
+                                  required: true,
+                                  whitespace: true,
+                                  pattern: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?\s]+$/,
+                                  message: '支持大小写字母、数字和特殊符号',
+                                },
+                              ]}
+                              style={{ width: '80%', marginBottom: 0 }}
+                            >
+                              <Input placeholder="请输入服务名称" />
+                            </Form.Item>
+                            <PlusCircleOutlined
                               style={{ color: '#0E5DD8' }}
-                              onClick={() => remove(name)}
+                              onClick={() => {
+                                const current = form.getFieldValue(['services', name]) || {}
+                                add({ name: current?.name || '', model_num_gpus: current?.model_num_gpus || undefined })
+                              }}
                             />
-                          </span>
-
-                          )}
+                            {index !== 0 && (
+                              <MinusCircleOutlined
+                                className="dynamic-delete-button"
+                                style={{ color: '#0E5DD8' }}
+                                onClick={() => remove(name)}
+                              />
+                            )}
+                          </div>
+                          <Form.Item
+                            name={[name, 'model_num_gpus']}
+                            validateTrigger={['onChange', 'onBlur']}
+                            rules={[
+                              {
+                                required: true,
+                                type: 'number',
+                                message: '请输入显卡数量',
+                              },
+                              {
+                                validator: (_, value) => {
+                                  if (!Number.isInteger(value) || value < 1)
+                                    return Promise.reject(new Error('显卡数量需为大于等于1的整数'))
+                                  return Promise.resolve()
+                                },
+                              },
+                            ]}
+                            style={{ width: '80%', marginBottom: 0 }}
+                          >
+                            <InputNumber min={1} precision={0} placeholder="分配显卡数量" style={{ width: '100%' }} />
+                          </Form.Item>
+                        </div>
                       </Form.Item>
                     ))}
                   </>

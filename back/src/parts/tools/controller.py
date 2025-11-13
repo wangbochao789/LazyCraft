@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import json
 import os
@@ -27,6 +23,7 @@ from flask_login import current_user
 from flask_restful import marshal, reqparse
 
 from core.restful import Resource
+from libs.feature_gate import require_internet_feature
 from libs.login import login_required
 from parts.logs import Action, LogService, Module
 from parts.tag.tag_service import TagService
@@ -379,6 +376,7 @@ class ToolCopyApi(Resource):
 
 class ToolTestApi(Resource):
     @login_required
+    @require_internet_feature("工具运行")
     def post(self):
         data = request.json
         if not data:

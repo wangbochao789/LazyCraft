@@ -8,7 +8,7 @@ import styles from './index.module.scss'
 import DrawInfo from './DrawInfo'
 import AddModal from './AddModal'
 import AddModelList from './AddModelList'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { getModelInfo, reDown } from '@/infrastructure/api/modelWarehouse'
 import { deleteModel, getModelList } from '@/infrastructure/api/modelAdjust'
 import { useApplicationContext } from '@/shared/hooks/app-context'
@@ -71,10 +71,10 @@ const ModelDetail = (req) => {
   const getInfo = () => {
     getModelInfo({ url: `mh/model_info/${id}`, options: { params: { qtype, namespace: isMine } } }).then((res) => {
       setBaseInfo(res)
-      if (res?.models?.length > 0) {
+      if (res?.models?.length > 0)
         setType(res?.models[0]?.id)
-        search.submit()
-      }
+      // 初始化时加载微调模型列表
+      search.submit()
     })
   }
   useEffect(() => {
@@ -83,14 +83,14 @@ const ModelDetail = (req) => {
   const handleDelete = async (record) => {
     const res = await deleteModel({ url: `/mh/delete_finetune_model/${id}/${record?.id}` })
     if (res) {
-      Toast.notify({ type: 'success', message: '删除成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
       search.submit()
     }
   }
   const reDownload = () => {
     reDown({ url: `/mh/retry_download/${id}` }).then((res) => {
       if (res) {
-        Toast.notify({ type: 'success', message: '操作成功' })
+        Toast.notify({ type: ToastTypeEnum.Success, message: '操作成功' })
         getInfo()
       }
     })

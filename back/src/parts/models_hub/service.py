@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import json
 import logging
@@ -371,7 +367,7 @@ class ModelService:
                     LazyModelConfigInfo.api_key.isnot(None),
                 )
             ),
-            asc(Lazymodel.id),
+            desc(Lazymodel.id),
         )
         pagination = query.paginate(
             page=data["page"],
@@ -454,21 +450,39 @@ class ModelService:
             CommonError: 当API密钥无效或认证异常时。
         """
 
-        res = False
-        try:
-            m = lazyllm.OnlineChatModule(source=model_brand.lower(), api_key=api_key)
-            res = m._validate_api_key()
-            if not res:
-                raise CommonError("key 无效！")
-        except Exception as e:
-            logging.error(f"update_or_create_api_key error: {e}")
-            raise CommonError("api_key 认证异常")
+        # 验证 api_key 和 proxy_url 至少有一个存在
+        if not (api_key or proxy_url):
+            raise CommonError("api_key 和 proxy_url 不能同时为空，至少需要提供一个")
+        
+        # 只有当 api_key 存在且非空时，才进行验证
+        if api_key and api_key.strip():
+            res = False
+            try:
+                split_keys = api_key.split(":")
+                secret_key = None
+                origin_key = api_key
+                if model_brand == "SenseNova" and len(split_keys) < 2:
+                    raise CommonError("key 无效！")
+                if len(split_keys) >= 2:
+                    origin_key = split_keys[0]
+                    secret_key = split_keys[1]
+
+                # OpenAI 跳过验证 api_key
+                if model_brand != "OpenAI":
+                    m = lazyllm.OnlineChatModule(source=model_brand.lower(),api_key=origin_key, secret_key=secret_key)
+                    res = m._validate_api_key()
+                
+                    if not res:
+                        raise CommonError("key 无效！")
+            except Exception as e:
+                logging.error(f"update_or_create_api_key error: {e}")
+                raise CommonError("api_key 认证异常")
 
         # 查找对应 model_brand 的模型
         models = Lazymodel.query.filter(
             Lazymodel.model_brand == model_brand, Lazymodel.model_type == "online"
         ).all()
-
+        api_key = api_key if api_key else ""
         for model in models:
             # 检查 LazyModelConfigInfo 中是否已有该模型的配置
             config = LazyModelConfigInfo.query.filter(
@@ -1134,7 +1148,7 @@ class ModelService:
     def update_model(self, model_id, api_key, proxy_url="", proxy_auth_info=None):
         model = Lazymodel.query.get(model_id)
         if not model:
-            return ValueError("模型不存在")
+            raise CommonError("模型不存在")
         if model.model_type != "online":
             raise CommonError("只有在线模型支持配置 api_key")
         engine = LightEngine()
@@ -1251,7 +1265,23 @@ class ModelService:
                 db.session.remove()
                 model = Lazymodel.query.get(id)
                 if res:
-                    model.model_path = res
+                    base_model_path = os.getenv("LAZYLLM_MODEL_PATH")
+                    final_model_path = res
+                    if base_model_path:
+                        target_model_path = os.path.join(base_model_path, model.model_name)
+                        if os.path.exists(target_model_path):
+                            final_model_path = target_model_path
+                        else:
+                            os.makedirs(base_model_path, exist_ok=True)
+                            os.symlink(res, target_model_path)
+                            logging.info(
+                                "为模型 %s 创建软链接: %s -> %s",
+                                model.model_name,
+                                target_model_path,
+                                res,
+                            )
+                            final_model_path = target_model_path
+                    model.model_path = final_model_path
                     model.model_status = ModelStatus.SUCCESS.value
                     model.download_message = "Download successful"
                     db.session.commit()
@@ -1549,15 +1579,21 @@ class ModelService:
         model_config = LazyModelConfigInfo.query.filter(
             LazyModelConfigInfo.model_id == online_id,
             LazyModelConfigInfo.tenant_id == tenant_id,
-            LazyModelConfigInfo.api_key != "",
+            or_(
+                LazyModelConfigInfo.api_key != "",
+                LazyModelConfigInfo.proxy_url != "",
+            ),
         ).first()
         if model_config is not None:
             split_keys = model_config.api_key.split(":")
+            proxy_url = model_config.proxy_url
             if len(split_keys) >= 2:
                 result = {"api_key": split_keys[0], "secret_key": split_keys[1]}
             else:
                 result = {"api_key": model_config.api_key}
 
+            if proxy_url:
+                result["proxy_url"] = proxy_url
             if model_brand:
                 result["source"] = model_brand
             return result
@@ -1676,7 +1712,10 @@ class ModelService:
                             LazyModelConfigInfo.model_id == Lazymodel.id,
                             LazyModelConfigInfo.tenant_id
                             == self.account.current_tenant_id,
-                            LazyModelConfigInfo.api_key != "",
+                             or_(
+                                LazyModelConfigInfo.api_key != "",
+                                LazyModelConfigInfo.proxy_url != "",
+                            ),
                         ),
                     ),
                 )

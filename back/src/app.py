@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import json
 import logging
@@ -25,7 +21,7 @@ import time
 import warnings
 from appcmd import register_commands
 from datetime import datetime
-from logging.handlers import RotatingFileHandler
+from logging.handlers import TimedRotatingFileHandler
 from zoneinfo import ZoneInfo
 
 from flask import Flask, Response, g, request
@@ -84,8 +80,11 @@ class MyApp:
             log_dir = os.path.dirname(log_file)
             os.makedirs(log_dir, exist_ok=True)
             log_handlers = [
-                RotatingFileHandler(
-                    filename=log_file, maxBytes=1024 * 1024 * 1024, backupCount=5
+                TimedRotatingFileHandler(
+                    filename=log_file,
+                    when="D",        # 按天分块
+                    interval=6,      # 每6天
+                    backupCount=30,  # 保留180天的日志
                 ),
                 logging.StreamHandler(sys.stdout),
             ]

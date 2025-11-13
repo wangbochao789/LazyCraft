@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import logging
 import os
@@ -37,7 +33,7 @@ from parts.urls import api
 
 from . import fields
 from .model import Lazymodel, LazymodelOnlineModels, ModelStatus
-from .model_list import local_model_list, online_model_list
+from .model_list import online_model_list
 from .service import ModelService
 
 
@@ -402,7 +398,7 @@ class ModelHubUpdateApiKeyApi(Resource):
         self.check_can_write()       
         parser = reqparse.RequestParser()
         parser.add_argument("model_brand", type=str, required=True, location="json")
-        parser.add_argument("api_key", type=str, required=True, location="json")
+        parser.add_argument("api_key", type=str, required=False, location="json")
         parser.add_argument("proxy_url", type=str, location="json", required=False)
         parser.add_argument(
             "proxy_auth_info", type=dict, location="json", required=False
@@ -796,7 +792,7 @@ class ModelHubModelFinetuneDeleteApi(Resource):
 
 class ModelHubModelFinetuneListApi(Resource):
     @login_required
-    def get(self):
+    def post(self):
         """获取微调模型分页列表。
         
         Args:
@@ -810,12 +806,12 @@ class ModelHubModelFinetuneListApi(Resource):
             dict: 包含微调模型列表的分页数据，使用 finetune_pagination_fields 格式。
         """
         parser = reqparse.RequestParser()
-        parser.add_argument("model_id", type=str, default=0, location="args")
-        parser.add_argument("online_model_id", type=str, default=0, location="args")
-        parser.add_argument("page", type=int, default=1, location="args")
-        parser.add_argument("page_size", type=int, default=20, location="args")
+        parser.add_argument("model_id", type=str, default=0, location="json")
+        parser.add_argument("online_model_id", type=str, default=0, location="json")
+        parser.add_argument("page", type=int, default=1, location="json")
+        parser.add_argument("page_size", type=int, default=20, location="json")
         parser.add_argument(
-            "qtype", type=str, default="already", location="args", required=False
+            "qtype", type=str, default="already", location="json", required=False
         )
         args = parser.parse_args()
         g.qtype = args["qtype"]
@@ -834,17 +830,6 @@ class ModelHubOnlineModelSupportListApi(Resource):
             list: 支持的在线模型列表。
         """
         return online_model_list
-
-
-class ModelHubLocalModelSupportListApi(Resource):
-    @login_required
-    def get(self):
-        """获取支持的本地模型列表。
-        
-        Returns:
-            list: 支持的本地模型列表。
-        """
-        return local_model_list
 
 
 class ModelUpdateOnlineModelListApi(Resource):
@@ -942,7 +927,6 @@ api.add_resource(
 )
 api.add_resource(ModelHubModelFinetuneListApi, "/mh/finetune_model_page")
 api.add_resource(ModelHubOnlineModelSupportListApi, "/mh/online_model_support_list")
-api.add_resource(ModelHubLocalModelSupportListApi, "/mh/local_model_support_list")
 api.add_resource(ModelUpdateOnlineModelListApi, "/mh/update_online_model_list")
 api.add_resource(ModelHubExistModelListApi, "/mh/exist_model_list")
 api.add_resource(ModelHubDefaultIconListApi, "/mh/default_icon_list")

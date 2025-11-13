@@ -1,4 +1,5 @@
 # Copyright (c) 2025 SenseTime. All Rights Reserved.
+# Author: LazyLLM Team,  https://github.com/LazyAGI/LazyLLM
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Additional Notice:
-# When modifying, redistributing, or creating derivative works of this software,
-# you must retain the original LazyCraft logo and the GitHub link icon that directs
-# to the official repository: https://github.com/LazyAGI/LazyLLM
 
 import os.path
 from datetime import datetime
@@ -267,19 +263,29 @@ class DocView(Resource):
                 last = params[-1]
                 if last.endswith(".md"):
                     if last.startswith("_sidebar"):
-                        # 一级菜单
+                        # 一级菜单：动态生成侧边栏
                         try:
                             template = self.template_load.get_template("_sidebar.ft")
+                            menus = doc_service.doc_menu()
+                            print(f"[DEBUG] doc_menu returned {len(menus)} items")
                             data = {
-                                "menus": doc_service.doc_menu()
-                            }  # doc_menu 需要自定义实现
+                                "menus": menus
+                            }
                             rendered_content = template.render(data)
+                            print(f"[DEBUG] Rendered sidebar length: {len(rendered_content)}")
                             return Response(
                                 rendered_content,
                                 content_type="text/markdown; charset=utf-8",
                             )
                         except Exception as e:
-                            print(e)
+                            print(f"[ERROR] Failed to generate sidebar: {e}")
+                            import traceback
+                            traceback.print_exc()
+                            # 返回空的侧边栏而不是让它继续执行
+                            return Response(
+                                "<!-- 侧边栏生成失败 -->",
+                                content_type="text/markdown; charset=utf-8",
+                            )
 
                     if last.startswith("doc_"):
                         # 文档详情
