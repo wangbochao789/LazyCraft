@@ -529,7 +529,7 @@ const InferenceService = () => {
                             ]}
                             style={{ width: '80%', marginBottom: 0 }}
                           >
-                            <InputNumber min={1} precision={0} placeholder="分配显卡数量" style={{ width: '100%' }} />
+                            <Select placeholder="分配显卡数量" style={{ width: '100%' }} options={[{ label: '1', value: 1 }, { label: '2', value: 2 }, { label: '4', value: 4 }, { label: '8', value: 8 }]} />
                           </Form.Item>
                         </div>
                       </Form.Item>
