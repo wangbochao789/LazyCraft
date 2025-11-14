@@ -86,7 +86,7 @@ const ModalList = (props: any) => {
                   }
                   overlayStyle={{ maxWidth: '600px' }}
                 >
-                  <QuestionCircleOutlined style={{ cursor: 'pointer'}} />
+                  <QuestionCircleOutlined style={{ cursor: 'pointer' }} />
                 </Tooltip>
               </span>
             }
