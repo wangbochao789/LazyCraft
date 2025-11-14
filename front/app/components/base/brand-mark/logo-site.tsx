@@ -41,7 +41,7 @@ const LogoSiteContent: FC<LogoSiteComponentProps> = ({
     <Image
       src='/logo/logo2.png'
       alt='logo2'
-      width={120}
+      width={50}
       height={20}
     />
   )
