@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { Tooltip } from 'antd'
-import { GithubOutlined } from '@ant-design/icons'
+// import { GithubOutlined } from '@ant-design/icons'
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { useBoolean } from 'ahooks'
 import { Bars3Icon } from '@heroicons/react/20/solid'
@@ -54,19 +54,30 @@ const Header = () => {
   )
 
   const renderLogoSection = () => (
-    <Link href="/apps" className='flex items-center mr-4 w-[8.9583vw]'>
-      <BrandMark className='object-contain' />
+    // <Link href="/apps" className='flex items-center mr-4 w-[8.9583vw]'>
+    //   <BrandMark className='object-contain' />
+    // </Link>
+    <Link href="/apps" className='flex items-center gap-3 mr-6 flex-shrink-0'>
+      <BrandMark className='w-10 h-10 flex-shrink-0' />
+      <div className='flex flex-col'>
+        <span className='text-lg font-bold text-[#071127]'>智能辅助培训课件开发环境</span>
+        <span className='text-sm font-semibold text-[#071127]'>机务培训模型训练与管理工具v1.0</span>
+      </div>
     </Link>
   )
 
   const renderGithubLink = () => (
     <a href="https://github.com/LazyAGI/LazyLLM" target="_blank" className='flex mt-[-5px] text-[22px] items-center w-[1.3021vw]'>
-      <GithubOutlined />
+      {/* <GithubOutlined /> */}
     </a>
   )
 
   const renderDesktopNavigation = () => (
-    <div className='flex items-center'>
+    <div className={`flex items-center gap-1 overflow-x-auto flex-1 min-w-0 ${style.navigationScroll}`}
+      style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: '#D9DBE0 transparent',
+      }}>
       <AppNav />
       <ResourceBaseNav className={navigationItemClasses} />
       <PromptNav className={navigationItemClasses} />

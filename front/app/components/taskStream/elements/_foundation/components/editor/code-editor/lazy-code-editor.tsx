@@ -8,7 +8,7 @@ import { currentLanguage } from '@/app/components/taskStream/elements/script/typ
 
 import './lazy-editor.css'
 
-loader.config({ paths: { vs: '/monaco-editor' } })
+loader.config({ paths: { vs: '/vs' } })
 
 const LINE_HEIGHT = 18
 

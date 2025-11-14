@@ -8,7 +8,7 @@ import cn from '@/shared/utils/classnames'
 import type { ParamData } from '@/core/data/common'
 import './find-widget.css'
 
-loader.config({ paths: { vs: '/monaco-editor' } })
+loader.config({ paths: { vs: '/vs' } })
 
 const EDITOR_LINE_HEIGHT = 18
 
