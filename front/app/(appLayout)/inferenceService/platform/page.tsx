@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Collapse, Empty, Form, Input, InputNumber, Modal, Pagination, Popconfirm, Select, Spin, Tag, message } from 'antd'
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
+import { Button, Collapse, Empty, Form, Input, Modal, Pagination, Popconfirm, Select, Spin, Tag, Tooltip, message } from 'antd'
+import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useUpdateEffect } from 'ahooks'
 import style from './page.module.scss'
 import ChatModal from './chatModal'
@@ -62,6 +62,8 @@ const InferenceService = () => {
   const [sName, setSName] = useState('')
   const [selectLabels, setSelectLabels] = useState([]) as any
   const [creator, setCreator] = useState([]) as any
+  const [riskModalOpen, setRiskModalOpen] = useState(false)
+  const [pendingValues, setPendingValues] = useState<any>(null)
 
   // 添加轮询相关的引用
   const pollingTimer = useRef<NodeJS.Timeout | null>(null)
@@ -188,12 +190,7 @@ const InferenceService = () => {
     setIsModalOpen(true)
   }
 
-  const handleOk = () => {
-    if (isView) {
-      setIsModalOpen(false)
-      setIsView(false)
-      return
-    }
+  const submitFormValues = async (values: any) => {
     let gUrl = ''
     if (isEdit)
       gUrl = '/infer-service/service/create'
@@ -201,27 +198,45 @@ const InferenceService = () => {
     else
       gUrl = '/infer-service/group/create'
 
-    form.validateFields().then(async (values) => {
-      setBtnLoading(true)
+    setBtnLoading(true)
 
-      const params = { ...values }
-      try {
-        const res: any = await createPrompt({
-          url: gUrl,
-          body: params,
-        })
-        if (res) {
-          message.success('保存成功')
-          form.resetFields()
-          setModelType('localLLM')
-          getList(1, '')
-          setIsModalOpen(false)
-          setPageOption({ ...pageOption, page: 1 })
+    try {
+      const res: any = await createPrompt({
+        url: gUrl,
+        body: values,
+      })
+      if (res) {
+        message.success('保存成功')
+        form.resetFields()
+        setModelType('localLLM')
+        getList(1, '')
+        setIsModalOpen(false)
+        setPageOption({ ...pageOption, page: 1 })
+      }
+    }
+    finally {
+      setBtnLoading(false)
+      setPendingValues(null)
+      setRiskModalOpen(false)
+    }
+  }
+
+  const handleOk = () => {
+    if (isView) {
+      setIsModalOpen(false)
+      setIsView(false)
+      return
+    }
+    form.validateFields().then(async (values) => {
+      if (!isEdit) {
+        const selectedModel = modelList.find((item: any) => item.id === values.model_id)
+        if (selectedModel && selectedModel.need_confirm === false) {
+          setPendingValues(values)
+          setRiskModalOpen(true)
+          return
         }
       }
-      finally {
-        setBtnLoading(false)
-      }
+      submitFormValues(values)
     })
   }
 
@@ -229,6 +244,8 @@ const InferenceService = () => {
     setIsModalOpen(false)
     form.resetFields()
     setModelType('localLLM')
+    setPendingValues(null)
+    setRiskModalOpen(false)
   }
 
   const onSearchApp = (e) => {
@@ -527,9 +544,24 @@ const InferenceService = () => {
                                 },
                               },
                             ]}
-                            style={{ width: '80%', marginBottom: 0 }}
+                            style={{ marginBottom: 0 }}
                           >
-                            <InputNumber min={1} precision={0} placeholder="分配显卡数量" style={{ width: '100%' }} />
+                            <div className='flex items-center gap-[8px]'>
+                              <Select placeholder="分配显卡数量" style={{ width: '80%' }} options={[{ label: '1', value: 1 }, { label: '2', value: 2 }, { label: '4', value: 4 }, { label: '8', value: 8 }]} />
+                              <Tooltip
+                                placement="top"
+                                title={
+                                  <div className='text-xs leading-relaxed max-w-[280px]'>
+                                    <p>运行大模型占用的显存主要由以下组成(以Qwen3-32B、精度为FP16为例计算，占用显存约为64+8+2=74G)：</p>
+                                    <p>1）模型权重：32B × 2 = 64 GB，固定不变。</p>
+                                    <p>2）KV缓存：2 × 并发数 × 32K × 64 × 128 × 8 × 2，示例为并发1上下文32K，约8G；并发翻倍显存同步增加。</p>
+                                    <p>3）激活值与开销：推理中间计算与框架额外占用约1-2G。</p>
+                                  </div>
+                                }
+                              >
+                                <QuestionCircleOutlined style={{ color: '#0E5DD8' }} />
+                              </Tooltip>
+                            </div>
                           </Form.Item>
                         </div>
                       </Form.Item>
@@ -538,6 +570,22 @@ const InferenceService = () => {
                 )}
               </Form.List>
             </Form>
+          </div>
+        </Modal>
+        <Modal
+          open={riskModalOpen}
+          title="启动风险提示"
+          okText="坚持启动"
+          cancelText="取消"
+          onOk={() => pendingValues && submitFormValues(pendingValues)}
+          onCancel={() => {
+            setRiskModalOpen(false)
+            setPendingValues(null)
+          }}
+        >
+          <div className='leading-relaxed'>
+            <p>当前模型不在官方支持清单内，启动推理服务时可能无法成功。</p>
+            <p>是否仍然选择继续启动？</p>
           </div>
         </Modal>
         <ChatModal agentId={testInfo?.id} modelName={testInfo?.name} visible={visible} onOk={() => setVisible(false)} onCancel={() => setVisible(false)} />

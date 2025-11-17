@@ -212,7 +212,7 @@ const WorkflowExecutionPanel: FC<WorkflowExecutionPanelProps> = ({
                 simple_error: executionDetail.error,
               }
               : undefined}
-            consumed_time={executionDetail.consumed_time}
+            elapsed_time={executionDetail.elapsed_time}
             total_tokens={executionDetail.total_tokens}
             created_at={executionDetail.created_at}
             created_by={determineExecutor}
