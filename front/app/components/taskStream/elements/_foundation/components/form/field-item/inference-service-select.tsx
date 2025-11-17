@@ -19,8 +19,8 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
   itemProps,
 }) => {
   // 兼容旧节点：支持 model_type 和 model_kind 两种字段名
-  const model_kind = (itemProps as any)?.model_kind || (itemProps as any)?.model_type
-  const model_show_type = (itemProps as any)?.model_show_type || (itemProps as any)?.model_type
+  const model_kind = (itemProps as Record<string, string>)?.model_kind || (itemProps as Record<string, string>)?.model_type
+  const model_show_type = (itemProps as Record<string, string>)?.model_show_type || (itemProps as Record<string, string>)?.model_type
   const inputs = nodeData.llm || nodeData || resourceData || {}
   const [originTreeData, setOriginTreeData] = useState<any[]>([])
   const [flattenedTreeData, setFlattenedTreeData] = useState<any[]>([])
