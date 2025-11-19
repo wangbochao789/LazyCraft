@@ -12,7 +12,7 @@ import { fetchTraceList } from '@/infrastructure/api//log'
 import './index.scss'
 
 export type ExecutionResultProps = {
-  consumed_time?: number
+  elapsed_time?: number
   created_at?: number
   created_by?: string
   error?: { detail_error: string; simple_error: string }
@@ -28,7 +28,7 @@ export type ExecutionResultProps = {
 }
 
 const ExecutionResult: FC<ExecutionResultProps> = ({
-  consumed_time,
+  elapsed_time,
   created_at,
   created_by,
   error,
@@ -81,7 +81,7 @@ const ExecutionResult: FC<ExecutionResultProps> = ({
       <div className='px-4 py-2'>
         <ExecutionStatus
           status={status}
-          time={consumed_time}
+          time={elapsed_time}
           tokens={total_tokens}
           error={error}
         />
@@ -149,7 +149,7 @@ const ExecutionResult: FC<ExecutionResultProps> = ({
           status={status}
           executor={created_by}
           startTime={created_at}
-          time={consumed_time}
+          time={elapsed_time}
           tokens={total_tokens}
           steps={steps}
           presentSteps={presentSteps}

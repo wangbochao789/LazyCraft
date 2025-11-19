@@ -41,7 +41,7 @@ export type WorkflowxEcutionDetailResponse = {
   }
   created_by_role: 'account' | 'end_user'
   detail_error?: string
-  consumed_time?: number
+  elapsed_time?: number
   error?: string
   terminated_at: number
   graph: {

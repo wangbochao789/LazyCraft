@@ -70,7 +70,7 @@ const MainLayoutComponent: React.FC<{ children: React.ReactNode }> = ({ children
         />
         {/* Monaco Editor 预加载脚本 */}
         <Script
-          src="/monaco-editor/loader.js"
+          src="/vs/loader.js"
           strategy="beforeInteractive"
         />
         <Script

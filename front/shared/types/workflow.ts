@@ -17,7 +17,7 @@ export type NodeMonitoring = {
     name: string
   }
   details?: NodeMonitoring[][]
-  consumed_time: number
+  elapsed_time: number
   error?: string
   execution_metadata: {
     currency: string
