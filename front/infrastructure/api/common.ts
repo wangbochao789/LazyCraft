@@ -44,3 +44,22 @@ export const getUserInfo = () => {
 export const logout: Fetcher<BaseResponse, { url: string; params: Record<string, any> }> = ({ url, params }) => {
   return get<BaseResponse>(url, params)
 }
+
+// 密钥交换接口
+export const keyExchange = async (frontendPublicKey: string): Promise<BaseResponse & {
+  data: {
+    backend_public_key: string
+    session_id: string
+    expires_in?: number
+  }
+}> => {
+  return post('/key_exchange', {
+    body: { frontend_public_key: frontendPublicKey },
+  }, { silent: true }) as Promise<BaseResponse & {
+    data: {
+      backend_public_key: string
+      session_id: string
+      expires_in?: number
+    }
+  }>
+}
