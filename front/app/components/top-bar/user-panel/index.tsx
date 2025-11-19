@@ -157,6 +157,18 @@ export default function AccountSelector({ isMobileView }: AccountSelectorProps) 
           </Menu.Item>
         </div>
       </PermitCheck>
+      <PermitCheck value='AUTH_0003'>
+        <div className="px-1 py-1">
+          <Menu.Item>
+            <Link
+              className={classNames(menuItemBaseClasses, 'group justify-between')}
+              href='/resource/resourceMonitor'
+            >
+              算力调度及管理平台
+            </Link>
+          </Menu.Item>
+        </div>
+      </PermitCheck>
     </>
   )
 

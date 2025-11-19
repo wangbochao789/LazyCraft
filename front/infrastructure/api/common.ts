@@ -3,7 +3,6 @@ import { get, post } from './base'
 import type {
   BaseResponse,
 } from '@/core/data/common'
-
 export const sendForgotPasswordEmail: Fetcher<BaseResponse, { url: string; body: { email: string } }> = ({ url, body }) =>
   post<BaseResponse>(url, { body })
 

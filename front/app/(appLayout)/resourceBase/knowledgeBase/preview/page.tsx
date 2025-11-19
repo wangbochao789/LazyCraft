@@ -12,7 +12,7 @@ import PreviewJson from '@/app/components/preview/previewJSON'
 import PreviewMD from '@/app/components/preview/previewMD'
 import PreviewHtml from '@/app/components/preview/previewHTML'
 import PreviewPpt from '@/app/components/preview/previewPpt'
-
+import PreviewXML from '@/app/components/preview/PreviewXML'
 const PreviewPageContent = () => {
   const seachParams = useSearchParams()
   const [path, setPath] = useState('')
@@ -36,6 +36,7 @@ const PreviewPageContent = () => {
     else if (suffix === 'md') { return <div className='p-5'> <PreviewMD url={fileUrl} /></div> }
     else if (suffix === 'json') { return <div className='p-5'><PreviewJson url={fileUrl} /></div> }
     else if (suffix === 'html') { return <PreviewHtml url={fileUrl} /> }
+    else if (suffix === 'xml') { return <PreviewXML url={fileUrl} /> }
     else if (suffix === 'pptx') { return <PreviewPpt url={fileUrl} /> }
     else if (suffix === 'ppt') {
       return <div className='p-5 text-center'>

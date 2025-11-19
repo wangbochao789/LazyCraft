@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Captcha from '../register/captcha'
 import style from './page.module.scss'
 import { checkExist, login } from '@/infrastructure/api/common'
+import { encryptPayloadWithECDH, initKeyExchange } from '@/infrastructure/security/ecdh'
 
 const NormalForm = () => {
   const router = useRouter()
@@ -13,6 +14,11 @@ const NormalForm = () => {
   const [openid, setOpenid] = useState<string | null>(null)
   const [provider, setProvider] = useState<string | null>(null)
   useEffect(() => {
+    // 初始化密钥交换（在登录前调用一次）
+    initKeyExchange().catch((error) => {
+      console.error('密钥交换初始化失败:', error)
+    })
+
     if (searchParams) {
       setOpenid(searchParams.get('openid'))
       setProvider(searchParams.get('provider'))
@@ -31,9 +37,10 @@ const NormalForm = () => {
     const resUrl = `/oauth/authorize/${provider}`
     try {
       setIsLoading(true)
+      const encryptedPayload = await encryptPayloadWithECDH(params)
       const res = await login({
         url: resUrl,
-        body: params,
+        body: encryptedPayload,
       })
       if (res.result === 'success') {
         if (typeof window !== 'undefined')
