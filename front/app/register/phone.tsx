@@ -7,7 +7,7 @@ import IconFont from '../components/base/iconFont'
 import Captcha from './captcha'
 import style from './phone.module.scss'
 import { checkExist, commonPost } from '@/infrastructure/api/common'
-import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
+import { encryptPayloadWithECDH, initKeyExchange } from '@/infrastructure/security/ecdh'
 import { userEmailValidationRegex } from '@/app-specs'
 
 const Register_phone = () => {
@@ -18,6 +18,11 @@ const Register_phone = () => {
   const [loading, setLoading] = useState<any>(false)
   const [verificationKeyError, setVerificationKeyError] = useState<any>(null)
   useEffect(() => {
+    // 初始化密钥交换（在注册前调用一次）
+    initKeyExchange().catch((error) => {
+      console.error('密钥交换初始化失败:', error)
+    })
+
     const phone = searchParams.get('phone')
     const verifyCode = searchParams.get('verify_code')
     if (phone || verifyCode) {

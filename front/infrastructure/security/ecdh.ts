@@ -1,8 +1,12 @@
-import { API_PREFIX } from '@/app-specs'
+import { keyExchange } from '@/infrastructure/api/common'
 
 const HKDF_INFO = 'ecdh-aes-key-exchange'
 const AES_KEY_LENGTH = 256
 const NONCE_LENGTH = 12
+
+// 缓存密钥交换结果和前端密钥对
+let cachedKeyExchangeResult: KeyExchangeResult | null = null
+let cachedFrontendKeyPair: CryptoKeyPair | null = null
 
 const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
   const bytes = new Uint8Array(buffer)
@@ -146,49 +150,35 @@ const performEncryption = async (aesKey: CryptoKey, payload: Record<string, any>
   return arrayBufferToBase64(combined.buffer)
 }
 
-const buildKeyExchangeUrl = (): string => {
-  const base = API_PREFIX.endsWith('/') ? API_PREFIX.slice(0, -1) : API_PREFIX
-  return `${base}/key_exchange`
+const exchangeKeyWithBackend = async (frontendPublicKey: string, keyPair: CryptoKeyPair): Promise<KeyExchangeResult> => {
+  // 调用密钥交换接口
+  const response = await keyExchange(frontendPublicKey)
+  const result = normalizeKeyExchangeResponse(response)
+
+  // 缓存结果（后端公钥、session_id 和前端密钥对）
+  cachedKeyExchangeResult = result
+  cachedFrontendKeyPair = keyPair
+  return result
 }
 
-const shouldUseInternalProxy = (): boolean => {
-  const flag = process.env.NEXT_PUBLIC_USE_INTERNAL_ECDH_PROXY
+// 初始化密钥交换（在登录前调用一次）
+export const initKeyExchange = async (): Promise<void> => {
+  if (!globalThis.crypto?.subtle)
+    throw new Error('当前环境不支持 Web Crypto API，无法完成安全传输')
 
-  if (flag === 'true')
-    return true
+  if (cachedKeyExchangeResult && cachedFrontendKeyPair)
+    return
 
-  if (flag === 'false')
-    return false
-
-  return process.env.NODE_ENV === 'development'
+  // 生成前端密钥对
+  const keyPair = await generateFrontendKeyPair()
+  const frontendPublicKey = await exportPublicKey(keyPair.publicKey)
+  await exchangeKeyWithBackend(frontendPublicKey, keyPair)
 }
 
-const exchangeKeyWithBackend = async (frontendPublicKey: string): Promise<KeyExchangeResult> => {
-  const url = shouldUseInternalProxy() ? '/api/internal/key_exchange' : buildKeyExchangeUrl()
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ frontend_public_key: frontendPublicKey }),
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(errorText ? `密钥交换失败：${errorText}` : `密钥交换失败，状态码 ${response.status}`)
-  }
-
-  let result: KeyExchangeAPIResponse
-  try {
-    result = await response.json() as KeyExchangeAPIResponse
-  }
-  catch (error) {
-    const message = error instanceof Error ? error.message : String(error || '未知错误')
-    throw new Error(`密钥交换失败：响应解析错误 - ${message}`)
-  }
-
-  return normalizeKeyExchangeResponse(result)
+// 清除缓存（用于重新登录等场景）
+export const clearKeyExchangeCache = (): void => {
+  cachedKeyExchangeResult = null
+  cachedFrontendKeyPair = null
 }
 
 export type EncryptedRequestPayload = {
@@ -200,9 +190,15 @@ export const encryptPayloadWithECDH = async (payload: Record<string, any>): Prom
   if (!globalThis.crypto?.subtle)
     throw new Error('当前环境不支持 Web Crypto API，无法完成安全传输')
 
-  const keyPair = await generateFrontendKeyPair()
-  const frontendPublicKey = await exportPublicKey(keyPair.publicKey)
-  const { backendPublicKey, sessionId } = await exchangeKeyWithBackend(frontendPublicKey)
+  // 如果没有缓存，先初始化密钥交换
+  if (!cachedKeyExchangeResult || !cachedFrontendKeyPair)
+    await initKeyExchange()
+
+  // 使用缓存的后端公钥、session_id 和前端密钥对
+  const { backendPublicKey, sessionId } = cachedKeyExchangeResult!
+  const keyPair = cachedFrontendKeyPair!
+
+  // 使用密钥交换时的前端私钥和后端公钥计算共享密钥
   const backendKey = await importBackendPublicKey(backendPublicKey)
   const aesKey = await deriveAesKey(keyPair.privateKey, backendKey)
   const encryptedData = await performEncryption(aesKey, payload)

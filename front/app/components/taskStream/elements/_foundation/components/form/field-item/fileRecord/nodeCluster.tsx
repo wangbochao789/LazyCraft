@@ -15,13 +15,33 @@ import IconFont from '@/app/components/base/iconFont'
 import { Checkbox, Input, InputNumber, Select } from '@/app/components/taskStream/elements/_foundation/components/form/base'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
 
+// 内置检索节点组名称常量
+const BUILTIN_RETRIEVER_GROUPS = {
+  BM25: 'bm25检索',
+  VECTOR: '向量检索',
+  SEMANTIC: '语义检索',
+}
+
+// 创建内置检索节点组
+const createBuiltinRetrieverGroup = (name: string, key: string) => ({
+  key,
+  name,
+  isBuiltin: true, // 标记为内置节点，不允许删除
+  embed: null,
+  embed_name: null,
+  enable_embed: name === BUILTIN_RETRIEVER_GROUPS.VECTOR || name === BUILTIN_RETRIEVER_GROUPS.SEMANTIC,
+  transform: 'SentenceSplitter',
+  chunk_size: 1024,
+  chunk_overlap: 100,
+})
+
 const SelectComponent: FC<Partial<FieldItemProps>> = ({
   name,
   value = [],
   readOnly,
   onChange,
   nodeData,
-  data,
+  data: _data,
   resourceData,
   nodeId,
   resourceId,
@@ -36,15 +56,53 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
   const parseState = getNodeState(targetId || '')
   const { isLoading } = parseState
 
+  // 确保每个节点都有key
   value = value?.map(item => ({ ...item, key: item?.key || uuid() }))
+
+  // 确保内置检索节点组存在
+  React.useEffect(() => {
+    if (isLoading || readOnly)
+      return
+
+    const builtinGroupNames = Object.values(BUILTIN_RETRIEVER_GROUPS)
+    const existingBuiltinGroups = value?.filter((item: any) =>
+      builtinGroupNames.includes(item.name) && item.isBuiltin,
+    ) || []
+
+    // 检查是否缺少内置节点组
+    const missingGroups: any[] = []
+    builtinGroupNames.forEach((groupName) => {
+      const exists = existingBuiltinGroups.some((item: any) => item.name === groupName)
+      if (!exists) {
+        // 生成固定的key，基于名称的hash，确保每次都是同一个key
+        const fixedKey = `builtin-${groupName.replace(/\s+/g, '-').toLowerCase()}`
+        missingGroups.push(createBuiltinRetrieverGroup(groupName, fixedKey))
+      }
+    })
+
+    // 如果有缺失的内置节点组，添加到列表开头
+    if (missingGroups.length > 0) {
+      const updatedValue = [...missingGroups, ...value]
+      onChange && onChange(name, updatedValue)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // 只在组件挂载时执行一次
+
+  // 确保内置节点组始终在列表开头
+  const sortedValue = React.useMemo(() => {
+    const builtinGroups = value?.filter((item: any) => item.isBuiltin) || []
+    const customGroups = value?.filter((item: any) => !item.isBuiltin) || []
+    return [...builtinGroups, ...customGroups]
+  }, [value])
 
   const addGroup = () => {
     // 如果正在解析，忽略此次操作
     if (isLoading)
       return
 
-    // 找出现有组名中的最大数字
-    const maxNum = value.reduce((max, item) => {
+    // 找出现有组名中的最大数字（排除内置节点组）
+    const customGroups = value?.filter((item: any) => !item.isBuiltin) || []
+    const maxNum = customGroups.reduce((max, item) => {
       const match = item.name?.match(/Group (\d+)/)
       if (match) {
         const num = parseInt(match[1])
@@ -60,6 +118,7 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
     onChange && onChange(name, [...value, {
       key: uuid(),
       name: newGroupName,
+      isBuiltin: false, // 标记为非内置节点
       embed: null,
       embed_name: null,
       enable_embed: false,
@@ -74,6 +133,11 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
     if (isLoading)
       return
 
+    // 检查是否为内置节点组，如果是则不允许删除
+    const itemToRemove = value?.find((item: any) => item.key === key)
+    if (itemToRemove?.isBuiltin)
+      return // 内置节点组不允许删除
+
     onChange && onChange(name, value?.filter((item: any) => item.key !== key))
   }
 
@@ -81,6 +145,13 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
     // 如果正在解析，忽略此次操作
     if (isLoading)
       return
+
+    // 检查是否为内置节点组，如果是则不允许修改名称
+    const itemToUpdate = value?.find((item: any) => item.key === group_key)
+    if (itemToUpdate?.isBuiltin && data.name && data.name !== itemToUpdate.name) {
+      // 内置节点组不允许修改名称
+      return
+    }
 
     // 更新数组，对当前修改的项进行数据清理
     const updatedValue = value?.map((item: any) => {
@@ -191,17 +262,17 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
           </label>
         </div>
 
-        {value?.map(item => (
+        {sortedValue?.map(item => (
           <div key={item.key} className="node-group-item">
             <NodeGroupItem
               data={{ ...item }}
-              list={value}
+              list={sortedValue}
               onChange={handleNodeGroupChange}
-              readOnly={readOnly}
+              readOnly={readOnly} // 允许编辑内置节点组
               nodeId={nodeId}
               resourceId={resourceId}
             />
-            {!readOnly && !isLoading && <Popconfirm
+            {!readOnly && !isLoading && !item.isBuiltin && <Popconfirm
               title="删除确认"
               description="确认删除该节点组？"
               onConfirm={() => removeGroup(item?.key)}
@@ -219,12 +290,17 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
                 移除
               </Button>
             </Popconfirm>}
+            {item.isBuiltin && (
+              <div style={{ color: '#999', fontSize: '12px', marginTop: '8px' }}>
+                内置节点组，可编辑但不可删除
+              </div>
+            )}
             <Divider className="node-group-divider" />
           </div>
         ))}
 
         {!readOnly && (
-          <div className={`add-group-section ${value?.length === 0 ? 'first-section' : ''}`}>
+          <div className={`add-group-section ${sortedValue?.length === 0 ? 'first-section' : ''}`}>
             <Button
               size='small'
               type='text'
@@ -501,6 +577,11 @@ function NodeGroupItem({ data, list, onChange, readOnly, nodeId, resourceId }) {
               if (value && predefinedNames.includes(value))
                 return Promise.reject(new Error('节点组名称不能使用预定义的组名（CoarseChunk、MediumChunk、FineChunk）'))
 
+              // 检查是否是内置检索节点组名称
+              const builtinNames = Object.values(BUILTIN_RETRIEVER_GROUPS)
+              if (value && builtinNames.includes(value) && !data.isBuiltin)
+                return Promise.reject(new Error('节点组名称不能使用内置检索节点组名称'))
+
               // 检查是否与其他组重复
               if (value && list.some((item: any) => item.name === value && item.key !== data.key))
                 return Promise.reject(new Error('节点组名称不能重复'))
@@ -510,7 +591,7 @@ function NodeGroupItem({ data, list, onChange, readOnly, nodeId, resourceId }) {
           }),
         ]}
       >
-        <Input className='w-full' placeholder='请输入节点组名称（不能使用预定义名称）' onChange={val => handleFormItemChange('name', val)} disabled={readOnly || isLoading} />
+        <Input className='w-full' placeholder='请输入节点组名称（不能使用预定义名称）' onChange={val => handleFormItemChange('name', val)} disabled={readOnly || isLoading || data.isBuiltin} />
       </Form.Item>
 
       <Form.Item

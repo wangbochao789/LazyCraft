@@ -92,11 +92,52 @@ docker compose up -d
 # 修改 docker-compose.yml 取消对 cloud-service 服务的注释
 ```
 
+#### 2.1 使用 HTTPS（可选）
+
+> **安全提示**：  
+> - 仅通过 localhost/127.0.0.1 访问时可以使用 HTTP  
+> - 通过局域网IP或公网IP访问时必须使用 HTTPS，以保护数据传输安全
+
+如需启用 HTTPS 访问，执行以下步骤：
+
+```bash
+# 1. 生成自签SSL证书
+cd docker/nginx
+chmod +x generate-ssl-cert.sh
+./generate-ssl-cert.sh
+
+# 2. 取消注释HTTPS相关配置
+# 2.1 编辑 docker/nginx/conf.d/default.conf，取消注释HTTPS server块（从 # server { 到对应的 # }）
+# 2.2 编辑 docker/docker-compose.yml，取消注释SSL证书目录挂载（找到 # - ./nginx/ssl:/etc/nginx/ssl 这一行）
+
+# 3. 设置环境变量（使用HTTPS端口）
+cd ..
+export WEB_CONSOLE_ENDPOINT="https://127.0.0.1:30383"
+export PORT=30382           # HTTP端口
+export HTTPS_PORT=30383     # HTTPS端口
+
+# 4. 启动服务
+docker compose up -d
+```
+
+**注意**：
+- 本配置提供的是自签证书的示例配置，浏览器会显示安全警告，点击"继续访问"即可
+- 如需使用 Let's Encrypt 或商业 CA 证书，请自行申请证书后，修改 `docker/nginx/conf.d/default.conf` 中的 SSL 证书路径配置
+
 ### 3. 访问服务
 
 ```bash
+# HTTP访问
 http://127.0.0.1:30382
+
+# HTTPS访问（如已配置）
+https://127.0.0.1:30383
+
 默认账号：admin
+默认密码：LazyCraft@2025
+
+如果要编辑内置的应用请使用如下账号：
+默认账号：administrator
 默认密码：LazyCraft@2025
 ```
 
@@ -140,12 +181,44 @@ docker build --build-arg COMMIT_SHA=$(git rev-parse HEAD) -t lazycraft-front:lat
 ### 4. 启动服务
 
 ```bash
+# HTTP 方式（默认）
 # 设置环境变量为平台登录地址，例如 http://127.0.0.1:30382
 export WEB_CONSOLE_ENDPOINT="http://your-console-url"
-
 export BACK_IMAGE="lazycraft-back:latest"
 export FRONT_IMAGE="lazycraft-front:latest"
 
 cd docker
 docker compose up -d
 ```
+
+#### 4.1 使用 HTTPS（可选）
+
+> **安全提示**：  
+> - 仅通过 localhost/127.0.0.1 访问时可以使用 HTTP  
+> - 通过局域网IP或公网IP访问时必须使用 HTTPS，以保护数据传输安全
+
+```bash
+# 1. 生成自签SSL证书
+cd docker/nginx
+chmod +x generate-ssl-cert.sh
+./generate-ssl-cert.sh
+
+# 2. 取消注释HTTPS相关配置
+# 2.1 编辑 docker/nginx/conf.d/default.conf，取消注释HTTPS server块（从 # server { 到对应的 # }）
+# 2.2 编辑 docker/docker-compose.yml，取消注释SSL证书目录挂载（找到 # - ./nginx/ssl:/etc/nginx/ssl 这一行）
+
+# 3. 设置环境变量（使用HTTPS）
+cd ..
+export WEB_CONSOLE_ENDPOINT="https://127.0.0.1:30383"
+export PORT=30382           # HTTP端口
+export HTTPS_PORT=30383     # HTTPS端口
+export BACK_IMAGE="lazycraft-back:latest"
+export FRONT_IMAGE="lazycraft-front:latest"
+
+# 4. 启动服务
+docker compose up -d
+```
+
+**注意**：
+- 本配置提供的是自签证书的示例配置，浏览器会显示安全警告，点击"继续访问"即可
+- 如需使用 Let's Encrypt 或商业 CA 证书，请自行申请证书后，修改 `docker/nginx/conf.d/default.conf` 中的 SSL 证书路径配置

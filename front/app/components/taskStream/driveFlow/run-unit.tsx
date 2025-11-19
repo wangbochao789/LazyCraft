@@ -72,7 +72,7 @@ const ExecutionNode: FC<ExecutionNodeProps> = ({
   }, [hideProcessDetail, isOpeneded])
 
   const tokenCount = (nodeInfo.prompt_tokens || 0) + (nodeInfo.completion_tokens || 0)
-  const duration = nodeInfo.consumed_time || 0
+  const duration = nodeInfo.elapsed_time || 0
 
   useEffect(() => {
     setIsOpeneded(!nodeInfo.expand)

@@ -10,7 +10,7 @@ import { AgreementButton, GitHubLoginButton, UserAgreementContent } from './comp
 import style from './page.module.scss'
 import { userEmailValidationRegex } from '@/app-specs'
 import { checkExist, login, sendForgotPasswordEmail } from '@/infrastructure/api/common'
-import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
+import { encryptPayloadWithECDH, initKeyExchange } from '@/infrastructure/security/ecdh'
 
 // 常量定义
 const PHONE_REGEX = /^1[3-9]\d{9}$/
@@ -83,8 +83,13 @@ const NormalForm = () => {
     }
   }, [loginType, rememberMe, router])
 
-  // 初始化记住密码
+  // 初始化记住密码和密钥交换
   useEffect(() => {
+    // 初始化密钥交换（在登录前调用一次）
+    initKeyExchange().catch((error) => {
+      console.error('密钥交换初始化失败:', error)
+    })
+
     const loginData = localStorage.getItem('loginData')
     if (loginData) {
       try {

@@ -362,7 +362,7 @@ const WorkflowPreview = () => {
                     varOutputs={varOutputs}
                     status={workflowLiveData?.result?.status || ''}
                     error={workflowLiveData?.result?.error as any}
-                    consumed_time={workflowLiveData?.result?.consumed_time}
+                    elapsed_time={workflowLiveData?.result?.elapsed_time}
                     total_tokens={workflowLiveData?.result?.total_tokens}
                     created_at={workflowLiveData?.result?.created_at}
                     created_by={(workflowLiveData?.result?.created_by as any)?.name}
