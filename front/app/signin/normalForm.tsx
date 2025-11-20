@@ -12,7 +12,8 @@ import { GitHubLoginButton } from './components'
 import style from './page.module.scss'
 import { userEmailValidationRegex } from '@/app-specs'
 import { checkExist, login, sendForgotPasswordEmail } from '@/infrastructure/api/common'
-import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
+// 暂时注释，登录时不再使用加密
+// import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
 
 // 常量定义
 const PHONE_REGEX = /^1[3-9]\d{9}$/
@@ -48,8 +49,10 @@ const NormalForm = () => {
 
     try {
       setIsLoading(true)
-      const encryptedPayload = await encryptPayloadWithECDH(plainParams)
-      const res = await login({ url: resUrl, body: encryptedPayload })
+      // 暂时注释掉加密，直接发送明文数据
+      // const encryptedPayload = await encryptPayloadWithECDH(plainParams)
+      // const res = await login({ url: resUrl, body: encryptedPayload })
+      const res = await login({ url: resUrl, body: plainParams })
 
       if (res.result === 'success') {
         localStorage.setItem('console_token', res.data)
