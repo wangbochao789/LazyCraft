@@ -259,4 +259,6 @@ const PickerUser = memo((props: any) => {
   )
 })
 
+PickerUser.displayName = 'PickerUser'
+
 export default PickerUser

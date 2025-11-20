@@ -1,4 +1,4 @@
-import { API_PREFIX } from '@/app-specs'
+import { post } from '../api/base'
 
 const HKDF_INFO = 'ecdh-aes-key-exchange'
 const AES_KEY_LENGTH = 256
@@ -146,49 +146,31 @@ const performEncryption = async (aesKey: CryptoKey, payload: Record<string, any>
   return arrayBufferToBase64(combined.buffer)
 }
 
-const buildKeyExchangeUrl = (): string => {
-  const base = API_PREFIX.endsWith('/') ? API_PREFIX.slice(0, -1) : API_PREFIX
-  return `${base}/key_exchange`
-}
-
-const shouldUseInternalProxy = (): boolean => {
-  const flag = process.env.NEXT_PUBLIC_USE_INTERNAL_ECDH_PROXY
-
-  if (flag === 'true')
-    return true
-
-  if (flag === 'false')
-    return false
-
-  return process.env.NODE_ENV === 'development'
-}
-
 const exchangeKeyWithBackend = async (frontendPublicKey: string): Promise<KeyExchangeResult> => {
-  const url = shouldUseInternalProxy() ? '/api/internal/key_exchange' : buildKeyExchangeUrl()
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ frontend_public_key: frontendPublicKey }),
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(errorText ? `密钥交换失败：${errorText}` : `密钥交换失败，状态码 ${response.status}`)
-  }
-
-  let result: KeyExchangeAPIResponse
   try {
-    result = await response.json() as KeyExchangeAPIResponse
+    const result = await post<KeyExchangeAPIResponse>('/key_exchange', {
+      body: { frontend_public_key: frontendPublicKey },
+    }, {
+      isPublicAPI: false,
+      silent: true, // 密钥交换错误需要特殊处理，不使用默认的 Toast 提示
+    })
+
+    return normalizeKeyExchangeResponse(result)
   }
   catch (error) {
-    const message = error instanceof Error ? error.message : String(error || '未知错误')
-    throw new Error(`密钥交换失败：响应解析错误 - ${message}`)
-  }
+    let message = '未知错误'
+    if (error instanceof Error) {
+      message = error.message
+      // 如果是网络错误，提供更友好的错误信息
+      if (message.includes('fetch failed') || message.includes('Failed to fetch') || message.includes('timeout'))
+        message = '无法连接到后端服务，请检查后端服务是否运行正常'
+    }
+    else if (typeof error === 'string') {
+      message = error
+    }
 
-  return normalizeKeyExchangeResponse(result)
+    throw new Error(`密钥交换失败：${message}`)
+  }
 }
 
 export type EncryptedRequestPayload = {
