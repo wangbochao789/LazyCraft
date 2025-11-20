@@ -12,28 +12,46 @@ const PickerUser = memo((props: any) => {
   const { defaultValue, value, configData, disabled, onChange } = props
   const { groupId, groupName, isOnlyDeleteUser, isAdminSpace, isCooperation } = configData || {}
   const selfRef = useRef<any>({ transferTargetId: undefined })
+  const onChangeRef = useRef(onChange)
   const { permitData } = useApplicationContext()
   const { hasPermit } = usePermitCheck()
   const [userList, setUserList] = useState<any[] | undefined>()
   const [valueList, setValueList] = useState<any[] | undefined>()
   const [keyword, setKeyword] = useState<string | undefined>()
 
+  // 保持 onChange 引用最新
   useEffect(() => {
+    onChangeRef.current = onChange
+  }, [onChange])
+
+  useEffect(() => {
+    if (!groupId) {
+      setUserList([])
+      return
+    }
     if (isCooperation) {
       getGroupDetail({ url: '/workspaces/detail', options: { params: { tenant_id: groupId } } }).then((res) => {
         const resList = res?.accounts || []
-        const teamInitList = resList.filter(item => item.role === RoleCategory.readonly)
-        setUserList(teamInitList)
-        onChange && onChange(teamInitList.map(item => ({ account_id: item.id, role: item.role, name: item.name })))
+        // 协作管理场景：显示所有用户（owner 会在选择时被禁用，但仍应显示）
+        setUserList(resList.filter(item => item.role === RoleCategory.readonly))
+        onChangeRef.current && onChangeRef.current(resList.map(item => ({ account_id: item.id, role: item.role, name: item.name })))
+      }).catch((err) => {
+        console.error('获取协作用户列表失败:', err)
+        setUserList([])
+        message.error('获取用户列表失败，请稍后重试')
       })
     }
     else {
       getUserList({ url: '/workspaces/select/members', options: { params: { page: 1, limit: 99999, tenant_id: groupId } } }).then((res) => {
         const resData = res || {}
         setUserList(resData.data || [])
+      }).catch((err) => {
+        console.error('获取用户列表失败:', err)
+        setUserList([])
+        message.error('获取用户列表失败，请稍后重试')
       })
     }
-  }, [])
+  }, [groupId, isCooperation])
 
   useEffect(() => {
     setValueList(defaultValue)

@@ -4,11 +4,13 @@ import { Form, TreeSelect } from 'antd'
 const { TreeNode } = TreeSelect
 type IProps = {
   treeData: any
+  task_type?: string
 }
 
-export default (props: IProps) => {
+const DatasetTreeSelect = (props: IProps) => {
   const {
     treeData = [],
+    task_type,
   } = props
   const renderTreeNodes = (data: any) =>
     data.map((item: any) => {
@@ -45,8 +47,8 @@ export default (props: IProps) => {
   return (
     <Form.Item
       name="datasets"
-      label="训练数据集"
-      rules={[{ required: true, message: '请选择训练数据集' }]}
+      label={task_type === 'model_finetuning' ? '训练数据集' : '校准数据集'}
+      rules={[{ required: true, message: task_type === 'model_finetuning' ? '请选择训练数据集' : '请选择校准数据集' }]}
     >
       <TreeSelect
         style={{ width: '100%' }}
@@ -57,6 +59,7 @@ export default (props: IProps) => {
         {renderTreeNodes(treeData)}
       </TreeSelect>
     </Form.Item>
-
   )
 }
+
+export default DatasetTreeSelect
