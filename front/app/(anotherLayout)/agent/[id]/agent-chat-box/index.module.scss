@@ -186,6 +186,14 @@
         margin-bottom: 50px;
       }
 
+      .defaultContainer {
+        width: 100%;
+        max-width: 680px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
       .defaultIcon {
         display: flex;
         justify-content: center;
@@ -195,6 +203,11 @@
         color: #071127;
         font-size: 28px;
         margin-top: 22px;
+      }
+
+      .defaultDescription {
+        color: #615959;
+        margin-top: 10px;
       }
     }
 

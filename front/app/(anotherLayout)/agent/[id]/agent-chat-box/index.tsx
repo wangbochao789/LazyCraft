@@ -18,6 +18,7 @@ import Icon from '@/app/components/base/iconFont'
 import MarkdownRenderer from '@/app/components/base/markdown-renderer'
 import AnswerIcon from '@/public/cflogo.png'
 import RobotDefaultIcon from '@/public/bglogo.png'
+import { fetchAppLogs } from '@/infrastructure/api/explore'
 
 const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }: {
   agentId?: string
@@ -36,6 +37,7 @@ const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }
   const [showLogic, setShowLogic] = useState<boolean | undefined>()
   const [errorModalVisible, setErrorModalVisible] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [appDescription, setAppDescription] = useState<string>('')
   useEffect(() => {
     const agent_token = localStorage?.getItem('console_token') || localStorage?.getItem('agent_token')
     if (!agent_token && !agentToken) {
@@ -47,6 +49,13 @@ const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }
     else if (agent_token) {
       localStorage?.setItem('agent_token', agent_token)
       getAgentHistorys({ appId: agentId })
+    }
+    // 初始页面加载时调用 fetchAppLogs
+    if (agentId) {
+      fetchAppLogs(agentId as string).then((res: any) => {
+        if (res?.description)
+          setAppDescription(res.description)
+      })
     }
   }, [agentToken, agentId])
 
@@ -304,13 +313,18 @@ const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }
               {
                 !detailData.chatId
                   ? <div className={styles.agentDefault}>
-                    <div>
+                    <div className={styles.defaultContainer}>
                       <div className={styles.defaultIcon}>
                         <Image src={RobotDefaultIcon} alt="" />
                       </div>
                       <div className={styles.defaultText}>
                         我今天能帮你做什么？
                       </div>
+                      {appDescription && (
+                        <div className={styles.defaultDescription}>
+                          <div>应用介绍: {appDescription}</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   : <div className={styles.agentRecord} id='agentRecordEle'>
@@ -342,7 +356,7 @@ const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }
                                     <span>.</span>
                                     <span>.</span>
                                   </div>)
-                              //  : <div dangerouslySetInnerHTML={{ __html: processContent(item.content) }} />}
+                                //  : <div dangerouslySetInnerHTML={{ __html: processContent(item.content) }} />}
                                 : <MarkdownRenderer content={item.content || ''} />}
                               {
                                 item?.files?.length > 0 && <div className={styles.chatBytes}>

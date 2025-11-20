@@ -6,7 +6,9 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import Captcha from '../register/captcha'
 import IconFont from '../components/base/iconFont'
-import { AgreementButton, GitHubLoginButton, UserAgreementContent } from './components'
+// import { AgreementButton, GitHubLoginButton, UserAgreementContent } from './components'
+import { GitHubLoginButton } from './components'
+// import { UserAgreementContent } from './components'
 import style from './page.module.scss'
 import { userEmailValidationRegex } from '@/app-specs'
 import { checkExist, login, sendForgotPasswordEmail } from '@/infrastructure/api/common'
@@ -15,7 +17,7 @@ import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
 // 常量定义
 const PHONE_REGEX = /^1[3-9]\d{9}$/
 const INPUT_HEIGHT = 40
-const SCROLL_THRESHOLD = 5
+// const SCROLL_THRESHOLD = 5 // 已注释，暂时不使用
 
 // 样式常量
 const commonStyles = {
@@ -34,9 +36,10 @@ const NormalForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isEmailSent, setIsEmailSent] = useState(false)
   const [email, setEmail] = useState('')
-  const [isManualRead, setIsManualRead] = useState(false)
-  const [isManualModalOpen, setIsManualModalOpen] = useState(false)
-  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
+  // 用户协议相关状态（已注释，暂时不使用）
+  // const [isManualRead, setIsManualRead] = useState(false)
+  // const [isManualModalOpen, setIsManualModalOpen] = useState(false)
+  // const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
 
   // 处理登录提交
   const handleSubmit = useCallback(async (values: Record<string, any>) => {
@@ -151,31 +154,31 @@ const NormalForm = () => {
     emailForm.resetFields()
   }, [emailForm])
 
-  // 打开用户协议弹窗
-  const openManualModal = useCallback(() => {
-    setIsManualModalOpen(true)
-    // 如果用户已经阅读过协议，再次打开时直接设置为已滚动到底部
-    setHasScrolledToBottom(isManualRead)
-  }, [isManualRead])
+  // 打开用户协议弹窗（已注释，暂时不使用）
+  // const openManualModal = useCallback(() => {
+  //   setIsManualModalOpen(true)
+  //   // 如果用户已经阅读过协议，再次打开时直接设置为已滚动到底部
+  //   setHasScrolledToBottom(isManualRead)
+  // }, [isManualRead])
 
-  // 关闭用户协议弹窗
-  const closeManualModal = useCallback(() => {
-    setIsManualModalOpen(false)
-  }, [])
+  // 关闭用户协议弹窗（已注释，暂时不使用）
+  // const closeManualModal = useCallback(() => {
+  //   setIsManualModalOpen(false)
+  // }, [])
 
-  // 确认已读用户协议
-  const confirmManualRead = useCallback(() => {
-    setIsManualRead(true)
-    setIsManualModalOpen(false)
-  }, [])
+  // 确认已读用户协议（已注释，暂时不使用）
+  // const confirmManualRead = useCallback(() => {
+  //   setIsManualRead(true)
+  //   setIsManualModalOpen(false)
+  // }, [])
 
-  // 处理协议滚动
-  const handleManualScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLDivElement
-    const isBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < SCROLL_THRESHOLD
-    if (isBottom && !hasScrolledToBottom)
-      setHasScrolledToBottom(true)
-  }, [hasScrolledToBottom])
+  // 处理协议滚动（已注释，暂时不使用）
+  // const handleManualScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+  //   const target = e.target as HTMLDivElement
+  //   const isBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < SCROLL_THRESHOLD
+  //   if (isBottom && !hasScrolledToBottom)
+  //     setHasScrolledToBottom(true)
+  // }, [hasScrolledToBottom])
 
   // Tabs 配置
   const tabItems = useMemo(() => [
@@ -217,14 +220,14 @@ const NormalForm = () => {
             </Checkbox>
             <Button type='link' onClick={() => setIsModalOpen(true)}>忘记密码</Button>
           </div>
-          <AgreementButton isRead={isManualRead} onClick={openManualModal} />
+          {/* <AgreementButton isRead={isManualRead} onClick={openManualModal} /> */}
           <Form.Item>
             <Button
               style={commonStyles.buttonHeight}
               type="primary"
               htmlType="submit"
               block
-              disabled={!isManualRead}
+              // disabled={!isManualRead}
             >
               登录
             </Button>
@@ -266,7 +269,7 @@ const NormalForm = () => {
             help={verificationKeyError || undefined}
             onChange={() => verificationKeyError && setVerificationKeyError(null)}
           />
-          <AgreementButton isRead={isManualRead} onClick={openManualModal} />
+          {/* <AgreementButton isRead={isManualRead} onClick={openManualModal} /> */}
           <Form.Item>
             <Button
               loading={isLoading}
@@ -274,7 +277,7 @@ const NormalForm = () => {
               type="primary"
               htmlType="submit"
               block
-              disabled={!isManualRead}
+              // disabled={!isManualRead}
             >
               登录
             </Button>
@@ -283,7 +286,7 @@ const NormalForm = () => {
         </Form>
       ),
     },
-  ], [form, handleSubmit, rememberMe, handleRememberMeChange, isManualRead, openManualModal, getFakeCaptcha, verificationKeyError, isLoading])
+  ], [form, handleSubmit, rememberMe, handleRememberMeChange, getFakeCaptcha, verificationKeyError, isLoading])
 
   return (
     <div className={style.formWrap}>
@@ -337,7 +340,8 @@ const NormalForm = () => {
               </Form>}
           </div>
         </Modal>
-        <Modal
+        {/* 用户协议弹窗（已注释，暂时不使用） */}
+        {/* <Modal
           width={700}
           title="用户协议"
           footer={[
@@ -358,7 +362,7 @@ const NormalForm = () => {
           onCancel={closeManualModal}
         >
           <UserAgreementContent onScroll={handleManualScroll} />
-        </Modal>
+        </Modal> */}
       </div>
       {/* } */}
     </div>
