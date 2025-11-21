@@ -97,8 +97,9 @@ class ListService(Resource):
         status = data.get("status", [])
         user_id = data.get("user_id", [])
         tenant = data.get("tenant", "")
+        # 调用InferService获取服务列表和分页信息
         result, pagination_info = self.infer_service.list_infer_model_service(
-            page, per_page, qtype, search_name, status, user_id, tenant
+            page=page, per_page=per_page, qtype=qtype, search_name=search_name, status=status, user_id=user_id, tenant=tenant
         )
 
         return build_response(
@@ -158,6 +159,7 @@ class CreateServiceGroup(Resource):
             data = request.get_json()
             # 从JSON数据中获取模型名称
             model_id = data.get("model_id")
+            
             # 根据模型名称查询对应的模型记录
             model_info = Lazymodel.query.get(model_id)
             # 如果模型不存在，返回404错误
@@ -208,6 +210,7 @@ class CreateService(Resource):
         data = request.get_json()
         # 从JSON数据中获取模型名称
         group_id = data.get("group_id")
+        
         # 根据模型名称查询对应的模型记录
         group_info = InferModelServiceGroup.query.get(group_id)
         # 如果模型不存在，返回404错误

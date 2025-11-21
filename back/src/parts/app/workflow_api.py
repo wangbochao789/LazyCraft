@@ -814,26 +814,26 @@ class AIPromptAssistant(Resource):
         我需要你帮过滤用户的请求，判断请求是否和大模型提示语(prompt)有关
 
         ## 技能
-        精准判断用户输入是否与生成大模型提示语(prompt)有关，若有关回复1，若无关恢复2
+        精准判断用户输入是否与生成大模型提示语(prompt)有关，若有关回复:和prompt有关，若无关回复：和prompt无关
 
         ## 回复格式要求
-        - 仅回复1或2
+        - 仅回复"和prompt有关"或"和prompt无关"
 
         ### 示例
         #### 示例 1
         输入: 我感觉好无聊呀
-        输出: 2
+        输出: 和prompt无关
 
         #### 示例 2
         输入: 帮我写个提示语，与医学科普相关
-        输出: 1
+        输出: 和prompt有关
 
         #### 示例 3
         输入: 你是谁
-        输出: 2
+        输出: 和prompt无关
 
         ### 限制
-        - 若遇到难以理解或把握不准的，统一回复2。
+        - 若遇到难以理解或把握不准的，统一回复: 和prompt无关。
         """
         prompt = """
         ## 任务
@@ -872,10 +872,11 @@ class AIPromptAssistant(Resource):
                         }, 400
                 filter = llm.share(filter_prompt)
                 filte_res = filter(query)
-                if "2" in filte_res:
-                    ret = "输入与生成提示语无关，请重新组织语言"
-                else:
+                if "和prompt有关" in filte_res:
                     ret = llm(query)
+                else:
+                    ret = "输入与生成提示语无关，请重新组织语言。示例：帮我写个提示语，与医学科普相关。"
+                    
             else:
                 model = LazymodelOnlineModels.query.filter_by(
                     model_key=model_name
@@ -897,10 +898,10 @@ class AIPromptAssistant(Resource):
                 ).prompt(prompt)
                 filter = llm.share(filter_prompt)
                 filte_res = filter(query)
-                if "2" in filte_res:
-                    ret = "输入与生成提示语无关，请重新组织语言"
-                else:
+                if "和prompt有关" in filte_res:
                     ret = llm(query)
+                else:
+                    ret = "输入与生成提示语无关，请重新组织语言。示例：帮我写个提示语，与医学科普相关。"
         except Exception as e:
             msg = f"发生错误:{e}"
             msg = msg.replace("400 Bad Request:", "")

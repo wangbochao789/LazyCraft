@@ -1,11 +1,13 @@
 import { ConfigProvider } from 'antd'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { viewport } from 'next'
+import type { Viewport } from 'next'
+import Script from 'next/script'
 import zhCN from 'antd/es/locale/zh_CN'
 import theme from '../theme-skins/theme-config'
 import { NotificationProvider } from './components/base/flash-notice'
 import LazyLLMStorageInitor from './components/env-setup'
 import HeaderBar from './components/base/head-bar'
+import ModelFont from './modelFont'
 import './styles/antdUpdate.scss'
 import './styles/markdown.scss'
 import './styles/globals.css'
@@ -13,7 +15,7 @@ import './styles/globals.css'
 /**
  * 视口配置
  */
-export const viewport: viewport = {
+export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
@@ -52,7 +54,6 @@ const MainLayoutComponent: React.FC<{ children: React.ReactNode }> = ({ children
         <meta content="yes" name="mobile-web-app-capable" />
         <meta content="#FFFFFF" name="theme-color" />
         <link href="https://unpkg.com/x-data-spreadsheet@1.1.9/dist/xspreadsheet.css" rel="stylesheet" />
-        <script src="https://unpkg.com/x-data-spreadsheet@1.1.9/dist/xspreadsheet.js"></script>
       </head>
       <body
         className="h-full select-auto"
@@ -62,6 +63,20 @@ const MainLayoutComponent: React.FC<{ children: React.ReactNode }> = ({ children
         data-public-maintenance-message={SYSTEM_CONFIG.MAINTENANCE_MESSAGE}
         data-public-site-info={SYSTEM_CONFIG.SITE_INFO}
       >
+        {/* 第三方库脚本 */}
+        <Script
+          src="https://unpkg.com/x-data-spreadsheet@1.1.9/dist/xspreadsheet.js"
+          strategy="beforeInteractive"
+        />
+        {/* Monaco Editor 预加载脚本 */}
+        <Script
+          src="/vs/loader.js"
+          strategy="beforeInteractive"
+        />
+        <Script
+          src="/js/monaco-init.js"
+          strategy="afterInteractive"
+        />
         <AntdRegistry>
           <ConfigProvider locale={zhCN} theme={theme}>
             <HeaderBar />
@@ -70,6 +85,7 @@ const MainLayoutComponent: React.FC<{ children: React.ReactNode }> = ({ children
                 {children}
               </NotificationProvider>
             </LazyLLMStorageInitor>
+            <ModelFont />
           </ConfigProvider>
         </AntdRegistry>
       </body>

@@ -746,37 +746,7 @@ ams_model_list = [
         "name": "bge-large-zh-v1.5",
         "key": "bge-large-zh-v1.5",
         "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": True,
-        "model_kind": "Embedding",
-        "model_from": "modelscope",
-        "framework": "EmbeddingDeploy",
-        "endpoint": "/generate",
-        "model_brand": "BAAI"
-    },
-
-    # STT 模型
-    {
-        "name": "sensevoicesmall",
-        "key": "sensevoicesmall",
-        "model_type": "local",
-        "model_status": 1,
-        "is_finetune_model": False,
-        "can_finetune_model": False,
-        "model_kind": "STT",
-        "model_from": "modelscope",
-        "framework": "SenseVoiceDeploy",
-        "endpoint": "/generate",
-        "model_brand": "Alibaba"
-    },
-
-    # TTS 模型
-    {
-        "name": "bark",
-        "key": "bark",
-        "model_type": "local",
-        "model_status": 1,
+        "model_status": 3,
         "is_finetune_model": False,
         "can_finetune_model": False,
         "model_kind": "TTS",

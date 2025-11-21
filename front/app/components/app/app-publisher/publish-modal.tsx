@@ -46,14 +46,14 @@ const PublishModal: React.FC<PublishModalProps> = ({
       setConfirmLoading(true)
       await onConfirm(values)
       // 成功消息由父组件处理
-      onClose()
     }
     catch (error) {
-      console.error('发布失败:', error)
+      // console.error('发布失败:', error)
       // 错误消息由父组件处理
     }
     finally {
       setConfirmLoading(false)
+      onClose()
     }
   }
 
