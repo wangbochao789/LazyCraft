@@ -1,6 +1,6 @@
 'use client'
 import type { FC } from 'react'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Form, Typography } from 'antd'
 import type { FieldItemProps } from '../../types'
 import { Select } from '@/app/components/taskStream/elements/_foundation/components/form/base'
@@ -62,6 +62,17 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
     )
     return uniqueOptions
   }, [allResourceList, payload__doc, payload__group_name, formInstance])
+  useEffect(() => {
+    // 如果没有值，不需要清理
+    if (!value)
+      return
+    // 如果有值，检查值是否在选项中
+    const isValid = targetOptions.length > 0 && targetOptions.some(opt => opt.value === value)
+    if (!isValid) {
+      // 直接清空无效值
+      onChange && onChange(name, undefined)
+    }
+  }, [targetOptions, name, onChange, value])
 
   return (
     <>
