@@ -15,7 +15,7 @@ import {
   getSmoothStepPath,
   useStoreApi,
 } from 'reactflow'
-import { Checkbox, Col, Input, Modal, Row, Select } from 'antd'
+import { Checkbox, Col, Input, Modal, Row, Select, Tooltip } from 'antd'
 import { FormOutlined } from '@ant-design/icons'
 
 import { useCheckNodeShape, useReadonlyNodes } from './logicHandlers'
@@ -107,6 +107,10 @@ const CustomEdge = ({
     targetPosition: Position.Left,
     curvature: 0.16,
   })
+
+  // 计算连接线的长度，用于设置覆盖区域的宽度
+  const edgeLength = Math.sqrt((targetX - sourceX) ** 2 + (targetY - sourceY) ** 2)
+  const overlayWidth = Math.max(400, Math.min(edgeLength * 0.8, 1000))
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [edgeRule, setEdgeRule] = useState<undefined | string>(label as string)
   const [selectedIndices, setSelectedIndices] = useState<string[]>([])
@@ -724,6 +728,51 @@ const CustomEdge = ({
           strokeDasharray: hasValidationError ? '4 2' : 'none',
         }}
       />
+      {/* 透明的交互层，用于显示 tooltip - 创建多个覆盖点覆盖整个连接线 */}
+      <EdgeLabelRenderer>
+        {/* 在连接线的中间位置创建覆盖区域 */}
+        <Tooltip title="点击后按delete删除连线" placement="top" mouseEnterDelay={0}>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              pointerEvents: 'all',
+              width: `${overlayWidth}px`,
+              height: '50px',
+              zIndex: 1,
+              cursor: 'pointer',
+            }}
+          />
+        </Tooltip>
+        {/* 在连接线的起点附近创建覆盖区域 */}
+        <Tooltip title="点击后按delete删除连线" placement="top" mouseEnterDelay={0}>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${sourceX + (labelX - sourceX) * 0.3}px,${sourceY + (labelY - sourceY) * 0.3}px)`,
+              pointerEvents: 'all',
+              width: '200px',
+              height: '50px',
+              zIndex: 1,
+              cursor: 'pointer',
+            }}
+          />
+        </Tooltip>
+        {/* 在连接线的终点附近创建覆盖区域 */}
+        <Tooltip title="点击后按delete删除连线" placement="top" mouseEnterDelay={0}>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${targetX + (labelX - targetX) * 0.3}px,${targetY + (labelY - targetY) * 0.3}px)`,
+              pointerEvents: 'all',
+              width: '200px',
+              height: '50px',
+              zIndex: 1,
+              cursor: 'pointer',
+            }}
+          />
+        </Tooltip>
+      </EdgeLabelRenderer>
       {((!nodesReadOnly || hasValidationError) && !data?.isInIteration && (data?._mouseOver || hasValidationError)) && (
         <EdgeLabelRenderer>
           <div
@@ -731,6 +780,7 @@ const CustomEdge = ({
               position: 'absolute',
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               pointerEvents: 'all',
+              zIndex: 10,
             }}
             className="nodrag nopan"
           >
