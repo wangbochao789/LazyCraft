@@ -3,7 +3,6 @@ import { get, post } from './base'
 import type {
   BaseResponse,
 } from '@/core/data/common'
-
 export const sendForgotPasswordEmail: Fetcher<BaseResponse, { url: string; body: { email: string } }> = ({ url, body }) =>
   post<BaseResponse>(url, { body })
 
@@ -45,14 +44,47 @@ export const logout: Fetcher<BaseResponse, { url: string; params: Record<string,
   return get<BaseResponse>(url, params)
 }
 
-// 密钥交换接口
-export const keyExchange = (body: { frontend_public_key: string }) => {
-  return post<{
-    backend_public_key: string
-    session_id: string
-    expires_in?: number
-    algorithm?: string
-    curve?: string
-    key_size?: number
-  }>('/key_exchange', { body })
+export const fetchBaiyunToken: Fetcher<BaseResponse, { url: string; body: any }> = async ({ url, body }) => {
+  // const token = localStorage.getItem('console_token') || ''
+
+  // 将 body 参数转换为查询参数
+  const queryParams = new URLSearchParams()
+  if (body && typeof body === 'object') {
+    Object.keys(body).forEach((key) => {
+      if (body[key] !== undefined && body[key] !== null)
+        queryParams.append(key, body[key])
+    })
+  }
+
+  const response = await fetch(`${url}?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Authorization': token ? `Bearer ${token}` : '',
+    },
+    credentials: 'include',
+  })
+
+  if (!response.ok)
+    throw new Error(`HTTP error! status: ${response.status}`)
+
+  return response.json()
+}
+export const fetchBaiyunLogin: Fetcher<BaseResponse, { url: string; body: any }> = async ({ url, body }) => {
+  // const token = localStorage.getItem('console_token') || ''
+
+  const response = await fetch(`${url}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Authorization': token ? `Bearer ${token}` : '',
+    },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok)
+    throw new Error(`HTTP error! status: ${response.status}`)
+
+  return response.json()
 }

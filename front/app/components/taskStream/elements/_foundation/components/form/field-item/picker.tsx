@@ -253,6 +253,19 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
     if (!isUpdatingRef.current && !options_fetch_api && !stableEchoOptionsLinkageObj)
       setOptionsData(options || [])
   }, [options, options_fetch_api, stableEchoOptionsLinkageObj, name])
+  useEffect(() => {
+    if (name !== 'payload__group_name' || !stableEchoOptionsLinkageObj)
+      return
+    // 如果没有值，不需要清理
+    if (!value)
+      return
+    // 如果有值，检查值是否在选项中
+    const isValid = finalOptions.length > 0 && finalOptions.some(opt => opt.value === value)
+    if (!isValid) {
+      // 直接清空无效值
+      onChange && onChange(name, undefined)
+    }
+  }, [finalOptions, name, stableEchoOptionsLinkageObj, onChange, value])
 
   return (
     <>

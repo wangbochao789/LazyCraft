@@ -683,13 +683,13 @@ const CreateModal = (props: any) => {
                     {existModels.map(item => <Option path={item?.path} key={item?.name} value={item?.name}>{item?.name}</Option>)}
                   </Select>
                 </Form.Item>
-                <Form.Item
-                  label={<div>模型路径<Tooltip className='ml-1' title="模型下载地址，可在对应平台获取，如internlm/internlm2_5-7b-chat">
-                    <ExclamationCircleOutlined />
-                  </Tooltip></div>}
-                >
-                  <Input disabled value={modelPath} placeholder='请输入模型路径' maxLength={200} />
-                </Form.Item>
+                  <Form.Item
+                    label={<div>模型路径<Tooltip className='ml-1' title="模型下载地址，可在对应平台获取，如internlm/internlm2_5-7b-chat">
+                      <ExclamationCircleOutlined />
+                    </Tooltip></div>}
+                  >
+                    <Input disabled value={modelPath} placeholder='请输入模型路径' maxLength={200} />
+                  </Form.Item>
                 </>
                 : <Form.Item
                   name="model_name"
@@ -709,12 +709,12 @@ const CreateModal = (props: any) => {
               >
                 <Input placeholder='请输入模型路径' maxLength={200} />
               </Form.Item>
-              <Form.Item
-                name="access_tokens"
-                label="访问令牌"
-              >
-                <Input placeholder='请输入访问令牌' maxLength={200} />
-              </Form.Item>
+                <Form.Item
+                  name="access_tokens"
+                  label="访问令牌"
+                >
+                  <Input placeholder='请输入访问令牌' maxLength={200} />
+                </Form.Item>
               </>
               }
               {modelFrom === 'localModel' && <Form.Item
@@ -824,6 +824,13 @@ const CreateModal = (props: any) => {
               </Form.Item>
             </>
           }
+          {/* 新增两个虚假formitem */}
+          <Form.Item name="storage_quota" label="存储配额(G)" required rules={[{ required: true, message: '请输入存储配额' }]}>
+            <Input placeholder='请输入存储配额' type='number' min={0} />
+          </Form.Item>
+          <Form.Item name="gpu_quota" label="显卡配额(张)" required rules={[{ required: true, message: '请输入显卡配额' }]}>
+            <Input placeholder='请输入显卡配额' type="number" min={0} />
+          </Form.Item>
           <IconModal onSuccess={data => form.setFieldValue('model_icon', data)} visible={iconModal} onClose={() => setIconModal(false)} />
         </Form>
       </div>

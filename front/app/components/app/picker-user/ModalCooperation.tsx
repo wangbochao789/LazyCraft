@@ -23,6 +23,9 @@ const ModalOperate = (props: any) => {
       else {
         setPickerUserData({ defaultValue })
       }
+    }).catch((err) => {
+      console.error('获取协作状态失败:', err)
+      message.error('获取协作状态失败，请稍后重试')
     })
   }
 
@@ -31,7 +34,8 @@ const ModalOperate = (props: any) => {
       form.resetFields()
       getCoopDetail()
     }
-  }, [visible, form])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, form, targetType, targetId])
 
   const handleCancel = () => {
     setVisible(false)
@@ -57,7 +61,7 @@ const ModalOperate = (props: any) => {
       if (enableValue) {
         reqData.accounts = memberList?.map(item => item.account_id) || []
         if (reqData.accounts.length > 0) {
-          coopOpen(reqData).then((res) => {
+          coopOpen(reqData).then(() => {
             message.success('操作成功')
             handleCancel()
           })
@@ -67,7 +71,7 @@ const ModalOperate = (props: any) => {
         }
       }
       else {
-        coopClose(reqData).then((res) => {
+        coopClose(reqData).then(() => {
           message.success('操作成功')
           handleCancel()
         })

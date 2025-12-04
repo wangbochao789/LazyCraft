@@ -48,7 +48,7 @@ const CommonLayout = ({ children }: CommonLayoutProps) => {
 
 // 页面元数据配置
 export const metadata = {
-  title: 'LazyLLM',
+  title: '机务培训模型训练与管理工具',
 }
 
 export default CommonLayout

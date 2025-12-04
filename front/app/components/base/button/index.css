@@ -1,0 +1,112 @@
+@tailwind components;
+
+@layer components {
+  .button-base {
+    @apply inline-flex justify-center items-center cursor-pointer whitespace-nowrap;
+  }
+
+  .button-disabled {
+    @apply cursor-not-allowed;
+  }
+
+  .button-small {
+    @apply px-2 h-6 rounded-md text-xs font-medium;
+  }
+
+  .button-medium {
+    @apply px-3.5 h-8 rounded-lg text-[13px] leading-4 font-medium;
+  }
+
+  .button-large {
+    @apply px-4 h-9 rounded-[10px] text-sm font-semibold;
+  }
+
+  .button-primary {
+    @apply shadow bg-components-button-primary-bg border-components-button-primary-border hover:bg-components-button-primary-bg-hover hover:border-components-button-primary-border-hover text-components-button-primary-text;
+  }
+
+  .button-primary.button-destructive {
+    @apply bg-components-button-destructive-primary-bg border-components-button-destructive-primary-border hover:bg-components-button-destructive-primary-bg-hover hover:border-components-button-destructive-primary-border-hover text-components-button-destructive-primary-text;
+  }
+
+  .button-primary.button-disabled {
+    @apply shadow-none bg-components-button-primary-bg-disabled border-components-button-primary-bg-disabled text-components-button-primary-text-disabled;
+  }
+
+  .button-primary.button-destructive.button-disabled {
+    @apply shadow-none bg-components-button-destructive-primary-bg-disabled border-components-button-destructive-primary-bg-disabled text-components-button-destructive-primary-text-disabled;
+  }
+
+  .button-secondary {
+    @apply border-[0.5px] shadow-xs bg-components-button-secondary-bg border-components-button-secondary-border hover:bg-components-button-secondary-bg-hover hover:border-components-button-secondary-border-hover text-components-button-secondary-text;
+  }
+
+  .button-secondary.button-disabled {
+    @apply bg-components-button-secondary-bg-disabled border-components-button-secondary-bg-disabled text-components-button-secondary-text-disabled;
+  }
+
+  .button-secondary.button-destructive {
+    @apply bg-components-button-destructive-secondary-bg border-components-button-destructive-secondary-border hover:bg-components-button-destructive-secondary-bg-hover hover:border-components-button-destructive-secondary-border-hover text-components-button-destructive-secondary-text;
+  }
+
+  .button-secondary.button-destructive.button-disabled {
+    @apply bg-components-button-destructive-secondary-bg-disabled border-components-button-destructive-secondary-bg-disabled text-components-button-destructive-secondary-text-disabled;
+  }
+
+
+  .button-secondary-accent {
+    @apply border-[0.5px] shadow-xs bg-components-button-secondary-bg border-components-button-secondary-border hover:bg-components-button-secondary-bg-hover hover:border-components-button-secondary-border-hover text-components-button-secondary-accent-text;
+  }
+
+  .button-secondary-accent.button-disabled {
+    @apply bg-components-button-secondary-bg-disabled border-components-button-secondary-bg-disabled text-components-button-secondary-accent-text-disabled;
+  }
+
+  .button-warning {
+    @apply bg-components-button-destructive-primary-bg border-components-button-destructive-primary-border hover:bg-components-button-destructive-primary-bg-hover hover:border-components-button-destructive-primary-border-hover text-components-button-destructive-primary-text;
+  }
+
+  .button-warning.button-disabled {
+    @apply bg-components-button-destructive-primary-bg-disabled border-components-button-destructive-primary-bg-disabled text-components-button-destructive-primary-text-disabled;
+  }
+
+  .button-tertiary {
+    @apply bg-components-button-tertiary-bg hover:bg-components-button-tertiary-bg-hover text-components-button-tertiary-text;
+  }
+
+  .button-tertiary.button-disabled {
+    @apply bg-components-button-tertiary-bg-disabled text-components-button-tertiary-text-disabled;
+  }
+
+  .button-tertiary.button-destructive {
+    @apply bg-components-button-destructive-tertiary-bg hover:bg-components-button-destructive-tertiary-bg-hover text-components-button-destructive-tertiary-text;
+  }
+
+  .button-tertiary.button-destructive.button-disabled {
+    @apply bg-components-button-tertiary-bg-disabled text-components-button-tertiary-text-disabled;
+  }
+
+  .button-ghost {
+    @apply hover:bg-components-button-ghost-bg-hover text-components-button-ghost-text;
+  }
+
+  .button-ghost.button-disabled {
+    @apply text-components-button-ghost-text-disabled;
+  }
+
+  .button-ghost.button-destructive {
+    @apply hover:bg-components-button-destructive-ghost-bg-hover text-components-button-destructive-ghost-text;
+  }
+
+  .button-ghost.button-destructive.button-disabled {
+    @apply text-components-button-destructive-ghost-text-disabled;
+  }
+
+  .button-ghost-accent {
+    @apply hover:bg-state-accent-hover text-components-button-secondary-accent-text;
+  }
+
+  .button-ghost-accent.button-disabled {
+    @apply text-components-button-secondary-accent-text-disabled;
+  }
+}

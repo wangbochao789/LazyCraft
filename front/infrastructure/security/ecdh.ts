@@ -1,4 +1,4 @@
-import { keyExchange } from '@/infrastructure/api/common'
+import { post } from '../api/base'
 
 const HKDF_INFO = 'ecdh-aes-key-exchange'
 const AES_KEY_LENGTH = 256
@@ -148,11 +148,27 @@ const performEncryption = async (aesKey: CryptoKey, payload: Record<string, any>
 
 const exchangeKeyWithBackend = async (frontendPublicKey: string): Promise<KeyExchangeResult> => {
   try {
-    const result = await keyExchange({ frontend_public_key: frontendPublicKey })
-    return normalizeKeyExchangeResponse(result as KeyExchangeAPIResponse)
+    const result = await post<KeyExchangeAPIResponse>('/key_exchange', {
+      body: { frontend_public_key: frontendPublicKey },
+    }, {
+      isPublicAPI: false,
+      silent: true, // 密钥交换错误需要特殊处理，不使用默认的 Toast 提示
+    })
+
+    return normalizeKeyExchangeResponse(result)
   }
   catch (error) {
-    const message = error instanceof Error ? error.message : String(error || '未知错误')
+    let message = '未知错误'
+    if (error instanceof Error) {
+      message = error.message
+      // 如果是网络错误，提供更友好的错误信息
+      if (message.includes('fetch failed') || message.includes('Failed to fetch') || message.includes('timeout'))
+        message = '无法连接到后端服务，请检查后端服务是否运行正常'
+    }
+    else if (typeof error === 'string') {
+      message = error
+    }
+
     throw new Error(`密钥交换失败：${message}`)
   }
 }

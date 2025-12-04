@@ -15,13 +15,38 @@ import IconFont from '@/app/components/base/iconFont'
 import { Checkbox, Input, InputNumber, Select } from '@/app/components/taskStream/elements/_foundation/components/form/base'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
 
+// 定义内置节点组
+const BUILTIN_NODE_GROUPS = [
+  {
+    name: 'bm25检索',
+    transform: 'SentenceSplitter',
+    chunk_size: 1024,
+    chunk_overlap: 100,
+    enable_embed: false,
+  },
+  {
+    name: '向量检索',
+    transform: 'SentenceSplitter',
+    chunk_size: 1024,
+    chunk_overlap: 100,
+    enable_embed: true,
+  },
+  {
+    name: '语义检索',
+    transform: 'SentenceSplitter',
+    chunk_size: 1024,
+    chunk_overlap: 100,
+    enable_embed: true,
+  },
+]
+
 const SelectComponent: FC<Partial<FieldItemProps>> = ({
   name,
   value = [],
   readOnly,
   onChange,
   nodeData,
-  data,
+  data: _data,
   resourceData,
   nodeId,
   resourceId,
@@ -35,6 +60,55 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
   // 从 zustand store 获取当前节点的解析状态
   const parseState = getNodeState(targetId || '')
   const { isLoading } = parseState
+
+  // 确保内置节点组存在
+  React.useEffect(() => {
+    if (isLoading || !onChange)
+      return
+
+    const currentValue = value || []
+    const builtinNames = BUILTIN_NODE_GROUPS.map(g => g.name)
+    const existingBuiltinNames = currentValue
+      .filter(item => item.isBuiltin && builtinNames.includes(item.name))
+      .map(item => item.name)
+
+    // 检查是否有缺失的内置节点组
+    const missingBuiltinGroups = BUILTIN_NODE_GROUPS.filter(
+      group => !existingBuiltinNames.includes(group.name),
+    )
+
+    if (missingBuiltinGroups.length > 0) {
+      const newBuiltinGroups = missingBuiltinGroups.map(group => ({
+        key: uuid(),
+        name: group.name,
+        isBuiltin: true,
+        embed: null,
+        embed_name: null,
+        enable_embed: group.enable_embed || false,
+        transform: group.transform,
+        chunk_size: group.chunk_size,
+        chunk_overlap: group.chunk_overlap,
+      }))
+
+      // 将内置节点组添加到数组开头，并确保其他内置节点组也在前面
+      const existingBuiltinGroups = currentValue.filter(item => item.isBuiltin && builtinNames.includes(item.name))
+      const customGroups = currentValue.filter(item => !item.isBuiltin || !builtinNames.includes(item.name))
+      const updatedValue = [...existingBuiltinGroups, ...newBuiltinGroups, ...customGroups]
+      onChange(name, updatedValue)
+    }
+    else {
+      // 即使没有缺失的，也要确保内置节点组在数组开头
+      const builtinGroups = currentValue.filter(item => item.isBuiltin && builtinNames.includes(item.name))
+      const customGroups = currentValue.filter(item => !item.isBuiltin || !builtinNames.includes(item.name))
+      if (builtinGroups.length + customGroups.length === currentValue.length) {
+        // 顺序可能不对，需要重新排序
+        const sortedValue = [...builtinGroups, ...customGroups]
+        const needsReorder = sortedValue.some((item, index) => item.key !== currentValue[index]?.key)
+        if (needsReorder)
+          onChange(name, sortedValue)
+      }
+    }
+  }, [value, isLoading, onChange, name])
 
   value = value?.map(item => ({ ...item, key: item?.key || uuid() }))
 
@@ -74,6 +148,11 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
     if (isLoading)
       return
 
+    // 检查是否是内置节点组，内置节点组不允许删除
+    const itemToRemove = value?.find((item: any) => item.key === key)
+    if (itemToRemove?.isBuiltin)
+      return
+
     onChange && onChange(name, value?.filter((item: any) => item.key !== key))
   }
 
@@ -85,7 +164,12 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
     // 更新数组，对当前修改的项进行数据清理
     const updatedValue = value?.map((item: any) => {
       if (item.key === group_key) {
-        const mergedItem = { ...item, ...data }
+        // 如果是内置节点组，不允许修改名称
+        const dataCopy = { ...data }
+        if (item.isBuiltin && dataCopy.name && dataCopy.name !== item.name)
+          delete dataCopy.name
+
+        const mergedItem = { ...item, ...dataCopy }
 
         // 根据transform类型清理不相关字段
         if (mergedItem.transform === 'SentenceSplitter') {
@@ -191,37 +275,41 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
           </label>
         </div>
 
-        {value?.map(item => (
-          <div key={item.key} className="node-group-item">
-            <NodeGroupItem
-              data={{ ...item }}
-              list={value}
-              onChange={handleNodeGroupChange}
-              readOnly={readOnly}
-              nodeId={nodeId}
-              resourceId={resourceId}
-            />
-            {!readOnly && !isLoading && <Popconfirm
-              title="删除确认"
-              description="确认删除该节点组？"
-              onConfirm={() => removeGroup(item?.key)}
-              okText="是"
-              cancelText="否"
-              disabled={readOnly || isLoading}
-            >
-              <Button
-                size='small'
-                danger
+        {value?.map((item) => {
+          const isBuiltin = item.isBuiltin === true
+          return (
+            <div key={item.key} className="node-group-item">
+              <NodeGroupItem
+                data={{ ...item }}
+                list={value}
+                onChange={handleNodeGroupChange}
+                readOnly={readOnly}
+                nodeId={nodeId}
+                resourceId={resourceId}
+                isBuiltin={isBuiltin}
+              />
+              {!readOnly && !isLoading && !isBuiltin && <Popconfirm
+                title="删除确认"
+                description="确认删除该节点组？"
+                onConfirm={() => removeGroup(item?.key)}
+                okText="是"
+                cancelText="否"
                 disabled={readOnly || isLoading}
-                className="remove-button"
               >
-                <IconFont type='icon-shanchu1' className='mr-1 w-3.5 h-3.5' />
-                移除
-              </Button>
-            </Popconfirm>}
-            <Divider className="node-group-divider" />
-          </div>
-        ))}
+                <Button
+                  size='small'
+                  danger
+                  disabled={readOnly || isLoading}
+                  className="remove-button"
+                >
+                  <IconFont type='icon-shanchu1' className='mr-1 w-3.5 h-3.5' />
+                  移除
+                </Button>
+              </Popconfirm>}
+              <Divider className="node-group-divider" />
+            </div>
+          )
+        })}
 
         {!readOnly && (
           <div className={`add-group-section ${value?.length === 0 ? 'first-section' : ''}`}>
@@ -243,7 +331,7 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
 }
 export default React.memo(SelectComponent)
 
-function NodeGroupItem({ data, list, onChange, readOnly, nodeId, resourceId }) {
+function NodeGroupItem({ data, list, onChange, readOnly, nodeId, resourceId, isBuiltin = false }) {
   const [form] = Form.useForm()
 
   // 使用 zustand store 管理解析状态
@@ -501,6 +589,11 @@ function NodeGroupItem({ data, list, onChange, readOnly, nodeId, resourceId }) {
               if (value && predefinedNames.includes(value))
                 return Promise.reject(new Error('节点组名称不能使用预定义的组名（CoarseChunk、MediumChunk、FineChunk）'))
 
+              // 检查是否是内置节点组名称（如果不是当前编辑的内置节点组）
+              const builtinNames = BUILTIN_NODE_GROUPS.map(g => g.name)
+              if (value && builtinNames.includes(value) && !isBuiltin)
+                return Promise.reject(new Error(`节点组名称不能使用内置节点组名称（${builtinNames.join('、')}）`))
+
               // 检查是否与其他组重复
               if (value && list.some((item: any) => item.name === value && item.key !== data.key))
                 return Promise.reject(new Error('节点组名称不能重复'))
@@ -510,7 +603,7 @@ function NodeGroupItem({ data, list, onChange, readOnly, nodeId, resourceId }) {
           }),
         ]}
       >
-        <Input className='w-full' placeholder='请输入节点组名称（不能使用预定义名称）' onChange={val => handleFormItemChange('name', val)} disabled={readOnly || isLoading} />
+        <Input className='w-full' placeholder={isBuiltin ? '内置节点组名称（不可修改）' : '请输入节点组名称（不能使用预定义名称）'} onChange={val => handleFormItemChange('name', val)} disabled={readOnly || isLoading || isBuiltin} />
       </Form.Item>
 
       <Form.Item

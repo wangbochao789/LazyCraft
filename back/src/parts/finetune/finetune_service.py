@@ -247,6 +247,13 @@ class FinetuneService:
                     builtin_map[name] = builtin
                     if status == ModelStatus.SUCCESS.value:  # 只保留已下载的模型（model_status == 3）
                         downloaded_model_names.add(name)
+            if model_names:
+                rows = (
+                    db.session.query(Lazymodel.model_name, Lazymodel.builtin_flag)
+                    .filter(Lazymodel.model_name.in_(model_names))
+                    .all()
+                )
+                builtin_map = {name: builtin for name, builtin in rows}
 
             used_keys = {
                 row[0]
@@ -273,6 +280,13 @@ class FinetuneService:
                     filtered_ft_model_list.append(item)
             
             return get_ft_model_list_result, filtered_ft_model_list
+            for item in get_ft_model_list_return:
+                name = item.get("model")
+                if not name:
+                    item["need_confirm"] = False
+                    continue
+                builtin_flag = builtin_map.get(name, False)
+                item["need_confirm"] = False if builtin_flag else (name not in used_keys)
         return get_ft_model_list_result, get_ft_model_list_return
 
     def create_task(self, config):

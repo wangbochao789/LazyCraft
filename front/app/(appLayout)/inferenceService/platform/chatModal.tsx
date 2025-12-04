@@ -11,8 +11,8 @@ import { ssePost } from '@/infrastructure/api/base'
 import BytesPreview from '@/app/components/taskStream/elements/_foundation/components/form/field-item/preview/bytes-preview'
 import HoverGuide from '@/app/components/base/hover-tip-pro'
 import Icon from '@/app/components/base/iconFont'
-import AnswerIcon from '@/public/sensetime.png'
-import RobotDefaultIcon from '@/public/robot-default.png'
+import AnswerIcon from '@/public/cflogo.png'
+import RobotDefaultIcon from '@/public/bglogo.png'
 
 const ChatModal = (props: any) => {
   const { visible, onOk, onCancel, agentId = '1', modelName } = props
@@ -165,7 +165,7 @@ const ChatModal = (props: any) => {
                                 </div>}
                             </div>
                             <div className={styles.chatContent}>
-                              <div className={styles.chatRole}>{isLazyllm ? 'Sensetime' : 'You'}</div>
+                              <div className={styles.chatRole}>{isLazyllm ? '问答助手' : 'You'}</div>
                               <div className={styles.chatWord}>
                                 {((showLogic && isLazyllm && index === chatList.length - 1) || item.__useStream)
                                   ? (detailData?.result

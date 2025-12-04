@@ -27,14 +27,23 @@ const AnotherHeader = () => {
     router.push('/apps')
   }
   return (
-    <div className='flex flex-1 items-center justify-between px-4'>
-      <div className='flex items-center'>
-        <Link href="/apps" className='flex items-center mr-4'>
-          <BrandMark className='object-contain' />
+    <div className='flex flex-1 items-center justify-between px-6 py-2'>
+      <div className='flex items-center gap-4 flex-1 min-w-0 overflow-x-auto'>
+        <Link href="/apps" className='flex-shrink-0'>
+          <BrandMark className='w-12 h-12' />
         </Link>
-        <div className={styles.titleText}>{showText[path.split('/')[1]]}</div>
+        <div className='flex items-center gap-4 min-w-0'>
+          <Link href="/apps" className='hover:opacity-80 transition-opacity'>
+            <div className='flex flex-col'>
+              <span className='text-lg font-bold text-[#071127]'>智能辅助培训课件开发环境</span>
+              <span className='text-sm font-semibold text-[#071127]'>机务培训模型训练与管理工具v1.0</span>
+            </div>
+          </Link>
+          <div className='w-px h-6 bg-[#D9DBE0] flex-shrink-0'></div>
+          <div className={`${styles.titleText} whitespace-nowrap`}>{showText[path.split('/')[1]]}</div>
+        </div>
       </div>
-      <div className='flex items-center flex-shrink-0'>
+      <div className='flex items-center flex-shrink-0 gap-4'>
         {!isAgentPage() && <div className={styles.backWrap} onClick={goAppStore}>返回到应用商店 <IconFont type='icon-nav_fanhui' /></div>}
         {!isAgentPage() && <AccountDropdown isMobileView={isMobileView} />}
       </div>

@@ -13,7 +13,7 @@ import { getModelInfo, reDown } from '@/infrastructure/api/modelWarehouse'
 import { deleteModel, getModelList } from '@/infrastructure/api/modelAdjust'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { usePermitCheck } from '@/app/components/app/permit-check'
-
+import CapacityModal from './CapacityModal'
 const ModelDetail = (req) => {
   const { id } = req.params
   const router = useRouter()
@@ -33,6 +33,7 @@ const ModelDetail = (req) => {
   const [drawVisible, setDrawVisible] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showAddModel, setShowAddModel] = useState(false)
+  const [showCapacityModal, setShowCapacityModal] = useState(false)
   const { userSpecified, permitData } = useApplicationContext()
   const searchParams = useSearchParams()
   const qtype: any = searchParams.get('qtype')
@@ -43,6 +44,7 @@ const ModelDetail = (req) => {
     setDrawVisible(false)
     setShowAddModal(false)
     setShowAddModel(false)
+    setShowCapacityModal(false)
   }
 
   const handleJumpDetail = (record) => {
@@ -173,12 +175,15 @@ const ModelDetail = (req) => {
               {baseInfo?.model_kind && <div>模型类别：{baseInfo?.model_kind_display}</div>}
             </div>
           </div>
-          <div className='flex'>
-            {baseInfo?.model_type === 'online' && hasPermit('AUTH_5008') && qtype !== 'builtin' && <Button className='mr-[10px]' type='primary' ghost onClick={() => setShowAddModel(true)}>添加模型清单</Button>}
-            {baseInfo?.model_type === 'online' && hasPermit('AUTH_5007') && <Button className='mr-[10px]' type='primary' ghost onClick={() => setShowAddModel(true)}>添加模型清单</Button>}
-            {baseInfo?.model_type === 'local' && baseInfo?.model_from !== 'existModel' && baseInfo?.model_status === '4' && <Button className='mr-[10px]' type='primary' ghost onClick={reDownload}>重新下载</Button>}
-            {baseInfo?.model_type === 'local' && baseInfo?.model_from !== 'existModel' && baseInfo?.model_status === '1' && <Button className='mr-[10px]' type='primary' ghost onClick={reDownload}>下载模型</Button>}
-            <Button type='primary' ghost onClick={() => setDrawVisible(true)}>查看更多详情</Button>
+          <div className='flex flex-col gap-1'>
+            <div className='flex'>
+              {baseInfo?.model_type === 'online' && hasPermit('AUTH_5008') && qtype !== 'builtin' && <Button className='mr-[10px]' type='primary' ghost onClick={() => setShowAddModel(true)}>添加模型清单</Button>}
+              {baseInfo?.model_type === 'online' && hasPermit('AUTH_5007') && <Button className='mr-[10px]' type='primary' ghost onClick={() => setShowAddModel(true)}>添加模型清单</Button>}
+              {baseInfo?.model_type === 'local' && baseInfo?.model_from !== 'existModel' && baseInfo?.model_status === '4' && <Button className='mr-[10px]' type='primary' ghost onClick={reDownload}>重新下载</Button>}
+              {baseInfo?.model_type === 'local' && baseInfo?.model_from !== 'existModel' && baseInfo?.model_status === '1' && <Button className='mr-[10px]' type='primary' ghost onClick={reDownload}>下载模型</Button>}
+              <Button type='primary' ghost onClick={() => setDrawVisible(true)}>查看更多详情</Button>
+            </div>
+            <Button type='primary' ghost onClick={() => setShowCapacityModal(true)}>容量管理</Button>
           </div>
         </div>
       </Card>
@@ -196,6 +201,7 @@ const ModelDetail = (req) => {
       <DrawInfo visible={drawVisible} baseInfo={baseInfo} onClose={handleAddModalClose}></DrawInfo>
       <AddModal visible={showAddModal} baseInfo={baseInfo} id={id} onSuccess={handleAddSuccess} onClose={handleAddModalClose}></AddModal>
       <AddModelList qtype={qtype} isMine={isMine} getInfo={getInfo} visible={showAddModel} baseInfo={baseInfo} id={id} onClose={handleAddModalClose}></AddModelList>
+      <CapacityModal visible={showCapacityModal} baseInfo={baseInfo} onClose={handleAddModalClose}></CapacityModal>
     </div >
   )
 }

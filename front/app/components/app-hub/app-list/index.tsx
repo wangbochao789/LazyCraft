@@ -150,8 +150,6 @@ const Apps = () => {
       message.warning('请先发布应用')
       return
     }
-
-    // Reset form completely before any other activities
     createAppForm.resetFields()
 
     // Set state variables for template mode
@@ -683,6 +681,19 @@ const Apps = () => {
       message.error('API关闭失败')
     }
   }
+
+  // 处理发布模式选择
+  const handlePublishModeChange = (item: any, mode: string) => {
+    // 根据选择的模式显示不同的消息
+    const modeLabels = {
+      1: '灰度发布',
+      2: '蓝绿发布',
+      3: '编排发布',
+      4: '滚动发布',
+    }
+
+    message.success(`已切换到${modeLabels[mode as keyof typeof modeLabels]}`)
+  }
   return (
     <div className={style.appContainer}>
       <div className='flex justify-between'>
@@ -868,6 +879,44 @@ const Apps = () => {
                         >
                           <Tooltip title="API发布">
                             <Iconfont type="icon-api" />
+                          </Tooltip>
+                        </div>}
+                        {item.enable_api && <div
+                          className={`${style.iconWrap} mr-2`}
+                          style={{
+                            color: item.enable_api_call === '1' ? '#2ea121' : '',
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                          }}
+                        >
+                          <Tooltip title="发布模式切换">
+                            <Dropdown
+                              menu={{
+                                items: [
+                                  {
+                                    key: '1',
+                                    label: '灰度发布',
+                                  },
+                                  {
+                                    key: '2',
+                                    label: '蓝绿发布',
+                                  },
+                                  {
+                                    key: '3',
+                                    label: '编排发布',
+                                  },
+                                  {
+                                    key: '4',
+                                    label: '滚动发布',
+                                  },
+                                ],
+                                onClick: ({ key }) => handlePublishModeChange(item, key),
+                              }}
+                              placement="bottom"
+                            >
+                              <Iconfont type="icon-fabu" />
+                            </Dropdown>
                           </Tooltip>
                         </div>}
                         {

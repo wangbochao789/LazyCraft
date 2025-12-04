@@ -12,7 +12,7 @@ const { Dragger } = Upload
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 const UploadModal = (props: any) => {
   const allowedTypes = [
-    '.pdf', '.json', '.html', '.doc', '.docx', '.xls', '.xlsx', '.txt', '.csv', '.ppt', '.pptx', '.md', '.tex',
+    '.pdf', '.json', '.html', '.doc', '.docx', '.xls', '.xlsx', '.txt', '.csv', '.ppt', '.pptx', '.md', '.tex', '.xml',
   ]
   const { oepnProgressMonitor, runProgressMonitor } = useModalContext()
   const { visible, id, onClose, onSuccess: successEvent } = props
@@ -218,7 +218,7 @@ const UploadModal = (props: any) => {
             </p>
             <p className="ant-upload-text">将文件拖拽至此区域或选择文件上传（支持多文件上传）</p>
             <p className="ant-upload-hint">
-              支持使用 pdf、word、ppt、excel、csv、 txt、json、html、markdown、latex，编码格式为utf-8，可一次上传多个文件，每个文件大小50MB以内。
+              支持使用 pdf、word、ppt、excel、csv、 txt、json、html、XML、markdown、latex，编码格式为utf-8，可一次上传多个文件，每个文件大小50MB以内。
             </p>
           </Dragger>
 
