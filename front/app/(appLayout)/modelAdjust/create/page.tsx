@@ -139,7 +139,8 @@ const CreateModelAdjust = () => {
         })
       }
       else {
-        setModelType('')
+        // 设置为实际的模型类型（如localLLM）而不是空字符串
+        setModelType(selectedModel?.model_kind || 'localLLM')
 
         // 重置训练模式和微调类型为默认值
         setTrainingType('SFT')
@@ -174,8 +175,8 @@ const CreateModelAdjust = () => {
     if (data.task_type === 'model_finetuning') {
       // 模型微调逻辑
       const { base_model, val_size, training_type, finetuning_type } = data
-      if (mType !== 'local')
-        delete values?.num_gpus
+      // 移除删除num_gpus的逻辑，所有微调任务都需要GPU卡数
+      // 如果没有设置，后端会使用默认值1
       values.val_size = val_size / 100
       values.training_type = training_type
       // delete data.val_size
@@ -323,6 +324,7 @@ const CreateModelAdjust = () => {
       num_epochs: option?.num_epochs,
       lora_alpha: option?.lora_alpha,
       num_gpus: option?.num_gpus,
+      save_steps: option?.save_steps,
     })
   }
 
@@ -441,7 +443,7 @@ const CreateModelAdjust = () => {
                     // 设置model_kind
                     const selectedModel = modelList.find(item => `${item.model}:${item.source.split('/').pop()}` === value)
                     const model_kind = selectedModel?.model_kind
-                    setModelType(model_kind || '')
+                    setModelType(model_kind || 'localLLM')
 
                     // 如果是Embedding模型，自动设置训练模式和微调类型
                     if (model_kind === 'Embedding') {
@@ -884,17 +886,47 @@ const CreateModelAdjust = () => {
                             />
                           </Form.Item>
                         </Col>
-                        {mType === 'local' && (
-                          <Col xl={12} lg={24}>
-                            <Form.Item
-                              name="num_gpus"
-                              label="GPU数量"
-                              rules={[{ required: true, message: '请输入GPU数量' }]}
-                            >
-                              <InputNumber precision={0} style={{ width: '100%' }} max={2147483647} min={1} placeholder='请输入1~2147483647的整数' />
-                            </Form.Item>
-                          </Col>
-                        )}
+                        <Col xl={12} lg={24}>
+                          <Form.Item
+                            name="num_gpus"
+                            label="GPU卡数"
+                            initialValue={1}
+                            rules={[{ required: true, message: '请选择GPU卡数' }]}
+                          >
+                            <Select
+                              placeholder='请选择GPU卡数'
+                              options={[
+                                { value: 1, label: 1 },
+                                { value: 2, label: 2 },
+                                { value: 4, label: 4 },
+                                { value: 8, label: 8 },
+                              ]}
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col xl={12} lg={24}>
+                          <Form.Item
+                            name="save_steps"
+                            label="断点保存间隔(步)"
+                            initialValue={500}
+                            validateTrigger='onBlur'
+                            rules={[
+                              { required: true, message: '请输入断点保存间隔' },
+                              {
+                                validator: (_, value) => {
+                                  if (!value && value !== 0)
+                                    return Promise.reject(new Error('断点保存间隔不能为空'))
+                                  const numValue = Number(value)
+                                  if (!Number.isInteger(numValue) || numValue < 1)
+                                    return Promise.reject(new Error('必须为≥1的整数'))
+                                  return Promise.resolve()
+                                },
+                              },
+                            ]}
+                          >
+                            <InputNumber precision={0} style={{ width: '100%' }} max={2147483647} min={1} placeholder='建议500~2000，过小影响训练速度' />
+                          </Form.Item>
+                        </Col>
                         <Col xl={12} lg={24}>
                           <Form.Item
                             name="batch_size"

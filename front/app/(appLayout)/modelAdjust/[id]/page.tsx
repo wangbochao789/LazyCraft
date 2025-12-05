@@ -10,10 +10,15 @@ import { apiPrefix } from '@/app-specs'
 const _tags: any = {
   InQueue: { text: '排队中', color: 'warning' },
   Pending: { text: '排队中', color: 'warning' },
+  Submitting: { text: '提交中', color: 'processing' }, // 正在提交到LazyLLM服务
   InProgress: { text: '运行中', color: 'processing' },
+  Running: { text: '运行中', color: 'processing' }, // LazyLLM可能返回Running状态
   Completed: { text: '已完成', color: 'success' },
   Failed: { text: '失败', color: 'error' },
   Cancel: { text: '已取消', color: 'default' },
+  Canceled: { text: '已取消', color: 'default' }, // 统一后的状态名
+  Suspended: { text: '已暂停', color: 'default' },
+  Download: { text: '下载中', color: 'default' },
 }
 const AdjustDetail = (req) => {
   const { id } = req.params
@@ -104,7 +109,7 @@ const AdjustDetail = (req) => {
             <div className='flex justify-between'>
               <div className={styles.detailWrap}>
                 <div>训练状态：<Tag color={_tags[baseInfo?.status]?.color}>{_tags[baseInfo?.status]?.text}</Tag></div>
-                <div>耗时：<span style={{ color: '#071127' }}>{baseInfo?.train_runtime}s</span></div>
+                <div>耗时：<span style={{ color: '#071127' }}>{baseInfo?.train_runtime}</span></div>
                 <div>基础模型：<span style={{ color: '#071127' }}>{baseInfo?.base_model_name}</span></div>
                 <div>训练数据集：{
                   baseInfo?.dataset_list?.map((item, index) => {
