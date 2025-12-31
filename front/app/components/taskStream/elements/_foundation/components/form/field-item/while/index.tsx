@@ -3,7 +3,7 @@
 import type { FC } from 'react'
 import React, { useEffect, useState } from 'react'
 import {PlusOutlined} from '@ant-design/icons'
-import { Input, Select, Tooltip } from 'antd'
+import { Select, Tooltip } from 'antd'
 import { v4 as uuid4 } from 'uuid'
 import type { FieldItemProps } from '../../types'
 import type { ValidationError, WhileLoopCondition } from './types'
@@ -12,6 +12,7 @@ import IconFont from '@/app/components/base/iconFont'
 import Button from '@/app/components/base/click-unit'
 import cn from '@/shared/utils/classnames'
 import './index.scss'
+import { Input } from '@/app/components/ui'
 
 const OPTIONS = [
   { name: '<', value: '<' },

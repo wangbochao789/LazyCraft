@@ -1,13 +1,14 @@
 'use client'
 import type { FC } from 'react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Input, Modal, Slider, Switch } from 'antd'
+import { Modal, Slider, Switch } from 'antd'
 import classNames from 'classnames'
 import type { FieldItemProps } from '../types'
 import Field from '../field-unit'
 import { Select } from '@/app/components/taskStream/elements/_foundation/components/form/base'
 import { post } from '@/infrastructure/api//base'
 import Icon from '@/app/components/base/iconFont'
+import { Button, Input } from '@/app/components/ui'
 
 // 定义TTS模型数据结构
 type TtsModel = {
@@ -256,7 +257,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             }}
           />
           <Button
-            type='link'
+            variant='tertiary'
             size='small'
             onClick={handleConfigClick}
             className="ml-2"

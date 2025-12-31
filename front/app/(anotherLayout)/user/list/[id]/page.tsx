@@ -1,6 +1,6 @@
 'use client'
 import React, { useRef } from 'react'
-import { Button, Divider, Modal, Select, Space, Table, message } from 'antd'
+import { Modal, Select, Space, Table, message } from 'antd'
 import type { TableProps } from 'antd'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAntdTable } from 'ahooks'
@@ -8,6 +8,7 @@ import PermitCheck from '@/app/components/app/permit-check'
 import { roleOptions } from '@/app/components/app/picker-user/constants'
 
 import { getGroupDetail, getUserList, getUserTenants, moveUserAssets } from '@/infrastructure/api/user'
+import { Button, Divider } from '@/app/components/ui'
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection']
 
@@ -123,9 +124,9 @@ const UserDetail = (req) => {
       title: '操作',
       key: 'action',
       render: (_, record: any) => (
-        <Space size="small" split={<Divider type="vertical" />} >
+        <Space size="small" split={<Divider orientation="vertical" />} >
           {record.has_assets && <PermitCheck value='AUTH_2005'>
-            <Button type='link' onClick={() => transferAssets(record)}>资产转移</Button>
+            <Button variant='tertiary' onClick={() => transferAssets(record)}>资产转移</Button>
           </PermitCheck>}
         </Space>
       ),
@@ -141,7 +142,7 @@ const UserDetail = (req) => {
       <div style={{ padding: '20px 0' }}>
         <span style={{ color: '#666' }}>用户名称：</span>
         {searchParams.get('accountName')}
-        <Button type='link' onClick={goBackPage} style={{ marginLeft: '2px' }}>{'<'}返回</Button>
+        <Button variant='tertiary' onClick={goBackPage} style={{ marginLeft: '2px' }}>{'<'}返回</Button>
       </div>
       <Table columns={columns} {...tableProps} />
     </div >

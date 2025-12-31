@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { Button, Form, Input, Popconfirm, Table, Tag } from 'antd'
+import { Form,, , Popconfirm, Table, Tag } from 'antd'
 import type { TableProps } from 'antd'
 import { useAntdTable, useUpdateEffect } from 'ahooks'
 import { useRouter } from 'next/navigation'
@@ -16,6 +16,7 @@ import { deleteDataset, getDatasetListNew } from '@/infrastructure/api/data'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { pageCache } from '@/shared/utils'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
+import { Button, Input } from '@/app/components/ui'
 
 type DataType = {
   key: string
@@ -145,7 +146,7 @@ const DataSetManager = () => {
       width: 150,
       render: (_, record) => (
         <>
-          <Button type='link' size='small' onClick={() => handleJumpDetail(record)}>详情</Button>
+          <Button variant='tertiary' size='small' onClick={() => handleJumpDetail(record)}>详情</Button>
           {canAddDelete(record?.user_id) && <Popconfirm
             title="提示"
             description={<div className='w-[200px]'>删除后，引用了本资源的智能体或工作流将自动取消引用，此操作不可撤回。</div>}
@@ -153,7 +154,7 @@ const DataSetManager = () => {
             okText="是"
             cancelText="否"
           >
-            <Button type='link' size='small' danger>删除</Button>
+            <Button variant='tertiary' size='small' danger>删除</Button>
           </Popconfirm>}
         </>
       ),
@@ -170,7 +171,7 @@ const DataSetManager = () => {
   return <div className='page'>
     <div className={styles.pageTop}>
       <ClassifyMode selectLabels={selectLabels} setSelectLabels={setSelectLabels} type='dataset' />
-      <Button type='primary' onClick={handleCreate}>添加数据集</Button>
+      <Button variant='primary' onClick={handleCreate}>添加数据集</Button>
     </div>
     <div className={styles.content}>
       <div className={styles.tableHeader}>

@@ -1,13 +1,14 @@
 'use client'
 import type { FC } from 'react'
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, InputNumber, Modal, Slider } from 'antd'
+import { InputNumber, Modal, Slider } from 'antd'
 import classNames from 'classnames'
 import type { FieldItemProps } from '../types'
 import Field from '../field-unit'
 import { Select } from '@/app/components/taskStream/elements/_foundation/components/form/base'
 import { post } from '@/infrastructure/api/base'
 import Icon from '@/app/components/base/iconFont'
+import { Button } from '@/app/components/ui'
 
 // 定义VQA模型数据结构
 type VqaModel = {
@@ -175,7 +176,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
             }}
           />
           <Button
-            type='link'
+            variant='tertiary'
             size='small'
             onClick={handleConfigClick}
             className="ml-2"

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Button, Col, Divider, Popconfirm, Row, Switch, Tag, Tooltip, Typography } from 'antd'
+import { Col,, , Popconfirm, Row, Switch, Tag, Tooltip, Typography } from 'antd'
 import { DownloadOutlined, PlusOutlined } from '@ant-design/icons'
 import NextImage from 'next/image'
 import { debounce } from 'lodash'
@@ -10,6 +10,7 @@ import DefaultLogo from '../app-list/app-default-logo.png'
 import styles from './index.module.scss'
 import Iconfont from '@/app/components/base/iconFont'
 import type { AppItem } from '@/core/data/common'
+import { Button, Divider } from '@/app/components/ui'
 
 const { Paragraph } = Typography
 
@@ -221,12 +222,12 @@ const AppCard: React.FC<AppCardProps> = ({
               创建人：{creatorInfo.name}
             </span>
             {canEditItem && onEdit && (
-              <Button type="link" onClick={handleEdit}>
+              <Button variant='tertiary' onClick={handleEdit}>
                 编辑
               </Button>
             )}
             {showRefButton && item?.ref_status && onRefClick && (
-              <Button type="link" onClick={handleRefClick}>
+              <Button variant='tertiary' onClick={handleRefClick}>
                 引用中
               </Button>
             )}
@@ -265,7 +266,7 @@ const AppCard: React.FC<AppCardProps> = ({
                       <span className="text-[#0E5DD8] ml-1">已发布</span>
                       {formatTime && (item as AppItem).workflow_updated_at && (
                         <>
-                          <Divider type="vertical" />
+                          <Divider orientation="vertical" />
                           更新于
                           {formatTime(
                             typeof (item as AppItem).workflow_updated_at === 'string'

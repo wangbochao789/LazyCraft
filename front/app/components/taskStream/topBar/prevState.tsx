@@ -1,8 +1,9 @@
 import { memo, useState } from 'react'
-import { Button } from 'antd'
+
 import { useCarrierControl } from '../elements/_foundation/components/drill-down-wrapper/hook-carrier'
 import { generateFlowImg } from '../utils'
 import { useStore, useWorkflowStore } from '@/app/components/taskStream/store'
+import { Button } from '@/app/components/ui'
 
 const LazyLLMPatentBack = () => {
   const patentState = useStore(s => s.patentState)
@@ -59,7 +60,7 @@ const LazyLLMPatentBack = () => {
   }
 
   return historyStacks?.length >= 2
-    ? <Button type="default" onClick={handleBackClick} loading={loading}>上一级画布</Button>
+    ? <Button variant='secondary' onClick={handleBackClick} loading={loading}>上一级画布</Button>
     : null
 }
 

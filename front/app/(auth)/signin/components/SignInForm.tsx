@@ -1,6 +1,6 @@
 'use client'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Checkbox, Form, Input, Modal, Tabs, message as antdMessage } from 'antd'
+import { Checkbox, Form,, , Modal, Tabs, message as antdMessage } from 'antd'
 import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
@@ -11,6 +11,7 @@ import IconFont from '@/app/components/base/iconFont'
 import { userEmailValidationRegex } from '@/app-specs'
 import { checkExist, login, sendForgotPasswordEmail } from '@/infrastructure/api/common'
 import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
+import { Button, Input } from '@/app/components/ui'
 
 // 常量定义
 const PHONE_REGEX = /^1[3-9]\d{9}$/
@@ -243,13 +244,13 @@ const SignInForm = () => {
             <Checkbox onChange={handleRememberMeChange} checked={rememberMe}>
               <span style={commonStyles.inputIcon}>记住密码</span>
             </Checkbox>
-            <Button type='link' onClick={() => setIsModalOpen(true)}>忘记密码</Button>
+            <Button variant='tertiary' onClick={() => setIsModalOpen(true)}>忘记密码</Button>
           </div>
           <AgreementButton isRead={isManualRead} onClick={openManualModal} />
           <Form.Item>
             <Button
               style={commonStyles.buttonHeight}
-              type="primary"
+              variant='primary'
               htmlType="submit"
               block
               disabled={!isManualRead}
@@ -299,7 +300,7 @@ const SignInForm = () => {
             <Button
               loading={isLoading}
               style={commonStyles.buttonHeight}
-              type="primary"
+              variant='primary'
               htmlType="submit"
               block
               disabled={!isManualRead}
@@ -326,7 +327,7 @@ const SignInForm = () => {
         />
         <div className={style.noCount}>
           <span>没有账号？</span>
-          <Button type='link' href={'/register'}>立即注册</Button>
+          <Button variant='tertiary' href={'/register'}>立即注册</Button>
         </div>
         <Modal width={500} title="忘记密码" footer={isEmailSent
           ? null
@@ -334,7 +335,7 @@ const SignInForm = () => {
             <Button key="back" onClick={() => setIsModalOpen(false)}>
               取消
             </Button>,
-            <Button key="submit" type="primary" onClick={handleForgotPassword}>
+            <Button key="submit" variant='primary' onClick={handleForgotPassword}>
               发送邮件
             </Button>,
           ]} centered open={isModalOpen} onCancel={closeModal}>
@@ -374,7 +375,7 @@ const SignInForm = () => {
             </Button>,
             <Button
               key="submit"
-              type="primary"
+              variant='primary'
               onClick={confirmManualRead}
               disabled={!hasScrolledToBottom}
             >

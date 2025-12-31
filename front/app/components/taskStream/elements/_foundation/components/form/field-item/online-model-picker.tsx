@@ -2,7 +2,7 @@
 import type { FC } from 'react'
 import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Button } from 'antd'
+
 import classNames from 'classnames'
 import type { FieldItemProps } from '../types'
 import Field from '../field-unit'
@@ -12,6 +12,7 @@ import TTSSettingsModal from './components/tts-settings-modal'
 import { Cascader, Input, Select } from '@/app/components/taskStream/elements/_foundation/components/form/base'
 import { get } from '@/infrastructure/api/base'
 import Icon from '@/app/components/base/iconFont'
+import { Button } from '@/app/components/ui'
 
 // 定义modal状态类型
 type ModalState = {
@@ -363,7 +364,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
                 />
                 {(model_kind === 'OnlineLLM') && (
                   <Button
-                    type='link'
+                    variant='tertiary'
                     size='small'
                     onClick={() => {
                       if (model_kind === 'OnlineLLM')

@@ -3,12 +3,13 @@ import type { FC } from 'react'
 import React from 'react'
 import {PlusOutlined} from '@ant-design/icons'
 import { ReactSortable } from 'react-sortablejs'
-import { Input } from 'antd'
+
 import type { FieldItemProps } from '../../types'
 import IconFont from '@/app/components/base/iconFont'
 import cn from '@/shared/utils/classnames'
 import Button from '@/app/components/base/click-unit'
 import './index.scss'
+import { Input } from '@/app/components/ui'
 
 /** switch-case 节点的条件分支编辑组件 */
 const SwtichCaseComponent: FC<Partial<FieldItemProps>> = ({

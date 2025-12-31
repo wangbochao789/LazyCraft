@@ -1,7 +1,7 @@
 'use client'
 
 import React, { Suspense, useState } from 'react'
-import { Button, Card, Radio, Tooltip } from 'antd'
+import { Card, Radio, Tooltip } from 'antd'
 import { useMount } from 'ahooks'
 import {
   useRouter,
@@ -14,6 +14,7 @@ import IDE from './IDEMode'
 import Toast from '@/app/components/base/flash-notice'
 
 import { cancelPublish, getToolDetail, publishTools } from '@/infrastructure/api/tool'
+import { Button } from '@/app/components/ui'
 
 type Detail = {
   created_at: string
@@ -100,14 +101,14 @@ const ToolsInfoContent = () => {
 
       </div>
       {!detail?.publish && <div className={styles.submitBtn}>
-        <Button type='primary' onClick={() => handlePublish('正式发布')}>发布</Button>
+        <Button variant='primary' onClick={() => handlePublish('正式发布')}>发布</Button>
       </div>}
       {detail?.publish && detail?.publish_type == '取消发布' && <div className={styles.submitBtn}>
-        <Button type='primary' onClick={() => handlePublish('正式发布')}>发布</Button>
+        <Button variant='primary' onClick={() => handlePublish('正式发布')}>发布</Button>
       </div>}
       {detail?.publish && detail?.publish_type == '正式发布' && <div className={styles.submitBtn}>
-        <Button type='primary' onClick={() => handlePublish('正式发布')}>更新发布</Button>
-        <Button type='primary' onClick={() => handlePublish('')}>取消发布</Button>
+        <Button variant='primary' onClick={() => handlePublish('正式发布')}>更新发布</Button>
+        <Button variant='primary' onClick={() => handlePublish('')}>取消发布</Button>
       </div>}
     </div>
     <div className={styles.outer}>

@@ -2,11 +2,12 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { Button, Input, Modal, Spin, message } from 'antd'
+import { Modal, Spin, message } from 'antd'
 import styles from './basModelAi.module.scss'
 import Icon from '@/app/components/base/iconFont'
 import { createCodeAI } from '@/infrastructure/api/prompt'
 import type { CodeAIResponse, ParamData } from '@/core/data/common'
+import { Button, Input } from '@/app/components/ui'
 
 type Props = {
   isOpen: boolean
@@ -101,7 +102,7 @@ const BaseModelAI: FC<Props> = ({
         </Button>,
         <Button
           key="apply"
-          type="primary"
+          variant='primary'
           disabled={isLoading}
           onClick={() => {
             if (inputLanguage)
@@ -128,7 +129,7 @@ const BaseModelAI: FC<Props> = ({
               onChange={e => setInputText(e.target.value)}
             />
             <Button
-              type="primary"
+              variant='primary'
               className={styles.generateBtn}
               onClick={handleGenerate}
               loading={isLoading}

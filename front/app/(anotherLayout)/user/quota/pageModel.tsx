@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Input, Modal, Select } from 'antd'
+import { Form,, , Modal, Select } from 'antd'
 import type { QuotaRecord } from './types'
 import styles from './index.module.scss'
+import { Input } from '@/app/components/ui'
 
 type QuotaApprovalModalProps = {
   isOpen: boolean

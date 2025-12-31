@@ -1,9 +1,10 @@
 'use client'
 
 import { memo } from 'react'
-import { Button, Checkbox, Form, Input, Select } from 'antd'
+import { Checkbox, Form,, , Select } from 'antd'
 import Icon from '@/app/components/base/iconFont'
 import './ConfigInputName.scss'
+import { Button, Input } from '@/app/components/ui'
 
 // 定义基础类型选项
 const dataTypeOptions = [
@@ -94,7 +95,7 @@ const ConfigInputName = ({
       {!readOnly && !disabled && (
         <div className="add-button-wrapper">
           <Button
-            type="text"
+            variant='ghost'
             className="field-item-extra-add-btn"
             onClick={handleAddParam}
           >

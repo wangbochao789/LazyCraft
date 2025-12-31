@@ -32,7 +32,7 @@ export type EmptyProps = {
  * />
  * ```
  */
-export const Empty = ({
+const EmptyComponent = ({
   description = '暂无数据',
   image,
   className,
@@ -51,4 +51,17 @@ export const Empty = ({
   )
 }
 
-Empty.displayName = 'Empty'
+EmptyComponent.displayName = 'Empty'
+
+// 暴露 antd Empty 的静态属性
+Object.assign(EmptyComponent, {
+  PRESENTED_IMAGE_SIMPLE: AntdEmpty.PRESENTED_IMAGE_SIMPLE,
+  PRESENTED_IMAGE_DEFAULT: AntdEmpty.PRESENTED_IMAGE_DEFAULT,
+})
+
+// 使用类型断言导出，确保静态属性被正确识别
+export const Empty = EmptyComponent as React.FC<EmptyProps> & {
+  displayName: string
+  PRESENTED_IMAGE_SIMPLE: typeof AntdEmpty.PRESENTED_IMAGE_SIMPLE
+  PRESENTED_IMAGE_DEFAULT: typeof AntdEmpty.PRESENTED_IMAGE_DEFAULT
+}

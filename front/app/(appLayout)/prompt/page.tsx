@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Col, Empty, Form, Input, Modal, Row, Spin, message } from 'antd'
+import { Col, Form,, , Modal, Row, Spin, message } from 'antd'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useUpdateEffect } from 'ahooks'
 import Image from 'next/image'
@@ -18,6 +18,7 @@ import AIPromptModal from '@/app/components/AIPromptModal'
 import { usePermitContext } from '@/shared/hooks/permit-context'
 import AppCard from '@/app/components/app-hub/AppCard'
 import TagSelect from '@/app/components/tagSelect'
+import { Button, Empty, Input } from '@/app/components/ui'
 const Prompt = () => {
   const [form] = Form.useForm()
   const authRadio = useRadioAuth()
@@ -325,7 +326,7 @@ const Prompt = () => {
     <div className={style.promptWrap}>
       <div className={style.top}>
         <TagMode ref={selectRef} selectLabels={selectTags} setSelectLabels={setSelectTags} type='prompt' />
-        <Button type='primary' onClick={handleCreatePrompt}>{isPrompt ? ' 新建 Prompt' : '新建 Prompt模版'}</Button>
+        <Button variant='primary' onClick={handleCreatePrompt}>{isPrompt ? ' 新建 Prompt' : '新建 Prompt模版'}</Button>
       </div>
       <div className='flex justify-between mt-[15px]'>
         <Form.Item label="其他选项">

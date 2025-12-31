@@ -1,6 +1,7 @@
 import React from 'react'
-import { Button } from 'antd'
+
 import { GithubOutlined } from '@ant-design/icons'
+import { Button } from '@/app/components/ui'
 
 const GITHUB_LOGIN_URL = '/console/api/oauth/login/github'
 

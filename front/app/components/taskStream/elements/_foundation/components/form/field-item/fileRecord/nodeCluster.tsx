@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React from 'react'
-import { Button, Divider, Form, Popconfirm } from 'antd'
+import { Form, Popconfirm } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import { v4 as uuid } from 'uuid'
 import type { FieldItemProps } from '../../types'
@@ -14,6 +14,7 @@ import { useParseStore } from './dataParser'
 import IconFont from '@/app/components/base/iconFont'
 import { Checkbox, Input, InputNumber, Select } from '@/app/components/taskStream/elements/_foundation/components/form/base'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
+import { Button, Divider } from '@/app/components/ui'
 
 const SelectComponent: FC<Partial<FieldItemProps>> = ({
   name,
@@ -165,7 +166,7 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
       <div className="document_node_group_header">
         <div className="header-title">
           <label style={{ color: '#071127', fontWeight: 500 }}>
-            <Divider type="vertical" style={{ backgroundColor: '#1677ff', width: 3, marginLeft: 0 }} />
+            <Divider orientation="vertical" style={{ backgroundColor: '#1677ff', width: 3, marginLeft: 0 }} />
             内置节点组
           </label>
         </div>
@@ -186,7 +187,7 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
       <div className="document_node_group_list w-full">
         <div className="custom-group-header">
           <label style={{ color: '#071127', fontWeight: 500 }}>
-            <Divider type="vertical" style={{ backgroundColor: '#1677ff', width: 3, marginLeft: 0 }} />
+            <Divider orientation="vertical" style={{ backgroundColor: '#1677ff', width: 3, marginLeft: 0 }} />
             自定义节点组
           </label>
         </div>
@@ -227,7 +228,7 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
           <div className={`add-group-section ${value?.length === 0 ? 'first-section' : ''}`}>
             <Button
               size='small'
-              type='text'
+              variant='ghost'
               style={{ color: '#1677ff' }}
               onClick={addGroup}
               disabled={readOnly || isLoading}

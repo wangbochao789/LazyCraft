@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Input, Modal, Radio, Select } from 'antd'
+import { Form,, , Modal, Radio, Select } from 'antd'
 import { getScriptList, handleFile } from '@/infrastructure/api/knowledgeBase'
 import Toast from '@/app/components/base/flash-notice'
 import { tagList } from '@/app/components/tagSelect/ClassifyMode'
 import { bindTags } from '@/infrastructure/api/tagManage'
 import { noOnlySpacesRule } from '@/shared/utils'
+import { Input } from '@/app/components/ui'
 type OptionType = {
   label: string
   value: string

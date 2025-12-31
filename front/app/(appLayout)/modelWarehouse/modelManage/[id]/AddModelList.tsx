@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, Modal, Select, Space } from 'antd'
+import { Form,, , Modal, Select, Space } from 'antd'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import Toast from '@/app/components/base/flash-notice'
 import { getTagList, updateList } from '@/infrastructure/api/tagManage'
+import { Button, Input } from '@/app/components/ui'
 
 const { Option } = Select
 enum EKind {
@@ -120,7 +121,7 @@ const AddModal = (props: any) => {
                   </Space>
                 ))}
                 <Form.Item>
-                  <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                  <Button variant="secondary" onClick={() => add()} icon={<PlusOutlined />}>
                     添加模型
                   </Button>
                 </Form.Item>

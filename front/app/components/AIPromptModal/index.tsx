@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { Button, Input, Modal, Spin, message } from 'antd'
+import { Modal, Spin, message } from 'antd'
 import styles from './index.module.scss'
 import Icon from '@/app/components/base/iconFont'
 import { createPromptAI } from '@/infrastructure/api//prompt'
+import { Button, Input } from '@/app/components/ui'
 
 type AIPromptModalProps = {
   open: boolean
@@ -243,7 +244,7 @@ const AIPromptModal: React.FC<AIPromptModalProps> = ({ open, onClose, onConfirm 
         {resultContent && (
           <div className={styles.buttonGroup}>
             <div className={styles.leftButtons}>
-              <Button type="primary" onClick={handleConfirm}>确定</Button>
+              <Button variant='primary' onClick={handleConfirm}>确定</Button>
               <Button onClick={handleClose}>退出</Button>
             </div>
             <div className={styles.rightIcons}>

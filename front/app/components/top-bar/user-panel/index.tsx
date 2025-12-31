@@ -5,12 +5,12 @@ import { DownOutlined } from '@ant-design/icons'
 import { Menu, Transition } from '@headlessui/react'
 import Link from 'next/link'
 import classNames from 'classnames'
-import { Button, Form, Modal, message } from 'antd'
+import { Form, Modal, message } from 'antd'
 import PasswordModel from './passwordModel'
-import Avatar from '@/app/components/base/user-avatar'
 import { logout, updatePassword } from '@/infrastructure/api//common'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import PermitCheck from '@/app/components/app/permit-check'
+import { Avatar, Button } from '@/app/components/ui'
 
 type AccountSelectorProps = {
   isMobileView: boolean
@@ -80,7 +80,7 @@ export default function AccountSelector({ isMobileView }: AccountSelectorProps) 
         <div className='grow'>
           <div className='flex items-center'>
             <div className='leading-5 font-normal text-[14px] text-gray-800 break-all'>{userSpecified?.name}</div>
-            <Button type="link" className='ml-2 p-0 h-auto' onClick={() => setIsPasswordModalVisible(true)}>修改密码</Button>
+            <Button variant='tertiary' className='ml-2 p-0 h-auto' onClick={() => setIsPasswordModalVisible(true)}>修改密码</Button>
           </div>
           <div className='leading-[18px] text-xs font-normal text-gray-500 break-all'>{userSpecified?.email}</div>
         </div>

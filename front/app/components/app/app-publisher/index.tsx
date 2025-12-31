@@ -5,7 +5,7 @@ import {
 } from 'react'
 import dayjs from 'dayjs'
 import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { Button as AntdButton, Modal, message } from 'antd'
+import { Modal, message } from 'antd'
 import { useToggle } from 'ahooks'
 import { useStoreApi } from '@xyflow/react'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -17,7 +17,7 @@ import VersionManagementDrawer from './version-management-drawer'
 import { useStore, useWorkflowStore } from '@/app/components/taskStream/store'
 import Iconfont from '@/app/components/base/iconFont'
 import ModalCooperation from '@/app/components/app/picker-user/ModalCooperation'
-import Button from '@/app/components/base/click-unit'
+import { Button } from '@/app/components/ui'
 import { cancelPublish, enableBackflow } from '@/infrastructure/api//apps'
 import {
   AnchorPortal,
@@ -412,23 +412,23 @@ const AppCirculator = ({
               </div>
               {
                 publicationDate
-                  ? <AntdButton
+                  ? <Button
                     block
                     className='my-3'
                     onClick={handleCancenPublish}
                   >
                     取消发布
-                  </AntdButton>
+                  </Button>
                   : null
               }
 
-              <AntdButton
+              <Button
                 block
                 className='my-3'
                 onClick={handleDataReflow}
               >
                 {appDetail?.enable_backflow ? '关闭' : '开启'}应用数据回流
-              </AntdButton>
+              </Button>
 
               {!isPrivate && <ModalCooperation
                 btnProps={{ type: 'default', block: true }}
@@ -436,13 +436,13 @@ const AppCirculator = ({
               />}
 
               {/* 版本管理 */}
-              <AntdButton
+              <Button
                 block
                 className='my-3'
                 onClick={handleVersionManagement}
               >
                 版本管理
-              </AntdButton>
+              </Button>
 
             </div>
             <div className='p-4 pt-3 border-t-[0.5px] border-t-black/5'>

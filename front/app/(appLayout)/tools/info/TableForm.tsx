@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Button, Table } from 'antd'
+import { Table } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
+import { Button } from '@/app/components/ui'
 
 const TableForm = (props) => {
   const { columns, data } = props

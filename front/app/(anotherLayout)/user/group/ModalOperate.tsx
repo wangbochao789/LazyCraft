@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, InputNumber, Modal, message } from 'antd'
+import { Form,, , InputNumber, Modal, message } from 'antd'
 import ApplicationModal from './applicationModel'
 import { getquotaApplication, updateUserGroup } from '@/infrastructure/api/user'
 import PickerUser from '@/app/components/app/picker-user'
 import { usePermitCheck } from '@/app/components/app/permit-check'
+import { Button, Input } from '@/app/components/ui'
 const ModalOperate = (props: any) => {
   const { visible, onClose, modalInfo } = props
   const [form] = Form.useForm()
@@ -150,7 +151,7 @@ const ModalOperate = (props: any) => {
             >
               <InputNumber readOnly={!isSuper} placeholder='请输入配额，最大值不超过102400' max={102400} min={1} style={{ width: 280 }} precision={0} suffix="G" />
             </Form.Item>
-            {modalInfo?.mode === 'edit' && <Button className='ml-2 ant-form-text' type="primary" onClick={() => {
+            {modalInfo?.mode === 'edit' && <Button className='ml-2 ant-form-text' variant='primary' onClick={() => {
               setApplicationType('storage')
               setApplicationVisible(true)
             }}>申请存储</Button>}
@@ -166,7 +167,7 @@ const ModalOperate = (props: any) => {
             >
               <InputNumber readOnly={!isSuper} placeholder='请输入显卡配额' max={999999} min={0} style={{ width: 280 }} precision={0} suffix="张GPU" />
             </Form.Item>
-            {modalInfo?.mode === 'edit' && <Button className='ml-2 ant-form-text' type="primary" onClick={() => {
+            {modalInfo?.mode === 'edit' && <Button className='ml-2 ant-form-text' variant='primary' onClick={() => {
               setApplicationType('gpu')
               setApplicationVisible(true)
             }}>申请实例</Button>}

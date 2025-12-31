@@ -702,7 +702,7 @@ const Apps = () => {
             items: appCreateItems,
             onClick: handleMenuClick,
           }}>
-            <Button type="primary">
+            <Button variant='primary'>
               <Space>
                 新建应用
                 <DownOutlined />
@@ -914,7 +914,7 @@ const Apps = () => {
             />
 
             <div className='text-[#C1C3C9] text-xs mt-2'>注：建议尺寸 128px * 128px，支持.jpg、.png，大小不超过1MB。</div>
-            <Button style={{ position: 'absolute', top: 75, left: 105 }} type='link' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
+            <Button style={{ position: 'absolute', top: 75, left: 105 }} variant='tertiary' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
           </div>
         </Form.Item>
         <Form.Item name="name" label={curApp.convertToTemplate ? '模版名称' : '应用名称'}

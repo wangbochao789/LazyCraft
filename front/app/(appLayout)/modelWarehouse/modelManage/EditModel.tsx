@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
-import { Form, Input, Modal } from 'antd'
+import { Form,, , Modal } from 'antd'
 import { editModel } from '@/infrastructure/api/modelWarehouse'
 import Toast from '@/app/components/base/flash-notice'
+import { Input } from '@/app/components/ui'
 
 const ModalList = (props: any) => {
   const { visible, onClose, onSuccess, data } = props

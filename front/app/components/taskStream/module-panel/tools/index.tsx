@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import { Col, Input, Row } from 'antd'
+import { Col,, , Row } from 'antd'
 import { useRequest } from 'ahooks'
 import { useStoreApi } from '@xyflow/react'
 import Image from 'next/image'
@@ -19,6 +19,7 @@ import { fetchToolList } from '@/infrastructure/api/workflow'
 import type { ToolDetailInfo } from '@/infrastructure/api/types'
 import { dragEmptySubmodule } from '@/infrastructure/api/apps'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
+import { Input } from '@/app/components/ui'
 // import { prefixUrl } from '@/shared/utils'
 
 enum ToolModeEnum {

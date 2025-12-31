@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from 'antd'
+import { Button } from '@/app/components/ui'
 
 type AgreementButtonProps = {
   isRead: boolean
@@ -13,7 +13,7 @@ const commonStyles = {
 
 const AgreementButton: React.FC<AgreementButtonProps> = ({ isRead, onClick }) => (
   <div style={commonStyles.agreementContainer}>
-    <Button type='link' onClick={onClick} style={commonStyles.agreementLink}>
+    <Button variant='tertiary' onClick={onClick} style={commonStyles.agreementLink}>
       {isRead ? '✓ 已阅读并同意用户协议' : '📋 阅读用户协议（登录前必读）'}
     </Button>
   </div>

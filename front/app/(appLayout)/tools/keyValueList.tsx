@@ -1,6 +1,7 @@
 import React from 'react'
-import { Button, Form, Input } from 'antd'
+import { Form } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Input } from '@/app/components/ui'
 
 type KeyValueListProps = {
   name: string
@@ -71,7 +72,7 @@ const KeyValueList: React.FC<KeyValueListProps> = ({
             ))}
             {!disabled && (
               <Form.Item style={{ marginBottom: 0 }}>
-                <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                <Button variant="secondary" onClick={() => add()} block icon={<PlusOutlined />}>
                   {addButtonText}
                 </Button>
               </Form.Item>

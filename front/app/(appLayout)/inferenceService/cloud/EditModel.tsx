@@ -1,8 +1,9 @@
 import React from 'react'
-import { Form, Input, Modal, Tooltip } from 'antd'
+import { Form,, , Modal, Tooltip } from 'antd'
 import { QuestionCircleOutlined } from '@ant-design/icons'
 import { editModel } from '@/infrastructure/api/modelWarehouse'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Input } from '@/app/components/ui'
 
 const ModalList = (props: any) => {
   const { visible, onClose, onSuccess, data, kind } = props

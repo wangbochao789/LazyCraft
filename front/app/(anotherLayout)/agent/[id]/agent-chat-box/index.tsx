@@ -1,6 +1,6 @@
 'use client'
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
-import { Input, Modal, Upload } from 'antd'
+import { Modal, Upload } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import { useKeyPress } from 'ahooks'
 import Image from 'next/image'
@@ -18,6 +18,7 @@ import Icon from '@/app/components/base/iconFont'
 import MarkdownRenderer from '@/app/components/base/markdown-renderer'
 import AnswerIcon from '@/public/sensetime.png'
 import RobotDefaultIcon from '@/public/robot-default.png'
+import { Input } from '@/app/components/ui'
 
 const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }: {
   agentId?: string
@@ -436,7 +437,7 @@ const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }
 
       {/* <PermitCheck value='AUTH_0002'>
             <div>
-              <Button type='primary' onClick={handleCreate}>创建文档</Button>
+              <Button variant='primary' onClick={handleCreate}>创建文档</Button>
             </div>
           </PermitCheck> */}
     </div>

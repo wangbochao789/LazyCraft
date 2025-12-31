@@ -1,8 +1,9 @@
 'use client'
 import React, { useCallback } from 'react'
 import type { FC } from 'react'
-import { Button } from 'antd'
+
 import IconFont from '@/app/components/base/iconFont'
+import { Button } from '@/app/components/ui'
 /**
  * 工作流节点切换展开按钮组件的属性接口
  */
@@ -42,7 +43,7 @@ const WorkflowNodeToggleExpandButton: FC<WorkflowNodeToggleExpandButtonProps> = 
 
   return (
     <Button
-      type="text"
+      variant='ghost'
       size="small"
       icon={IconComponent}
       onClick={handleToggle}

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button, Form, Input, InputNumber, Modal, Popconfirm, Space, Table, message } from 'antd'
+import { Form,, , InputNumber, Modal, Popconfirm, Space, Table, message } from 'antd'
 import { useAntdTable } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import styles from './index.module.scss'
@@ -10,6 +10,7 @@ import PasswordReset from './passwordReset'
 import PermitCheck from '@/app/components/app/permit-check'
 import { deleteUser, getUserList, updateUserSpace } from '@/infrastructure/api/user'
 import { addUser, resetPassword } from '@/infrastructure/api/common'
+import { Button, Input } from '@/app/components/ui'
 
 type Result = {
   total: number
@@ -184,10 +185,10 @@ const UserList = () => {
       render: (_, record) => (
         <Space size="middle">
           <PermitCheck value={'AUTH_ADMINISTRATOR'} >
-            <Button type='link' onClick={() => handleResource(record)}>资源配置</Button>
+            <Button variant='tertiary' onClick={() => handleResource(record)}>资源配置</Button>
           </PermitCheck>
           <PermitCheck value={'AUTH_2005'} >
-            <Button type='link' size='small' onClick={() => handleResetPassword(record)}>重置密码</Button>
+            <Button variant='tertiary' size='small' onClick={() => handleResetPassword(record)}>重置密码</Button>
           </PermitCheck>
           <PermitCheck value={'AUTH_2005'} >
             <Popconfirm
@@ -197,7 +198,7 @@ const UserList = () => {
               okText="是"
               cancelText="否"
             >
-              <Button type='link' size='small' danger>删除</Button>
+              <Button variant='tertiary' size='small' danger>删除</Button>
             </Popconfirm>
           </PermitCheck>
           {record.name !== 'admin' && <PermitCheck value={'AUTH_ADMINISTRATOR'} >
@@ -208,7 +209,7 @@ const UserList = () => {
               okText="是"
               cancelText="否"
             >
-              <Button type='link' size='small' danger>删除</Button>
+              <Button variant='tertiary' size='small' danger>删除</Button>
             </Popconfirm>
           </PermitCheck>}
         </Space>
@@ -225,7 +226,7 @@ const UserList = () => {
           </Form.Item>
         </Form>
         <PermitCheck value={'AUTH_2005'}>
-          <Button type='primary' onClick={() => setShowAddUser(true)}>添加用户</Button>
+          <Button variant='primary' onClick={() => setShowAddUser(true)}>添加用户</Button>
         </PermitCheck>
       </div>
       <Table rowKey="id" columns={columns} {...tableProps} />

@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React, { useEffect, useState } from 'react'
-import { Button } from 'antd'
+
 import classNames from 'classnames'
 import type { FieldItemProps } from '../types'
 import { ValueType, flattenTree, formatValueByType, traveTree } from './utils'
@@ -9,6 +9,7 @@ import ModelSettingsModal, { type ModelSettings } from './components/model-setti
 import { Cascader } from '@/app/components/taskStream/elements/_foundation/components/form/base'
 import { get } from '@/infrastructure/api/base'
 import Icon from '@/app/components/base/iconFont'
+import { Button } from '@/app/components/ui'
 
 const FieldItem: FC<Partial<FieldItemProps>> = ({
   disabled,
@@ -187,7 +188,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
         />
         {model_show_type === 'localLLM'
           && <Button
-            type='link'
+            variant='tertiary'
             size='small'
             onClick={() => setIsModalVisible(true)}
             className="ml-2"

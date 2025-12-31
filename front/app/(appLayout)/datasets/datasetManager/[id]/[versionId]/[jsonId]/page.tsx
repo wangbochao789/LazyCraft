@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Breadcrumb, Button, Input, Pagination, Spin } from 'antd'
+import { Breadcrumb,, ,, , Pagination, Spin } from 'antd'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -11,6 +11,7 @@ import JSONEditor from 'jsoneditor'
 import styles from './index.module.scss'
 import { getDatasetFileRefluxList, getJsonFile, updateFile } from '@/infrastructure/api/data'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Button, Input } from '@/app/components/ui'
 
 const JsonDetail = (req) => {
   const { params, searchParams } = req
@@ -272,8 +273,8 @@ const JsonDetail = (req) => {
             <div></div>
           )}
         <div style={{ display: 'flex', gap: '8px' }}>
-          <Button disabled={saveDisabled} type='primary' onClick={() => handleUpdate(true, false, true)}>保存</Button>
-          <Button disabled={saveDisabled} type='primary' onClick={() => handleUpdate(true, true)}>保存并返回</Button>
+          <Button disabled={saveDisabled} variant='primary' onClick={() => handleUpdate(true, false, true)}>保存</Button>
+          <Button disabled={saveDisabled} variant='primary' onClick={() => handleUpdate(true, true)}>保存并返回</Button>
         </div>
       </div>
     </div>

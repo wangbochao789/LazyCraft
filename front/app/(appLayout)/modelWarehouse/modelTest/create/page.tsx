@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Breadcrumb, Button, Col, Divider, Form, Input, InputNumber, Radio, Row, Select, Space, Tooltip, Upload, message } from 'antd'
+import { Breadcrumb,, , Col,, , Form,, , InputNumber, Radio, Row, Select, Space, Tooltip, Upload, message } from 'antd'
 import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -12,6 +12,7 @@ import Iconfont from '@/app/components/base/iconFont'
 import { createModel, getBaseModelList, getModelListDraw } from '@/infrastructure/api/modelAdjust'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { noOnlySpacesRule } from '@/shared/utils'
+import { Button, Divider, Input } from '@/app/components/ui'
 
 const { Dragger } = Upload
 const { TextArea } = Input
@@ -435,7 +436,7 @@ const ModelTestCreate = () => {
                                       </Form.Item>
                                     </Col>
                                     {/* <Col xl={1}>
-                                      <Button disabled={indexB === 0} danger type='link' onClick={() => removeContact(contactName)}>删除</Button>
+                                      <Button disabled={indexB === 0} danger variant='tertiary' onClick={() => removeContact(contactName)}>删除</Button>
                                     </Col> */}
                                   </Row>
                                 ))}
@@ -445,7 +446,7 @@ const ModelTestCreate = () => {
                         </Col>
                       </Row>
                     ))}
-                    <Button type='link' onClick={() => add()}>添加维度</Button>
+                    <Button variant='tertiary' onClick={() => add()}>添加维度</Button>
                   </>
                 )}
               </Form.List>
@@ -646,7 +647,7 @@ metric:
                                 </Form.List>
                               </Row>
                             ))}
-                            <Button type='link' onClick={() => add()}>添加维度</Button>
+                            <Button variant='tertiary' onClick={() => add()}>添加维度</Button>
                           </>
                         )}
                       </Form.List>
@@ -660,7 +661,7 @@ metric:
       </div>
       <div className={styles.saveWrap}>
         <Divider style={{ marginBottom: 10, marginTop: 0 }} />
-        <Button onClick={handleOk} type='primary' style={{ marginRight: 20 }}>保存</Button>
+        <Button onClick={handleOk} variant='primary' style={{ marginRight: 20 }}>保存</Button>
         <Divider style={{ marginTop: 10, marginBottom: 5 }} />
       </div>
     </div>

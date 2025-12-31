@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Card, Form, Image, Input, Modal, Select, Upload, message } from 'antd'
+import { Card, Form, Image,, , Modal, Select, Upload, message } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
 import { useRouter } from 'next/navigation'
@@ -15,6 +15,7 @@ import { bindTags } from '@/infrastructure/api/tagManage'
 import type { CreateUpdateMcpParams, CreateUpdateMcpResponse, McpTool, SyncMcpParams } from '@/shared/types/toolsMcp'
 
 import { ssePost } from '@/infrastructure/api/base'
+import { Button, Input } from '@/app/components/ui'
 
 // 通用的键值对数据格式转换函数
 const convertObjectToKeyValueArray = (data: any, fieldName: string) => {
@@ -273,7 +274,7 @@ const InfoMcpModel = (props: any) => {
                 {form.getFieldValue('icon') ? <Image src={form.getFieldValue('icon').replace('app', 'static')} alt="avatar" preview={false} width={100} height={100} /> : uploadButton}
               </Upload>
               <p className={'text-[#C1C3C9] text-xs mt-2'}>注：建议尺寸 128px * 128px，支持.jpg、.png，大小不超过1MB。</p>
-              <Button style={{ position: 'absolute', top: 75, left: 95 }} type='link' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
+              <Button style={{ position: 'absolute', top: 75, left: 95 }} variant='tertiary' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
             </Form.Item>
 
             <Form.Item
@@ -456,7 +457,7 @@ const InfoMcpModel = (props: any) => {
           <>
             <Card
               title={'工具列表'}
-              extra={<Button type='link' onClick={handleUpdate} loading={updateLoading} disabled={updateLoading}>更新</Button>}
+              extra={<Button variant='tertiary' onClick={handleUpdate} loading={updateLoading} disabled={updateLoading}>更新</Button>}
               className={styles.toolListCard}
               bodyStyle={{
                 height: '300px',

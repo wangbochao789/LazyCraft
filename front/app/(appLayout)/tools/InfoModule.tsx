@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Image, Input, Modal, Upload } from 'antd'
+import { Form, Image,, , Modal, Upload } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import type { GetProp, UploadProps } from 'antd'
 
@@ -10,6 +10,7 @@ import { noOnlySpacesRule } from '@/shared/utils'
 import TagSelect from '@/app/components/tagSelect'
 import { bindTags } from '@/infrastructure/api/tagManage'
 import IconModal from '@/app/components/iconModal'
+import { Button, Input } from '@/app/components/ui'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 
@@ -150,7 +151,7 @@ const CreateModal = (props: any) => {
               {form.getFieldValue('icon') ? <Image src={form.getFieldValue('icon').replace('app', 'static')} alt="avatar" preview={false} width={100} height={100} /> : uploadButton}
             </Upload>
             <p className={'text-[#C1C3C9] text-xs mt-2'}>注：建议尺寸 128px * 128px，支持.jpg、.png，大小不超过1MB。</p>
-            <Button style={{ position: 'absolute', top: 75, left: 95 }} type='link' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
+            <Button style={{ position: 'absolute', top: 75, left: 95 }} variant='tertiary' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
           </Form.Item>
 
           <Form.Item

@@ -1,8 +1,9 @@
 'use client'
 import { memo } from 'react'
-import { Button, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { useRouter } from 'next/navigation'
 import { useStore, useWorkflowStore } from '../store'
+import { Button } from '@/app/components/ui'
 
 const LazyLLMDrawPanelButton = () => {
   const publicationDate = useStore(s => s.publicationDate)
@@ -20,7 +21,7 @@ const LazyLLMDrawPanelButton = () => {
         className='mr-2'
         disabled={!publicationDate}
         onClick={handleNavigateToPanel}
-        type='primary'
+        variant='primary'
       >
         统计分析看板
       </Button>

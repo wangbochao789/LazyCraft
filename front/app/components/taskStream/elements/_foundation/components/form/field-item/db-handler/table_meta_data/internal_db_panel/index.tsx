@@ -1,8 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Form, Input, Modal, Select, Table } from 'antd'
+import { Form,, , Modal, Select, Table } from 'antd'
 import { useRequest } from 'ahooks'
 import { getDataBaseTable, getDataBaseTableStructureByName } from '@/infrastructure/api//database'
+import { Input } from '@/app/components/ui'
 
 type TableEditModalProps = {
   type: 'add' | 'edit'

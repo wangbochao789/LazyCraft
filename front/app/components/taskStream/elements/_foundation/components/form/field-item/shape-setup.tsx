@@ -2,7 +2,7 @@
 import type { FC } from 'react'
 import React, { useEffect, useMemo, useRef } from 'react'
 import { v4 as uuid4 } from 'uuid'
-import { Button as BtnAntd, Tooltip } from 'antd'
+import { as BtnAntd, Tooltip } from 'antd'
 import type { FieldItemProps } from '../types'
 import { ValueType, formatValueByType } from './utils'
 import cn from '@/shared/utils/classnames'
@@ -14,6 +14,7 @@ import { currentLanguage } from '@/app/components/taskStream/elements/script/typ
 import Icon from '@/app/components/base/iconFont'
 import './config-shape.scss'
 import { EffectType, generateTypeReadOnlyShape } from '@/infrastructure/api/universeNodes/universe_default_config'
+import { Button } from '@/app/components/ui'
 
 const baseTypeOptions = [
   { label: 'str', value: 'str' },

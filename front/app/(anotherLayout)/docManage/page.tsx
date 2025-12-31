@@ -1,11 +1,12 @@
 'use client'
 import React from 'react'
-import { Button, Popconfirm, Space, Table } from 'antd'
+import { Popconfirm, Space, Table } from 'antd'
 import { useAntdTable } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import styles from './page.module.scss'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { deleteDoc, getDocList, publishDoc } from '@/infrastructure/api/docManage'
+import { Button } from '@/app/components/ui'
 type Result = {
   total: number
   list: any
@@ -68,8 +69,8 @@ const Articles = () => {
       title: '操作',
       render: (_, record: any) => (
         <Space size="middle">
-          <Button type='link' onClick={() => handleJumpDetail(record)}>编辑</Button>
-          <Button type='link' onClick={() => handleAction(record)}>{record?.status === 'unpublish' ? '发布' : '下架'}</Button>
+          <Button variant='tertiary' onClick={() => handleJumpDetail(record)}>编辑</Button>
+          <Button variant='tertiary' onClick={() => handleAction(record)}>{record?.status === 'unpublish' ? '发布' : '下架'}</Button>
           <Popconfirm
             title="请确认"
             description="删除后文章不可恢复"
@@ -77,7 +78,7 @@ const Articles = () => {
             okText="是"
             cancelText="否"
           >
-            <Button type='link' danger>删除</Button>
+            <Button variant='tertiary' danger>删除</Button>
           </Popconfirm>
         </Space>
       ),
@@ -92,7 +93,7 @@ const Articles = () => {
     <div className={styles.outerWrap}>
       <div className={styles.docWrap}>
         <div className={styles.topWrap}>
-          <Button type='primary' onClick={handleCreate}>创建文档</Button>
+          <Button variant='primary' onClick={handleCreate}>创建文档</Button>
         </div>
         <div className='mt-[20px]'>
           <Table

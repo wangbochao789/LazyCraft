@@ -1,8 +1,9 @@
 import React from 'react'
-import { Button, Modal, message } from 'antd'
+import { Modal, message } from 'antd'
 import copy from 'copy-to-clipboard'
 import styles from './apiKeyModel.module.scss'
 import type { AppItem } from '@/core/data/common'
+import { Button } from '@/app/components/ui'
 
 type ApiKeyModelProps = {
   visible: boolean
@@ -48,7 +49,7 @@ const ApiKeyModel: React.FC<ApiKeyModelProps> = ({ visible, onClose, appItem, on
           <Button key="cancel" onClick={onClose}>
             取消
           </Button>,
-          <Button key="confirm" type="primary" onClick={handleConfirmClose}>
+          <Button key="confirm" variant='primary' onClick={handleConfirmClose}>
             确认关闭
           </Button>,
         ]}
@@ -88,7 +89,7 @@ const ApiKeyModel: React.FC<ApiKeyModelProps> = ({ visible, onClose, appItem, on
             {getApiUrl()}
           </span>
           <Button
-            type="link"
+            variant='tertiary'
             size="small"
             onClick={handleCopy}
             className={styles.apiKeyCopyButton}

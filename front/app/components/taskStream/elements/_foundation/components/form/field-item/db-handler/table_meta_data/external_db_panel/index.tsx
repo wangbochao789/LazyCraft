@@ -1,10 +1,11 @@
 'use client'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { Button, Form, Input, Modal, Select, Switch, Table } from 'antd'
+import { Form,, , Modal, Select, Switch, Table } from 'antd'
 import { v4 as uuid4 } from 'uuid'
 import classNames from 'classnames'
 import style from './index.module.scss'
 import IconFont from '@/app/components/base/iconFont'
+import { Button, Input } from '@/app/components/ui'
 
 type TableEditModalProps = {
   type: 'add' | 'edit'
@@ -353,7 +354,7 @@ const TableEditModal: React.FC<any> = (props: TableEditModalProps) => {
               columns={columns as any[]}
               pagination={false}
             />
-            <Button onClick={handleAdd} type="primary" ghost style={{ marginTop: 16 }}>
+            <Button onClick={handleAdd} variant='primary' ghost style={{ marginTop: 16 }}>
               添加一行
             </Button>
           </Form.Item>

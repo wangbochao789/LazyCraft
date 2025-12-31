@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react'
-import { Button, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { shapeSelectors, useStore } from '../store'
+import { Button } from '@/app/components/ui'
 
 const LazyLLMHistoryPreviewButton = () => {
   const isHistoryPreviewed = useStore(s => s.isHistoryPreviewed)

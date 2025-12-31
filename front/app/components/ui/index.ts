@@ -11,16 +11,6 @@ export type { ButtonProps } from './button'
 // Input 输入框组件
 export { Input } from './input'
 
-// Card 卡片组件
-export {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from './card'
-
 // Modal 模态框组件
 export { Modal } from './modal'
 export type { ModalProps } from './modal'

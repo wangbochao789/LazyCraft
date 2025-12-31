@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Breadcrumb, Button, Col, Divider, Form, Input, InputNumber, Modal, Radio, Row, Select, TreeSelect } from 'antd'
+import { Breadcrumb,, , Col,, , Form,, , InputNumber, Modal, Radio, Row, Select, TreeSelect } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import InfoTitle from '../components/InfoTitle'
@@ -11,6 +11,7 @@ import { EMode, EType } from './config'
 import { createModel, deleteParam, getBaseModelList, getModelListFromFinetune } from '@/infrastructure/api/modelAdjust'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { useApplicationContext } from '@/shared/hooks/app-context'
+import { Button, Divider, Input } from '@/app/components/ui'
 
 type ModelItemType = {
   model: string
@@ -335,7 +336,7 @@ const CreateModelAdjust = () => {
                 >
                   {defineList.map((item: any) => <Option option={item?.finetune_config} value={item?.id} key={item?.id} label={item?.name}>
                     {item?.name} {!item?.is_default
-                      && <Button onClick={e => handleDelete(item?.id, e)} type='link' danger>删除</Button>
+                      && <Button onClick={e => handleDelete(item?.id, e)} variant='tertiary' danger>删除</Button>
                     }
                   </Option>)}
                 </Select>
@@ -343,7 +344,7 @@ const CreateModelAdjust = () => {
             </Col>
             <Col xl={16} lg={24}>
               <Row gutter={48} style={{ margin: 0, background: '#FAFAFB' }}>
-                <Col xl={24} lg={24} style={{ textAlign: 'right', marginTop: 12, marginBottom: 20 }}><Button onClick={openConfigModal} type='primary' ghost>保存为偏好设置</Button></Col>
+                <Col xl={24} lg={24} style={{ textAlign: 'right', marginTop: 12, marginBottom: 20 }}><Button onClick={openConfigModal} variant='primary' ghost>保存为偏好设置</Button></Col>
                 <Col xl={12} lg={24}>
                   <Form.Item
                     name="num_epochs"
@@ -514,7 +515,7 @@ const CreateModelAdjust = () => {
       </div>
       <div style={{ textAlign: 'right' }}>
         <Divider style={{ marginBottom: 10 }} />
-        <Button onClick={handleOk} type='primary' style={{ marginRight: 20 }}>发布微调任务</Button>
+        <Button onClick={handleOk} variant='primary' style={{ marginRight: 20 }}>发布微调任务</Button>
         <Divider style={{ marginTop: 10 }} />
       </div>
     </div>

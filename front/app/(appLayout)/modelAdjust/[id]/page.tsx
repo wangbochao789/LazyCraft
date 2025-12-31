@@ -1,11 +1,12 @@
 'use client'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Breadcrumb, Button, Card, Tag } from 'antd'
+import { Breadcrumb,, , Card, Tag } from 'antd'
 import Link from 'next/link'
 import styles from './index.module.scss'
 import DrawInfo from './DrawInfo'
 import { getAdjustInfo } from '@/infrastructure/api/modelAdjust'
 import { apiPrefix } from '@/app-specs'
+import { Button } from '@/app/components/ui'
 
 const _tags: any = {
   InQueue: { text: '排队中', color: 'warning' },
@@ -96,7 +97,7 @@ const AdjustDetail = (req) => {
           <div className={styles.infoWrap}>
             <div className={styles.first}>
               <div className={styles.name}>{baseInfo?.name}</div>
-              <div><Button type='primary' ghost onClick={() => setDrawVisible(true)}>查看完整配置</Button></div>
+              <div><Button variant='primary' ghost onClick={() => setDrawVisible(true)}>查看完整配置</Button></div>
             </div>
             <div>
               来源：{baseInfo?.created_from_info}

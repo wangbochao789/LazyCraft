@@ -1,6 +1,6 @@
 'use client'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Divider, Form, Input, Radio, Select, Space, Tag, Tooltip, message } from 'antd'
+import { Form,, , Radio, Select, Space, Tag, Tooltip, message } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useDebounceFn } from 'ahooks'
 import Editor from '../../components/editor/code-editor'
@@ -9,6 +9,7 @@ import styles from './page.module.scss'
 import type { ParamData, ParamItem } from '@/core/data/common'
 
 import { getPara, saveTools } from '@/infrastructure/api/tool'
+import { Button, Divider, Input } from '@/app/components/ui'
 
 const options = [
   { label: '代码', value: 'code' },
@@ -327,7 +328,7 @@ const IDEMode = (props: IProps) => {
                               <ExclamationCircleOutlined />
                             </Tooltip></div>
                             <Button
-                              type="link"
+                              variant='tertiary'
                               size='small'
                               onClick={() => add()}
                             >
@@ -411,7 +412,7 @@ const IDEMode = (props: IProps) => {
                                 ]}
                               />
                             </Form.Item>
-                            <Button className={styles.delSty} disabled={index === 0} danger type='link' onClick={() => remove(name)}>删除</Button>
+                            <Button className={styles.delSty} disabled={index === 0} danger variant='tertiary' onClick={() => remove(name)}>删除</Button>
                             <Form.Item
                               style={{ marginBottom: 10 }}
                               {...restField}
@@ -446,7 +447,7 @@ const IDEMode = (props: IProps) => {
                               <ExclamationCircleOutlined />
                             </Tooltip></div>
                             <Button
-                              type="link"
+                              variant='tertiary'
                               size='small'
                               onClick={() => add()}
 
@@ -530,7 +531,7 @@ const IDEMode = (props: IProps) => {
                                 ]}
                               />
                             </Form.Item>
-                            <Button className={styles.delSty} disabled={index === 0} danger type='link' onClick={() => remove(name)}>删除</Button>
+                            <Button className={styles.delSty} disabled={index === 0} danger variant='tertiary' onClick={() => remove(name)}>删除</Button>
                             <Form.Item
                               style={{ marginBottom: 10 }}
                               {...restField}
@@ -558,7 +559,7 @@ const IDEMode = (props: IProps) => {
               </Form>
             </div>
             <div className={styles.save}>
-              <Button type='primary' loading={saveLoad} onClick={savePara}>保 存</Button>
+              <Button variant='primary' loading={saveLoad} onClick={savePara}>保 存</Button>
             </div>
           </div>
         }
@@ -574,7 +575,7 @@ const IDEMode = (props: IProps) => {
           <div className='mb-[6px]'>输入</div>
           <Input.TextArea disabled={inputDisabled} value={runValue} onChange={textAreaChange} placeholder="请输入" rows={7} />
           {/* <Editor height={150} value={runValue} onChange={textAreaChange} language='json' /> */}
-          <div className='text-right mt-[10px] mb-[20px]'><Button disabled={inputDisabled} loading={runLoad} type='primary' onClick={runTest}>运 行</Button></div>
+          <div className='text-right mt-[10px] mb-[20px]'><Button disabled={inputDisabled} loading={runLoad} variant='primary' onClick={runTest}>运 行</Button></div>
         </div>
         <div>
           <div className='mb-[6px]'>输出</div>

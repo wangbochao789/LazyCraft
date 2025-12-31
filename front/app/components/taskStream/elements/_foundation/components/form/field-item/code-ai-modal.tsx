@@ -1,11 +1,12 @@
 'use client'
 import type { FC } from 'react'
 import { useRef, useState } from 'react'
-import { Button, Input, Modal, message } from 'antd'
+import { Modal, message } from 'antd'
 import styles from './code-ai-modal.module.scss'
 import Icon from '@/app/components/base/iconFont'
 import { createCodeAI } from '@/infrastructure/api/prompt'
 import type { CodeAIResponse } from '@/core/data/common'
+import { Button, Input } from '@/app/components/ui'
 
 type Props = {
   isOpen: boolean
@@ -102,7 +103,7 @@ const CodeAiModal: FC<Props> = ({
         <Button key="cancel" onClick={handleCancel}>
           取消
         </Button>,
-        <Button key="apply" type="primary" onClick={handleApply} disabled={!generatedCode}>
+        <Button key="apply" variant='primary' onClick={handleApply} disabled={!generatedCode}>
           应用代码
         </Button>,
       ]}
@@ -122,7 +123,7 @@ const CodeAiModal: FC<Props> = ({
               rows={8}
             />
             <Button
-              type="primary"
+              variant='primary'
               className={styles.generateBtn}
               onClick={handleGenerate}
               loading={isGenerating}

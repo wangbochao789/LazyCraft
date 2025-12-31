@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Breadcrumb, Button, Col, Divider, Form, Input, InputNumber, Row } from 'antd'
+import { Breadcrumb,, , Col,, , Form,, , InputNumber, Row } from 'antd'
 import Link from 'next/link'
 import { useDebounceFn } from 'ahooks'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -8,6 +8,7 @@ import styles from './page.module.scss'
 import MarkdownEditor from './md'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { createDoc, editDoc, getDocInfo } from '@/infrastructure/api/docManage'
+import { Button, Divider, Input } from '@/app/components/ui'
 // import MarkdownEditor from '@/app/components/preview/markdownEditor'
 
 const ArticleDetail = (req) => {
@@ -149,7 +150,7 @@ const ArticleDetail = (req) => {
       </div>
       <div className={styles.saveWrap}>
         <Divider style={{ marginBottom: 10, marginTop: 0 }} />
-        <Button loading={loading} onClick={() => run(1)} type='primary' style={{ marginRight: 20 }}>保存并上架</Button>
+        <Button loading={loading} onClick={() => run(1)} variant='primary' style={{ marginRight: 20 }}>保存并上架</Button>
         <Button loading={loading} onClick={() => run(0)} style={{ marginRight: 20 }}>仅保存</Button>
         <Divider style={{ marginTop: 10, marginBottom: 5 }} />
       </div>

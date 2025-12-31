@@ -92,7 +92,7 @@ const DatabaseDetailContent = () => {
                 <Input.Search placeholder='请输入数据表名称' style={{ width: 270 }} onSearch={search.submit} allowClear />
               </Form.Item>
             </Form>
-            <Button type="primary" ghost className='ml-[10px]' onClick={createNew}>新建数据库表</Button>
+            <Button variant='primary' ghost className='ml-[10px]' onClick={createNew}>新建数据库表</Button>
           </div>
           <Table
             rowKey='id'
@@ -105,12 +105,12 @@ const DatabaseDetailContent = () => {
             <Column title="创建人" dataIndex="created_by_account" render={v => v.name} />
             <Column title="操作" width={400} render={(_, record) => (
               <>
-                <Button type='link' size='small' onClick={() => handleDirect(record, 'editTableStructure')}>编辑表结构</Button>
-                <Divider type='vertical' />
-                <Button type='link' size='small' onClick={() => handleDirect(record, 'editTableData')}>编辑表数据</Button>
-                <Divider type='vertical' />
-                <Button type='link' size='small' onClick={() => handleDirect(record, 'individualTableDetail')}>数据表详情</Button>
-                <Divider type='vertical' />
+                <Button variant='tertiary' size='small' onClick={() => handleDirect(record, 'editTableStructure')}>编辑表结构</Button>
+                <Divider orientation="vertical" />
+                <Button variant='tertiary' size='small' onClick={() => handleDirect(record, 'editTableData')}>编辑表数据</Button>
+                <Divider orientation="vertical" />
+                <Button variant='tertiary' size='small' onClick={() => handleDirect(record, 'individualTableDetail')}>数据表详情</Button>
+                <Divider orientation="vertical" />
                 <Popconfirm
                   title="提示"
                   description="该数据库及名下的所有数据表将被删除不可恢复，请确认。确认后，该条记录删除。如果该表作为其他的表的外键，不可删除"
@@ -118,7 +118,7 @@ const DatabaseDetailContent = () => {
                   okText="是"
                   cancelText="否"
                 >
-                  <Button size='small' type='link' danger>删除</Button>
+                  <Button size='small' variant='tertiary' danger>删除</Button>
                 </Popconfirm>
               </>
             )} />

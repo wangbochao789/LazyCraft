@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Col, Divider, Input, Row } from 'antd'
+import { Col, Row } from 'antd'
 import { useStoreApi } from '@xyflow/react'
 import { groupBy } from 'lodash-es'
 import { MenuOutlined } from '@ant-design/icons'
@@ -16,6 +16,7 @@ import HoverTip from '@/app/components/base/hover-tip'
 import { dragEmptySubmodule } from '@/infrastructure/api//apps'
 
 import IconFont from '@/app/components/base/iconFont'
+import { Divider, Input } from '@/app/components/ui'
 
 // 分类对应的中文名称
 const CLASSIFICATION_NAMES: Record<string, string> = {

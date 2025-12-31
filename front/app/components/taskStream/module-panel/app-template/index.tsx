@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { Col, Input, Row, Spin } from 'antd'
+import { Col,, , Row, Spin } from 'antd'
 import { useRequest } from 'ahooks'
 import { useStoreApi } from '@xyflow/react'
 import { MenuOutlined } from '@ant-design/icons'
@@ -11,6 +11,7 @@ import { dragAppTemplate } from '@/infrastructure/api//apps'
 import HoverTip from '@/app/components/base/hover-tip'
 
 import IconFont from '@/app/components/base/iconFont'
+import { Input } from '@/app/components/ui'
 
 const AppTemplate = () => {
   const { data, loading, run } = useRequest<any, any>(params => fetchAppTemplateList({ qtype: 'already', ...params }))

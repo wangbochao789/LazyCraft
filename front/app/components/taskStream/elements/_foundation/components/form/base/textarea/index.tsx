@@ -1,8 +1,9 @@
 import React from 'react'
-import { Input } from 'antd'
+
 import type { TextAreaProps } from 'antd/lib/input'
 import classNames from 'classnames'
 import './index.scss'
+import { Input } from '@/app/components/ui'
 
 type CustomTextAreaProps = {
   readOnly?: boolean

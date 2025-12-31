@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Button, Dropdown, Modal, Space } from 'antd'
+import { Dropdown, Modal, Space } from 'antd'
 import { ClockCircleOutlined, DownOutlined, HistoryOutlined } from '@ant-design/icons'
 import { type Node, useNodes, useStoreApi } from '@xyflow/react'
 import {
@@ -24,6 +24,7 @@ import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import Form from '@/app/components/taskStream/elements/_foundation/components/form/field-layout'
 import { useResources } from '@/app/components/taskStream/logicHandlers/resStore'
 import { useStore as useAppStore } from '@/app/components/app/store'
+import { Button } from '@/app/components/ui'
 
 // 类型定义
 type Props = {
@@ -427,7 +428,7 @@ const InputsPanel = memo(({ onRun, isCanRunApp }: Props) => {
           ? (
             <div className='flex items-center'>
               <Button
-                type="link"
+                variant='tertiary'
                 size="small"
                 onClick={handleBackToCurrent}
                 className="p-0 mr-2 text-blue-600 hover:text-blue-800"
@@ -466,7 +467,7 @@ const InputsPanel = memo(({ onRun, isCanRunApp }: Props) => {
     <div className='flex flex-col px-4 py-2 space-y-2'>
       <div className='flex items-center justify-between space-x-2'>
         <Button
-          type='primary'
+          variant='primary'
           disabled={!isCanRunApp || (workflowLiveData?.result?.status === ExecutionNodeStatus.Running)}
           className='w-full'
           onClick={doRun}

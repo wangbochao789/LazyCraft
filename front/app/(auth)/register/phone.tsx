@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, message } from 'antd'
+import { Form,, , message } from 'antd'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Captcha from './captcha'
@@ -9,6 +9,7 @@ import IconFont from '@/app/components/base/iconFont'
 import { checkExist, commonPost } from '@/infrastructure/api/common'
 import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
 import { userEmailValidationRegex } from '@/app-specs'
+import { Button, Input } from '@/app/components/ui'
 
 const Register_phone = () => {
   const [form] = Form.useForm()
@@ -247,7 +248,7 @@ const Register_phone = () => {
         onChange={() => verificationKeyError && setVerificationKeyError(null)}
       />
       <Form.Item>
-        <Button style={{ height: 40 }} loading={loading} className="submit_btn" type="primary" htmlType="submit" block>
+        <Button style={{ height: 40 }} loading={loading} className="submit_btn" variant='primary' htmlType="submit" block>
           注册
         </Button>
       </Form.Item>

@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React from 'react'
-import { Button, Divider, Form } from 'antd'
+import { Form } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import { v4 as uuid4 } from 'uuid'
 import type { FieldItemProps } from '../types'
@@ -9,6 +9,7 @@ import CodeEditor from './code'
 import IconFont from '@/app/components/base/iconFont'
 import { TextArea } from '@/app/components/taskStream/elements/_foundation/components/form/base'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
+import { Button, Divider } from '@/app/components/ui'
 
 const SelectComponent: FC<Partial<FieldItemProps>> = ({
   name,
@@ -49,12 +50,12 @@ const SelectComponent: FC<Partial<FieldItemProps>> = ({
         style={{ paddingBottom: 16, marginBottom: 16, borderBottom: '1px solid #e8e8e8' }}
       >
         <label style={{ color: '#5E6472' }}>
-          <Divider type="vertical" style={{ backgroundColor: '#1677ff', width: 3, marginLeft: 0 }} />
+          <Divider orientation="vertical" style={{ backgroundColor: '#1677ff', width: 3, marginLeft: 0 }} />
           自然语言转SQL脚本的样例
         </label>
         {!readOnly && <Button
           size='small'
-          type='text'
+          variant='ghost'
           style={{ color: '#1677ff', float: 'right' }}
           onClick={addGroup}
           disabled={readOnly}

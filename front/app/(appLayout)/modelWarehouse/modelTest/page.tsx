@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Form, Input, Popconfirm, Radio, Table } from 'antd'
+import { Form,, , Popconfirm, Radio, Table } from 'antd'
 import type { TableProps } from 'antd'
 import { useAntdTable } from 'ahooks'
 import { useRouter } from 'next/navigation'
@@ -10,6 +10,7 @@ import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import Toast from '@/app/components/base/flash-notice'
 import { deleteTest, getTestList } from '@/infrastructure/api/modelTest'
 import { apiPrefix } from '@/app-specs'
+import { Button, Input } from '@/app/components/ui'
 
 type DataType = {
   key: string
@@ -199,11 +200,11 @@ const ModelAdjust = () => {
         return (
           <>
             {canEdit
-              ? <Button disabled={btnDisabled} size="small" type='link' onClick={() => handleJump(record, record?.evaluation_method === 'manual' ? 'dimension' : 'aiDimension')}>标注</Button>
-              : <Button disabled={btnDisabled} size="small" type='link' onClick={() => handleJumpView(record, record?.evaluation_method === 'manual' ? 'dimension' : 'aiDimension')}>查看</Button>
+              ? <Button disabled={btnDisabled} size="small" variant='tertiary' onClick={() => handleJump(record, record?.evaluation_method === 'manual' ? 'dimension' : 'aiDimension')}>标注</Button>
+              : <Button disabled={btnDisabled} size="small" variant='tertiary' onClick={() => handleJumpView(record, record?.evaluation_method === 'manual' ? 'dimension' : 'aiDimension')}>查看</Button>
             }
-            <Button type='link' disabled={btnDisabled} size="small" onClick={() => handleJump(record, 'testReport')}>测评报告</Button>
-            <Button type='link' disabled={btnDisabled} size="small" onClick={() => handleDownload(record)}>下载</Button>
+            <Button variant='tertiary' disabled={btnDisabled} size="small" onClick={() => handleJump(record, 'testReport')}>测评报告</Button>
+            <Button variant='tertiary' disabled={btnDisabled} size="small" onClick={() => handleDownload(record)}>下载</Button>
             {canAddDelete && <Popconfirm
               title="提示"
               disabled={btnDisabled}
@@ -212,7 +213,7 @@ const ModelAdjust = () => {
               okText="是"
               cancelText="否"
             >
-              <Button disabled={btnDisabled} type='link' size="small" danger>删除</Button>
+              <Button disabled={btnDisabled} variant='tertiary' size="small" danger>删除</Button>
             </Popconfirm>}
           </>
         )
@@ -223,7 +224,7 @@ const ModelAdjust = () => {
     <div className={styles.content}>
       <div className={styles.craBtn}>
         <Radio.Group options={authRadio.is_self_space ? mineAuthOptions : authOptions} onChange={altChange} value={authValue} optionType="button" />
-        {authValue === 'mine' && <Button type='primary' onClick={handleCreate}>创建测评任务</Button>}
+        {authValue === 'mine' && <Button variant='primary' onClick={handleCreate}>创建测评任务</Button>}
       </div>
       <div className={styles.tableHeader}>
         <Form form={form} >

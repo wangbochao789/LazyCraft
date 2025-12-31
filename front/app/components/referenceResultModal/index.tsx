@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Button, Empty, List, Modal, Segmented, Spin, Table, Typography } from 'antd'
+import { List, Modal, Segmented, Spin, Table, Typography } from 'antd'
 import { get } from '@/infrastructure/api/base'
+import { Button, Empty } from '@/app/components/ui'
 
 type ReferenceType = 'tool' | 'app' | 'kb' | 'mcp'
 

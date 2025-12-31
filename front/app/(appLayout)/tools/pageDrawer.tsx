@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Drawer, Form, Image, Input, Popconfirm, Select, Space, Upload, message } from 'antd'
+import { Drawer, Form, Image,, , Popconfirm, Select, Space, Upload, message } from 'antd'
 import { CloudSyncOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
 import KeyValueList from './keyValueList'
@@ -13,6 +13,7 @@ import { addMcp, getMcp, publishMcp } from '@/infrastructure/api/toolmcp'
 import { ssePost } from '@/infrastructure/api/base'
 import type { CreateUpdateMcpParams, CreateUpdateMcpResponse, GetMcpParams, GetMcpResponse, McpTool, SyncMcpParams, TestMcpResponse } from '@/shared/types/toolsMcp'
 import { bindTags } from '@/infrastructure/api/tagManage'
+import { Button, Input } from '@/app/components/ui'
 
 // 通用的键值对数据格式转换函数
 const convertObjectToKeyValueArray = (data: any, fieldName: string) => {
@@ -341,7 +342,7 @@ const PageDrawer = (props: any) => {
         extra={
           <Space>
             <Button onClick={handleCancel}>取消</Button>
-            <Button type="primary" loading={confirmLoading} onClick={handleOk}>
+            <Button variant='primary' loading={confirmLoading} onClick={handleOk}>
               确定
             </Button>
           </Space>
@@ -381,7 +382,7 @@ const PageDrawer = (props: any) => {
                     : uploadButton}
                 </Upload>
                 <p style={{ color: '#C1C3C9' }}>注：建议尺寸 128px * 128px，支持.jpg、.png，大小不超过1MB。</p>
-                <Button className={styles.moreIconButton} type='link' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
+                <Button className={styles.moreIconButton} variant='tertiary' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
               </div>
             </Form.Item>
 
@@ -601,7 +602,7 @@ const PageDrawer = (props: any) => {
               {connectionLoading
                 ? (
                   <Button
-                    type="primary"
+                    variant='primary'
                     disabled={!canProceed}
                     onClick={() => {
                       if (!canProceed) {
@@ -620,7 +621,7 @@ const PageDrawer = (props: any) => {
                 )
                 : (
                   <Button
-                    type="primary"
+                    variant='primary'
                     onClick={() => handlePublishAction('正式发布')}
                   >
                     发布

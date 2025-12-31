@@ -1,12 +1,13 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
-import { Button, Card, Form, Modal, Radio, Table, Tag, message } from 'antd'
+import { Card, Form, Modal, Radio, Table, Tag, message } from 'antd'
 import type { RadioChangeEvent } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import CreateModal from './CreateModule'
 import EditModel from './EditModel'
 import { getModelInfo, getModelListNew } from '@/infrastructure/api/modelWarehouse'
 import { deleteModelList } from '@/infrastructure/api/user'
+import { Button } from '@/app/components/ui'
 
 // 定义模型数据类型
 type ModelItemType = {
@@ -177,7 +178,7 @@ const CloudService = () => {
   return (
     <div style={{ padding: '24px' }}>
       <Card title="云服务模型管理" style={{ marginBottom: '24px', position: 'relative' }}>
-        {/* <Button type='primary' style={{ marginRight: '10px', position: 'absolute', right: '10px', top: '10px' }} >新增</Button> */}
+        {/* <Button variant='primary' style={{ marginRight: '10px', position: 'absolute', right: '10px', top: '10px' }} >新增</Button> */}
         <Form.Item label="厂商名字">
           <Radio.Group
             style={{ marginLeft: 30 }}
@@ -198,7 +199,7 @@ const CloudService = () => {
 
       </Card>
 
-      <Card title={`${kind} 模型列表`} extra={<Button type="link" onClick={() => {
+      <Card title={`${kind} 模型列表`} extra={<Button variant='tertiary' onClick={() => {
         setEditModelVisible(true)
       }}>key</Button>}>
         <Table
@@ -230,7 +231,7 @@ const CloudService = () => {
                       <span className="text-gray-600 w-24">创建人：</span>
                       <span>{detail.user_name || '-'}</span>
                       <Button
-                        type="primary"
+                        variant='primary'
                         size="small"
                         style={{ position: 'absolute', right: 50 }}
                         onClick={() => startModel(record.id)}

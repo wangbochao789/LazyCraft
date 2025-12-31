@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Modal, Radio, message } from 'antd'
+import { Form, Modal, Radio, message } from 'antd'
 import PickerUser from './index'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { coopClose, coopOpen, getCoopStatus } from '@/infrastructure/api//user'
+import { Button } from '@/app/components/ui'
 
 const ModalOperate = (props: any) => {
   const { btnProps, modalProps, groupData } = props
@@ -76,7 +77,7 @@ const ModalOperate = (props: any) => {
   }
 
   return (<>
-    <Button type='primary' {...btnProps} onClick={modalOpen}>协作管理</Button>
+    <Button variant='primary' {...btnProps} onClick={modalOpen}>协作管理</Button>
     <Modal title="工作空间" width={720} {...modalProps} open={visible} onOk={handleOk} onCancel={handleCancel}>
       <Form
         form={form}

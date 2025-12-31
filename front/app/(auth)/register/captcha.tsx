@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Form, Input, Row } from 'antd'
+import { Col, Form,, , Row } from 'antd'
 import { SafetyCertificateOutlined } from '@ant-design/icons'
 import type { FormItemProps } from 'antd/es/form/FormItem'
 import styles from './phone.module.scss'
+import { Button, Input } from '@/app/components/ui'
 
 type IProps = {
   name?: string

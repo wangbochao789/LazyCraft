@@ -3,13 +3,14 @@ import {
   useRouter,
   useSearchParams,
 } from 'next/navigation'
-import { Button, Cascader, Form, Input, InputNumber, Popconfirm, Radio, Select, Table, Timeline, Tooltip, TreeSelect, Upload } from 'antd'
+import { Cascader, Form,, , InputNumber, Popconfirm, Radio, Select, Table, Timeline, Tooltip, TreeSelect, Upload } from 'antd'
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
 import styles from './page.module.scss'
 import IconFont from '@/app/components/base/iconFont'
 import Toast from '@/app/components/base/flash-notice'
 import { getToolApiInfo, testTool, toolsFields, upsertField, upsertToolsApi } from '@/infrastructure/api/tool'
+import { Button, Input } from '@/app/components/ui'
 
 type Props = {
   id: string
@@ -175,7 +176,7 @@ const Step1 = (props: Props) => {
         dataSource.length >= 1
           ? (
             <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(index)} okText='是' cancelText="否">
-              <Button type='link' size='small' danger disabled={dataSource.length === 1} >删除</Button>
+              <Button variant='tertiary' size='small' danger disabled={dataSource.length === 1} >删除</Button>
             </Popconfirm>
           )
           : null,
@@ -217,7 +218,7 @@ const Step1 = (props: Props) => {
               <span><span style={{ color: '#FF5E5E' }}>* </span>Header列表<Tooltip className='ml-1' title="HTTP请求头列表是客户端程序和服务器在每个HTTP请求和响应中发送和接收的字符串列表。这些标头通常对最终用户不可见，仅由服务器和客户端应用程序处理或记录">
                 <ExclamationCircleOutlined />
               </Tooltip></span>
-              <Button type='link' size='small' className='mb-[4px]' style={{ float: 'right' }} onClick={handleAdd}>添 加</Button>
+              <Button variant='tertiary' size='small' className='mb-[4px]' style={{ float: 'right' }} onClick={handleAdd}>添 加</Button>
             </div>
             <Table
               // size='small'
@@ -405,7 +406,7 @@ const Step1 = (props: Props) => {
         </Form>
       </div>
       <div className={styles.footer}>
-        <Button type='primary' onClick={handleNext}>
+        <Button variant='primary' onClick={handleNext}>
           下一步
         </Button>
       </div>
@@ -596,7 +597,7 @@ const Step2 = (props: Props) => {
         dataSource.length >= 1
           ? (
             <Popconfirm title="确定要删除吗?" okText='是' cancelText="否" onConfirm={() => handleDelete(index)}>
-              <Button size='small' type='link' danger disabled={dataSource.length === 1} >删除</Button>
+              <Button size='small' variant='tertiary' danger disabled={dataSource.length === 1} >删除</Button>
             </Popconfirm>
           )
           : null,
@@ -646,7 +647,7 @@ const Step2 = (props: Props) => {
         >
           <div className={styles.tableHeader}>
             <p>输入参数</p>
-            <Button type='link' size='small' onClick={handleAdd}>添加参数</Button>
+            <Button variant='tertiary' size='small' onClick={handleAdd}>添加参数</Button>
           </div>
 
           <Table
@@ -661,7 +662,7 @@ const Step2 = (props: Props) => {
         <Button onClick={handleBack}>
           上一步
         </Button>
-        <Button type='primary' className='ml-4' onClick={handleNext}>
+        <Button variant='primary' className='ml-4' onClick={handleNext}>
           下一步
         </Button>
       </div>
@@ -779,7 +780,7 @@ const Step3 = (props: Props) => {
         dataSource.length >= 1
           ? (
             <Popconfirm title="确定要删除吗?" okText='是' cancelText="否" onConfirm={() => handleDelete(index)}>
-              <Button size='small' type='link' danger disabled={dataSource.length === 1} >删除</Button>
+              <Button size='small' variant='tertiary' danger disabled={dataSource.length === 1} >删除</Button>
             </Popconfirm>
           )
           : null,
@@ -795,7 +796,7 @@ const Step3 = (props: Props) => {
         >
           <div className={styles.tableHeader}>
             <p>输出参数</p>
-            <Button type='link' size='small' onClick={handleAdd}>添加</Button>
+            <Button variant='tertiary' size='small' onClick={handleAdd}>添加</Button>
           </div>
           <Table
             // size='small'
@@ -810,7 +811,7 @@ const Step3 = (props: Props) => {
         <Button onClick={handleBack}>
           上一步
         </Button>
-        <Button type='primary' className='ml-4' onClick={handleNext}>
+        <Button variant='primary' className='ml-4' onClick={handleNext}>
           下一步
         </Button>
       </div>
@@ -948,10 +949,10 @@ const Step4 = (props: Props) => {
                     okText="是"
                     cancelText="否"
                   >
-                    <Button className='mr-[10px]' type='primary'>去授权</Button>
+                    <Button className='mr-[10px]' variant='primary'>去授权</Button>
                   </Popconfirm>
                 }
-                <Button type='primary' onClick={handleRun}>运 行</Button>
+                <Button variant='primary' onClick={handleRun}>运 行</Button>
               </div>
             </div>
             {data?.tool_field_output_ids?.length === 1 && <div className={styles.horizontalItem}>
@@ -996,7 +997,7 @@ const Step4 = (props: Props) => {
         <Button onClick={handleBack}>
           上一步
         </Button>
-        <Button type='primary' className='ml-4' onClick={handleConfirm}>
+        <Button variant='primary' className='ml-4' onClick={handleConfirm}>
           {'保存'}
         </Button>
       </div>

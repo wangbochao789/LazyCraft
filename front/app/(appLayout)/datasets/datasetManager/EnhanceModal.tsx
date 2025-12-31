@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import { Form, Input, Modal, Select } from 'antd'
+import { Form,, , Modal, Select } from 'antd'
 import { createKnowledgeBase, updateKnowledgeBase } from '@/infrastructure/api/knowledgeBase'
 import Toast from '@/app/components/base/flash-notice'
 import { categoryItems } from '@/shared/utils'
+import { Input } from '@/app/components/ui'
 
 const EnhanceModal = (props: any) => {
   const { visible, onClose, onSuccess, data } = props

@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React, { useEffect, useRef, useState } from 'react'
-import { Cascader, Form, Input, Modal, Select } from 'antd'
+import { Cascader, Form,, , Modal, Select } from 'antd'
 import './index.scss'
 import { traveTree } from '../../field-item/utils'
 import { useApplicationContext } from '@/shared/hooks/app-context'
@@ -9,6 +9,7 @@ import { useStore } from '@/app/components/taskStream/store'
 import { useStore as useAppStore } from '@/app/components/app/store'
 import { createModel, getBaseModelList } from '@/infrastructure/api/modelAdjust'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Input } from '@/app/components/ui'
 
 type ModelAdjustCreateBtnProps = {
   nodeName: string
@@ -123,7 +124,7 @@ const ModelAdjustCreateBtn: FC<any> = (props: ModelAdjustCreateBtnProps) => {
   return (
     <>
       {/* <Button
-        type='primary'
+        variant='primary'
         size="small"
         className={className}
         style={{ ...style, fontSize: 13 }}

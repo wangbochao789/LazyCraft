@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
-import { Form, Input, Modal } from 'antd'
+import { Form,, , Modal } from 'antd'
 import { createKnowledgeBase, updateKnowledgeBase } from '@/infrastructure/api/knowledgeBase'
 import Toast from '@/app/components/base/flash-notice'
 import { noOnlySpacesRule } from '@/shared/utils'
 import TagSelect from '@/app/components/tagSelect'
 import { bindTags } from '@/infrastructure/api/tagManage'
+import { Input } from '@/app/components/ui'
 
 const CreateModal = (props: any) => {
   const { visible, onClose, onSuccess, data, gettaglist } = props

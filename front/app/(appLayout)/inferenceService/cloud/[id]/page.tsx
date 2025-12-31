@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Breadcrumb, Button, Card, Popconfirm, Radio, Table } from 'antd'
+import { Breadcrumb,, , Card, Popconfirm, Radio, Table } from 'antd'
 import Link from 'next/link'
 import { useAntdTable } from 'ahooks'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -13,6 +13,7 @@ import { getModelInfo, reDown } from '@/infrastructure/api/modelWarehouse'
 import { deleteModel, getModelList } from '@/infrastructure/api/modelAdjust'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { usePermitCheck } from '@/app/components/app/permit-check'
+import { Button } from '@/app/components/ui'
 
 const ModelDetail = (req) => {
   const { id } = req.params
@@ -114,7 +115,7 @@ const ModelDetail = (req) => {
       align: 'right',
       render: (_, record) => (
         <>
-          {!!record?.finetune_task_id && <Button type='link' size='small' onClick={() => handleJumpDetail(record)}>查看训练详情</Button>}
+          {!!record?.finetune_task_id && <Button variant='tertiary' size='small' onClick={() => handleJumpDetail(record)}>查看训练详情</Button>}
           {(userSpecified.id === baseInfo.user_id || hasPermit('AUTH_5008')) && <Popconfirm
             title="提示"
             description="是否确认删除"
@@ -122,7 +123,7 @@ const ModelDetail = (req) => {
             okText="是"
             cancelText="否"
           >
-            <Button type='link' size='small' danger>删除</Button>
+            <Button variant='tertiary' size='small' danger>删除</Button>
           </Popconfirm>}
         </>
       ),
@@ -160,11 +161,11 @@ const ModelDetail = (req) => {
             </div>
           </div>
           <div className='flex'>
-            {baseInfo?.model_type === 'online' && hasPermit('AUTH_5008') && qtype !== 'builtin' && <Button className='mr-[10px]' type='primary' ghost onClick={() => setShowAddModel(true)}>添加模型清单</Button>}
-            {baseInfo?.model_type === 'online' && hasPermit('AUTH_5007') && <Button className='mr-[10px]' type='primary' ghost onClick={() => setShowAddModel(true)}>添加模型清单</Button>}
-            {baseInfo?.model_type === 'local' && baseInfo?.model_from !== 'existModel' && baseInfo?.model_status === '4' && <Button className='mr-[10px]' type='primary' ghost onClick={reDownload}>重新下载</Button>}
-            {baseInfo?.model_type === 'local' && baseInfo?.model_from !== 'existModel' && baseInfo?.model_status === '1' && <Button className='mr-[10px]' type='primary' ghost onClick={reDownload}>下载模型</Button>}
-            <Button type='primary' ghost onClick={() => setDrawVisible(true)}>查看更多详情</Button>
+            {baseInfo?.model_type === 'online' && hasPermit('AUTH_5008') && qtype !== 'builtin' && <Button className='mr-[10px]' variant='primary' ghost onClick={() => setShowAddModel(true)}>添加模型清单</Button>}
+            {baseInfo?.model_type === 'online' && hasPermit('AUTH_5007') && <Button className='mr-[10px]' variant='primary' ghost onClick={() => setShowAddModel(true)}>添加模型清单</Button>}
+            {baseInfo?.model_type === 'local' && baseInfo?.model_from !== 'existModel' && baseInfo?.model_status === '4' && <Button className='mr-[10px]' variant='primary' ghost onClick={reDownload}>重新下载</Button>}
+            {baseInfo?.model_type === 'local' && baseInfo?.model_from !== 'existModel' && baseInfo?.model_status === '1' && <Button className='mr-[10px]' variant='primary' ghost onClick={reDownload}>下载模型</Button>}
+            <Button variant='primary' ghost onClick={() => setDrawVisible(true)}>查看更多详情</Button>
           </div>
         </div>
       </Card>
@@ -173,7 +174,7 @@ const ModelDetail = (req) => {
       </div>}>
         <div className={styles.adjustWrap}>
           <div className={styles.headWrap}>
-            {baseInfo?.model_kind === 'localLLM' && (userSpecified.id === baseInfo.user_id || hasPermit('AUTH_5008')) && <div style={{ width: '100%', textAlign: 'right' }}><Button type='primary' ghost onClick={() => setShowAddModal(true)}>导入微调模型</Button></div>}
+            {baseInfo?.model_kind === 'localLLM' && (userSpecified.id === baseInfo.user_id || hasPermit('AUTH_5008')) && <div style={{ width: '100%', textAlign: 'right' }}><Button variant='primary' ghost onClick={() => setShowAddModal(true)}>导入微调模型</Button></div>}
             {baseInfo?.model_type === 'online' && <Radio.Group options={fixData(baseInfo?.models)} value={type} onChange={onChange} optionType="button" />}
           </div>
           <Table rowKey="id" className='mt-[20px]' columns={columns} {...tableProps} />

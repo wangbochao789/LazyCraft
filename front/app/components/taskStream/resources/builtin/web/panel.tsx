@@ -1,9 +1,10 @@
 import type { FC } from 'react'
 import React from 'react'
-import { Form, Input } from 'antd'
+import { Form } from 'antd'
 import useConfig from './use-config'
 import { useStore } from '@/app/components/taskStream/store'
 import FieldItem from '@/app/components/taskStream/elements/_foundation/components/form/field-item'
+import { Input } from '@/app/components/ui'
 
 const WebResourcePanel: FC<any> = ({
   id,

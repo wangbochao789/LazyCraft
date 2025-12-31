@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React, { memo, useRef, useState } from 'react'
-import { Affix, Button, message } from 'antd'
+import { Affix,, , message } from 'antd'
 import { useRequest } from 'ahooks'
 import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import produce from 'immer'
@@ -23,6 +23,7 @@ import { useFetchWebOrServerUrl } from '@/app/components/taskStream/logicHandler
 import { sleep } from '@/shared/utils'
 import { TEXT_GENERATION_TIMEOUT } from '@/app-specs'
 import { ExecutionexecutionStatus as WorkflowexecutionStatus } from '@/app/components/taskStream/types'
+import { Button } from '@/app/components/ui'
 
 const normalizeErrorMessage = (err: any): string => {
   if (typeof err === 'string')
@@ -551,7 +552,7 @@ const BatchRun: FC = () => {
                   <ExclamationCircleOutlined className='w-4 h-4 text-[#D92D20]' />
                   <div className='ml-1 text-[#D92D20]'>有 {allFailedTaskList.length} 条任务失败</div>
                   <Button
-                    type='primary'
+                    variant='primary'
                     className='ml-2'
                     onClick={() => forwardTaskQueue(1)}
                   >
@@ -559,7 +560,7 @@ const BatchRun: FC = () => {
                   </Button>
                   <div className='mx-3 w-[1px] h-3.5 bg-gray-200'></div>
                   <Button
-                    type='primary'
+                    variant='primary'
                     className='ml-2'
                     onClick={() => doSetAllTasksRef([])}
                   >

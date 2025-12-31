@@ -1,11 +1,12 @@
 'use client'
 import { useState } from 'react'
-import { Button, Form, Input, message } from 'antd'
+import { Form,, , message } from 'antd'
 import { useRouter, useSearchParams } from 'next/navigation'
 import cn from 'classnames'
 import style from './page.module.scss'
 import IconFont from '@/app/components/base/iconFont'
 import { changePasswordWithToken } from '@/infrastructure/api/common'
+import { Button, Input } from '@/app/components/ui'
 
 const ResetPasswordForm = () => {
   const searchParams = useSearchParams()
@@ -107,7 +108,7 @@ const ResetPasswordForm = () => {
               />
             </Form.Item>
             <Form.Item>
-              <Button style={{ height: 40 }} loading={loading} className="submit_btn" type="primary" htmlType="submit" block>
+              <Button style={{ height: 40 }} loading={loading} className="submit_btn" variant='primary' htmlType="submit" block>
                 确 认
               </Button>
             </Form.Item>

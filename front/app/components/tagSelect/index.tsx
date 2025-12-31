@@ -1,7 +1,8 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
-import { Button, Form, Select } from 'antd'
+import { Form, Select } from 'antd'
 import { deleteTag, getTagList } from '@/infrastructure/api//tagManage'
 import Toast from '@/app/components/base/flash-notice'
+import { Button } from '@/app/components/ui'
 
 const { Option } = Select
 

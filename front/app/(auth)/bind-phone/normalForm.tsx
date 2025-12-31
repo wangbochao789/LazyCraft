@@ -1,11 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Input } from 'antd'
+import { Form } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Captcha from '../register/captcha'
 import style from './page.module.scss'
 import { checkExist, login } from '@/infrastructure/api/common'
+import { Button, Input } from '@/app/components/ui'
 
 const NormalForm = () => {
   const router = useRouter()
@@ -95,7 +96,7 @@ const NormalForm = () => {
             onChange={() => verificationKeyError && setVerificationKeyError(null)}
           />
           <Form.Item>
-            <Button loading={isLoading} style={{ height: 40 }} type="primary" htmlType="submit" block>
+            <Button loading={isLoading} style={{ height: 40 }} variant='primary' htmlType="submit" block>
               登录
             </Button>
           </Form.Item>

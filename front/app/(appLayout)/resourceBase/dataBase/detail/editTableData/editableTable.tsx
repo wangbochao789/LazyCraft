@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import type { GetRef, InputRef, TableProps } from 'antd'
-import {
-  Button, Form, Input, InputNumber, Modal, Popconfirm,
-  Select, Table, Upload, message,
-} from 'antd'
+import { Button, Form,, , InputNumber, Modal, Popconfirm,
+  Select, Table, Upload, message, } from 'antd'
 import { InboxOutlined } from '@ant-design/icons'
 import { useToggle } from 'ahooks'
 import { DATA_TYPE_DICT, handleTableCellValue, handleTableData, isNumberType } from '../utils'
@@ -11,6 +9,7 @@ import useValidateSpace from '@/shared/hooks/use-validate-space'
 
 import { downloadTemplate } from '@/infrastructure/api/database'
 import { prefixUrl } from '@/shared/utils'
+import { Input } from '@/app/components/ui'
 
 const { Dragger } = Upload
 type FormInstance<T> = GetRef<typeof Form<T>>
@@ -252,7 +251,7 @@ const EditableTable = (props: any) => {
       dataIndex: '',
       render: (_, __, index) =>
         <Popconfirm title="确认删除?" onConfirm={() => handleDelete(index, isModalMode)}>
-          <Button type="link" danger>删除</Button>
+          <Button variant='tertiary' danger>删除</Button>
         </Popconfirm>,
     },
   ]
@@ -318,10 +317,10 @@ const EditableTable = (props: any) => {
     <div>
       <div className='text-right mb-5'>
         <div>
-          <Button onClick={handleAdd} type="primary" ghost className='mr-2'>
+          <Button onClick={handleAdd} variant='primary' ghost className='mr-2'>
             添加一列数据
           </Button>
-          <Button onClick={handleUpload} type="primary" ghost>
+          <Button onClick={handleUpload} variant='primary' ghost>
             导入数据
           </Button>
         </div>
@@ -350,7 +349,7 @@ const EditableTable = (props: any) => {
       />
 
       <div className='text-right mt-5 mb-5'>
-        <Button type="primary" htmlType='submit'>保存</Button>
+        <Button variant='primary' htmlType='submit'>保存</Button>
       </div>
 
       <Modal
@@ -379,7 +378,7 @@ const EditableTable = (props: any) => {
         <div className='text-[#8F949E] mb-5'>
           <div>导入要求：</div>
           <div>
-            1. 点击<Button type="link" style={{ padding: 0 }} onClick={handleDownloadTemplate}>下载模版</Button>，并按照规定格式填写数据，*部分为必填字段；
+            1. 点击<Button variant='tertiary' style={{ padding: 0 }} onClick={handleDownloadTemplate}>下载模版</Button>，并按照规定格式填写数据，*部分为必填字段；
           </div>
           <div>
             2. 注意至少添加一行数据。

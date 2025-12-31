@@ -1,6 +1,7 @@
 import React from 'react'
-import { Button, Modal } from 'antd'
+import { Modal } from 'antd'
 import styles from './page.module.scss'
+import { Button } from '@/app/components/ui'
 
 type ModelListModalProps = {
   visible: boolean

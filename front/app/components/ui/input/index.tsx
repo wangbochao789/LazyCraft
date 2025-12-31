@@ -6,6 +6,9 @@ import type { InputProps as AntdInputProps } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import classNames from '@/shared/utils/classnames'
 
+// 获取 AntdInput.Search 的 props 类型
+type AntdSearchProps = React.ComponentProps<typeof AntdInput.Search>
+
 export type InputProps = {
   /** 占位符文本 */
   placeholder?: string
@@ -50,7 +53,7 @@ export type InputProps = {
  * />
  * ```
  */
-export const Input = ({
+const InputComponent = ({
   value,
   defaultValue,
   onChange,
@@ -87,4 +90,68 @@ export const Input = ({
   )
 }
 
-Input.displayName = 'Input'
+InputComponent.displayName = 'Input'
+
+// Input.Search 组件
+export type SearchProps = {
+  /** 占位符文本 */
+  placeholder?: string
+  /** 受控值 */
+  value?: string
+  /** 非受控默认值 */
+  defaultValue?: string
+  /** 值变化回调 */
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  /** 搜索回调 */
+  onSearch?: (value: string) => void
+  /** 清除回调 */
+  onClear?: () => void
+  /** 输入框自定义类名 */
+  className?: string
+  /** 是否允许清除 */
+  allowClear?: boolean
+  /** 是否禁用 */
+  disabled?: boolean
+  /** 自定义样式 */
+  style?: React.CSSProperties
+} & Omit<AntdSearchProps, 'onChange' | 'onSearch' | 'value' | 'defaultValue'>
+
+const SearchComponent = ({
+  value,
+  defaultValue,
+  onChange,
+  onSearch,
+  onClear,
+  className,
+  allowClear,
+  disabled,
+  placeholder,
+  style,
+  ...props
+}: SearchProps) => {
+  return (
+    <AntdInput.Search
+      value={value}
+      defaultValue={defaultValue}
+      onChange={onChange}
+      onSearch={onSearch}
+      onClear={onClear}
+      className={className}
+      allowClear={allowClear}
+      disabled={disabled}
+      placeholder={placeholder}
+      style={style}
+      {...props}
+    />
+  )
+}
+
+SearchComponent.displayName = 'Input.Search'
+
+// 将 Search 组件附加到 InputComponent 上
+;(InputComponent as any).Search = SearchComponent
+
+// 使用类型断言导出，确保静态属性被正确识别
+export const Input = InputComponent as typeof InputComponent & {
+  Search: typeof SearchComponent
+}

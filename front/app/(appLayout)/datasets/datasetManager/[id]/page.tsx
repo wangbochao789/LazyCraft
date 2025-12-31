@@ -1,6 +1,6 @@
 'use client'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Breadcrumb, Button, Card, Modal, Popconfirm, Radio, Space, Table, Typography } from 'antd'
+import { Breadcrumb,, , Card, Modal, Popconfirm, Radio, Space, Table, Typography } from 'antd'
 import type { RadioChangeEvent, TableProps } from 'antd'
 import { ExclamationCircleFilled } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
@@ -18,6 +18,7 @@ import { usePermitCheck } from '@/app/components/app/permit-check'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
 import { tagList } from '@/app/components/tagSelect/ClassifyMode'
+import { Button } from '@/app/components/ui'
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection']
 
@@ -274,7 +275,7 @@ const DatasetDetail = (req) => {
             okText="是"
             cancelText="否"
           >
-            <Button type='link' disabled={!canEdit() || record.status != 2}>发布</Button>
+            <Button variant='tertiary' disabled={!canEdit() || record.status != 2}>发布</Button>
           </Popconfirm>
       },
 
@@ -337,7 +338,7 @@ const DatasetDetail = (req) => {
                         ))}
                         {hasMoreTags && (
                           <Button
-                            type="link"
+                            variant='tertiary'
                             onClick={() => {
                               if (isProcessing) {
                                 Toast.notify({ type: ToastTypeEnum.Warning, message: '该记录正在处理中，请稍后再进行数据处理' })
@@ -361,7 +362,7 @@ const DatasetDetail = (req) => {
               ? (
                 <Button
                   size='small'
-                  type='link'
+                  variant='tertiary'
                   danger
                   style={{
                     color: '#d9d9d9',
@@ -384,7 +385,7 @@ const DatasetDetail = (req) => {
                 >
                   <Button
                     size='small'
-                    type='link'
+                    variant='tertiary'
                     disabled={!canEdit()}
                     danger
                   >
@@ -439,7 +440,7 @@ const DatasetDetail = (req) => {
               ? (
                 <Button
                   size='small'
-                  type='link'
+                  variant='tertiary'
                   danger
                   style={{
                     color: '#d9d9d9',
@@ -462,7 +463,7 @@ const DatasetDetail = (req) => {
                 >
                   <Button
                     size='small'
-                    type='link'
+                    variant='tertiary'
                     disabled={!canEdit()}
                     danger
                   >
@@ -620,8 +621,8 @@ const DatasetDetail = (req) => {
             <div className={styles.tableHeader}>
               <Radio.Group options={options} value={type} onChange={onChange} optionType="button" />
               <div>
-                <Button type='primary' className='mr-4' disabled={rowSelection?.selectedRowKeys?.length === 0} onClick={handleExport}>导出数据</Button>
-                {type === 'branch' && datasetInfo.from_type === 'upload' && <Button type='primary' disabled={!canEdit()} onClick={handleAdd}>添加Branches</Button>}
+                <Button variant='primary' className='mr-4' disabled={rowSelection?.selectedRowKeys?.length === 0} onClick={handleExport}>导出数据</Button>
+                {type === 'branch' && datasetInfo.from_type === 'upload' && <Button variant='primary' disabled={!canEdit()} onClick={handleAdd}>添加Branches</Button>}
               </div>
             </div>
             <Table rowSelection={rowSelection} rowKey='id' columns={type === 'branch' ? columns : tagColumns} {...tableProps} />

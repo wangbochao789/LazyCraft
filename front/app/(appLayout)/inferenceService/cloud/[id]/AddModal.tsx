@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Form, Input, Modal, Select, Tooltip, Upload } from 'antd'
+import { Form,, , Modal, Select, Tooltip, Upload } from 'antd'
 import type { UploadProps } from 'antd'
 import type { RcFile } from 'antd/es/upload/interface'
 import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons' // , QuestionCircleOutlined
@@ -12,6 +12,7 @@ import { API_PREFIX } from '@/app-specs'
 import { getTagList } from '@/infrastructure/api/tagManage'
 import { uploadMerge } from '@/infrastructure/api/modelWarehouse' // uploadChunk,
 import Iconfont from '@/app/components/base/iconFont'
+import { Input } from '@/app/components/ui'
 
 const { Dragger } = Upload
 const MAX_CONCURRENT_UPLOADS = 5 // 设置最大并发数

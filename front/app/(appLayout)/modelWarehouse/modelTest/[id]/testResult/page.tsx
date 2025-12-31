@@ -1,11 +1,12 @@
 'use client'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Breadcrumb, Button, Card, Divider } from 'antd'
+import { Breadcrumb,, , Card } from 'antd'
 import Link from 'next/link'
 import InfoTitle from '../../../components/InfoTitle'
 
 import styles from './index.module.scss'
 import { getAdjustInfo } from '@/infrastructure/api/modelAdjust'
+import { Button, Divider } from '@/app/components/ui'
 
 const TestResult = (req) => {
   const { id } = req.params

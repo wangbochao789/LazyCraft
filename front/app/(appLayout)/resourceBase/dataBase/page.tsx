@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button, Divider, Form, Input, Modal, Popconfirm, Table, message } from 'antd'
+import { Form,, , Modal, Popconfirm, Table, message } from 'antd'
 import { useAntdTable, useToggle, useUpdateEffect } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import dayjs from 'dayjs'
@@ -10,6 +10,7 @@ import { createDatabase, deleteDatabase, getDataBaseList } from '@/infrastructur
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { noOnlySpacesRule } from '@/shared/utils'
+import { Button, Divider, Input } from '@/app/components/ui'
 const { Search } = Input
 const { Column } = Table
 const Database = () => {
@@ -77,7 +78,7 @@ const Database = () => {
   }
   return <div className="px-[30px] pt-5">
     <div className='flex justify-end'>
-      <Button type='primary' className="mb-5" onClick={() => toggle()}>新建数据库</Button>
+      <Button variant='primary' className="mb-5" onClick={() => toggle()}>新建数据库</Button>
     </div>
     <div className="flex justify-between">
       <Form.Item label="创建人">
@@ -102,8 +103,8 @@ const Database = () => {
       <Column title="操作" render={(_, record: any) => {
         return (
           <>
-            <Button type='link' size="small" onClick={() => router.push(`/resourceBase/dataBase/detail?id=${record.id}&name=${record.name}&comment=${record.comment}`)}>详情</Button>
-            <Divider type="vertical" />
+            <Button variant='tertiary' size="small" onClick={() => router.push(`/resourceBase/dataBase/detail?id=${record.id}&name=${record.name}&comment=${record.comment}`)}>详情</Button>
+            <Divider orientation="vertical" />
             {showDelete(record?.created_by_account?.id) && <Popconfirm
               title="提示"
               description="是否确认删除"
@@ -111,7 +112,7 @@ const Database = () => {
               okText="是"
               cancelText="否"
             >
-              <Button type='link' size="small" danger>删除</Button>
+              <Button variant='tertiary' size="small" danger>删除</Button>
             </Popconfirm>
             }
           </>

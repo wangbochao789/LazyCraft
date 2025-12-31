@@ -1,7 +1,8 @@
 import React from 'react'
 import type { FormInstance } from 'antd'
-import { Form, Input } from 'antd'
+import { Form } from 'antd'
 import IconFont from '@/app/components/base/iconFont'
+import { Input } from '@/app/components/ui'
 
 type PasswordResetFormValues = {
   name: string

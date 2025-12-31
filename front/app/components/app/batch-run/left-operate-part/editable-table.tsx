@@ -1,6 +1,6 @@
 'use client'
 import type { GetRef, InputRef, TableProps } from 'antd'
-import { Button, Form, Input, InputNumber, Modal, Table } from 'antd'
+import { Form,, , InputNumber, Modal, Table } from 'antd'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { ExclamationCircleFilled } from '@ant-design/icons'
 
@@ -8,6 +8,7 @@ import { useUpdate } from 'ahooks'
 import { handleUploadCsvData } from '../utils'
 
 import FileUploader from '@/app/components/taskStream/elements/_foundation/components/form/field-item/docUploader'
+import { Button, Input } from '@/app/components/ui'
 
 type FormInstance<T> = GetRef<typeof Form<T>>
 
@@ -160,7 +161,7 @@ const EditableTable = (props: any) => {
       title: '操作',
       dataIndex: 'operation',
       render: (_, __, i: number) =>
-        dataSource.length >= 1 && <Button type="text" danger onClick={() => onConfirmDelete(i)}>删除</Button>,
+        dataSource.length >= 1 && <Button variant='ghost' danger onClick={() => onConfirmDelete(i)}>删除</Button>,
     },
   ]
 
@@ -200,7 +201,7 @@ const EditableTable = (props: any) => {
 
   return (
     <div>
-      <Button onClick={handleAdd} type="primary" className='mb-4'>
+      <Button onClick={handleAdd} variant='primary' className='mb-4'>
         增加一行数据
       </Button>
       <Table

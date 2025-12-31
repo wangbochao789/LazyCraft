@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Input, InputNumber, Modal } from 'antd'
+import { Form,, , InputNumber, Modal } from 'antd'
+import { Input } from '@/app/components/ui'
 
 type ApplicationModalProps = {
   visible: boolean

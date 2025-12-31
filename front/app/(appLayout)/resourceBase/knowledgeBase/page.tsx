@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Col, Form, Input, Row } from 'antd'
+import { Col, Form,, , Row } from 'antd'
 import { useRouter } from 'next/navigation'
 import { ReadOutlined } from '@ant-design/icons'
 import styles from './page.module.scss'
@@ -15,6 +15,7 @@ import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import ReferenceResultModal from '@/app/components/referenceResultModal'
 import AppCard from '@/app/components/app-hub/AppCard'
+import { Button, Input } from '@/app/components/ui'
 
 const KnowledgeBase = () => {
   const router = useRouter()
@@ -113,7 +114,7 @@ const KnowledgeBase = () => {
     <div className={styles.knowledgeWrap}>
       <div className={styles.pageTop}>
         <TagMode ref={selectRef} selectLabels={selectTags} setSelectLabels={setSelectTags} type='knowledgebase' onRefresh={onRefresh} />
-        <Button className={styles.btnCreate} type="primary" onClick={handleCreate}>
+        <Button className={styles.btnCreate} variant='primary' onClick={handleCreate}>
           新建知识库
         </Button>
       </div>

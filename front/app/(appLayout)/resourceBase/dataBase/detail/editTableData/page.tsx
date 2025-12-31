@@ -4,7 +4,7 @@ import React, { Suspense, useState } from 'react'
 import {
   useRouter, useSearchParams,
 } from 'next/navigation'
-import { Breadcrumb, Divider, Form, Input, message } from 'antd'
+import { Breadcrumb,, , Form,, , message } from 'antd'
 import Link from 'next/link'
 import { useRequest } from 'ahooks'
 import { isEqual } from 'lodash'
@@ -13,6 +13,7 @@ import { handleTableData } from '../utils'
 import style from '../index.module.scss'
 import EditableTable from './editableTable'
 import { getDataBaseSubTableList, updateDatabaseTable } from '@/infrastructure/api/database'
+import { Divider, Input } from '@/app/components/ui'
 
 const EditTableDataContent = () => {
   const searchParams = useSearchParams()

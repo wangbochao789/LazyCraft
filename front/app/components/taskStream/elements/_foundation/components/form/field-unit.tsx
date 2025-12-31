@@ -1,13 +1,14 @@
 'use client'
 import type { FC } from 'react'
 import React, { useEffect, useRef, useState } from 'react'
-import { Divider, Form } from 'antd'
+import { Form } from 'antd'
 import cn from 'classnames'
 import { cloneDeep } from 'lodash-es'
 import { type FieldProps, LabelStyle } from './types'
 import InjectableCheckbox from './components/injectable-checkbox'
 import './index.scss'
 import { FieldType } from './fixed-vals'
+import { Divider } from '@/app/components/ui'
 
 const FragmentComponent = ({ children }) => {
   return (<>{children}</>)
@@ -134,7 +135,7 @@ const Field: FC<FieldProps> = ({
               },
             )}>
               {useTitleStyledLabel && (
-                <Divider type="vertical" className="title-divider" />
+                <Divider orientation="vertical" className="title-divider" />
               )}
               {label || inputOrOutputFieldLabelMap[type as string]}
             </span>

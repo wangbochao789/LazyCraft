@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Col, Input, List, Modal, Radio, Row, Spin, Typography, message } from 'antd'
+import { Col,, , List, Modal, Radio, Row, Spin, Typography, message } from 'antd'
 import React, { useState } from 'react'
 import { isEmpty } from 'lodash-es'
 import { useRequest } from 'ahooks'
@@ -13,6 +13,7 @@ import style from './index.module.scss'
 import { deleteAppTemplateList, fetchAppTemplateList } from '@/infrastructure/api//explore'
 import useTimestamp from '@/shared/hooks/use-timestamp'
 import { useApplicationContext } from '@/shared/hooks/app-context'
+import { Button, Input } from '@/app/components/ui'
 
 const { Paragraph } = Typography
 const AppTemplate = (props: any) => {
@@ -84,7 +85,7 @@ const AppTemplate = (props: any) => {
                       </Paragraph>
                     </Col>
                     <Col flex="64px">
-                      <Button type="text" size="small" danger onClick={() => onDeleteTemplate(item)}>删除</Button>
+                      <Button variant='ghost' size="small" danger onClick={() => onDeleteTemplate(item)}>删除</Button>
                     </Col>
                   </Row>
                   <div className='text-left mt-1 ml-4 text-[#5E6472]' style={{ minHeight: '22px' }}>
@@ -103,7 +104,7 @@ const AppTemplate = (props: any) => {
                   </div>
                   {/* 更新时间 */}
                   <div className='mx-4 group/edit invisible hover:bg-slate-200 group-hover/item:visible'>
-                    <Button type="primary" block onClick={() => handleAppTemplate(item)}>
+                    <Button variant='primary' block onClick={() => handleAppTemplate(item)}>
                       使用该模版
                     </Button>
                   </div>

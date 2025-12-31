@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Collapse, Empty, Form, Input, Modal, Pagination, Popconfirm, Select, Spin, Tag, Tooltip, message } from 'antd'
+import { Collapse,, , Form,, , Modal, Pagination, Popconfirm, Select, Spin, Tag, Tooltip, message } from 'antd'
 import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useUpdateEffect } from 'ahooks'
 import style from './page.module.scss'
@@ -10,6 +10,7 @@ import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { createPrompt, deletePrompt, getAdjustList, getPromptList } from '@/infrastructure/api/prompt'
+import { Button, Empty, Input } from '@/app/components/ui'
 
 const { Panel } = Collapse
 const showText: any = {
@@ -368,7 +369,7 @@ const InferenceService = () => {
       <div className={style.inferenceWrap}>
         <div className='mt-[1.0417vw] flex justify-between'>
           <ClassifyMode needSpace={false} label='运行状态' selectLabels={selectLabels} setSelectLabels={setSelectLabels} type='inference' />
-          <Button type='primary' onClick={handleCreatePrompt}>新建推理服务</Button>
+          <Button variant='primary' onClick={handleCreatePrompt}>新建推理服务</Button>
         </div>
         <div className='flex justify-between'>
           <Form.Item label="其他选项">
@@ -398,9 +399,9 @@ const InferenceService = () => {
                   <Panel
                     extra={
                       <div>
-                        {canAddDelete(item?.user_id) && <Button type='link' size='small' onClick={e => clickAdd(e, item)}>添加服务</Button>}
+                        {canAddDelete(item?.user_id) && <Button variant='tertiary' size='small' onClick={e => clickAdd(e, item)}>添加服务</Button>}
                         {canEdit(item?.user_id) && <span>
-                          {item?.online_count > 0 ? <Button type='link' size='small' onClick={e => clickStartStopA(e, item?.id, 'stop')}>关闭</Button> : <Button type='link' size='small' onClick={e => clickStartStopA(e, item?.id, 'start')}>开启</Button>}
+                          {item?.online_count > 0 ? <Button variant='tertiary' size='small' onClick={e => clickStartStopA(e, item?.id, 'stop')}>关闭</Button> : <Button variant='tertiary' size='small' onClick={e => clickStartStopA(e, item?.id, 'start')}>开启</Button>}
                         </span>}
                       </div>
                     }
@@ -423,12 +424,12 @@ const InferenceService = () => {
                           <div className={style.creator}>创建者：{ite?.created_by}</div>
                           <div className={style.createTime}>创建时间: {ite?.updated_at}</div>
                           <div className={style.actionSty}>
-                            {item?.model_type === 'localLLM' && <Button disabled={ite?.status !== 'Ready'} type='link' size='small' onClick={e => openTest(e, ite)}>测试</Button>}
+                            {item?.model_type === 'localLLM' && <Button disabled={ite?.status !== 'Ready'} variant='tertiary' size='small' onClick={e => openTest(e, ite)}>测试</Button>}
                             {canEdit(item?.user_id) && <span>
                               {
                                 ite?.status === 'Cancelled'
-                                  ? <Button type='link' size='small' onClick={e => clickStartStop(e, ite?.id, 'start')}>启动</Button>
-                                  : <Button type='link' size='small' onClick={e => clickStartStop(e, ite?.id, 'stop')}>关闭</Button>
+                                  ? <Button variant='tertiary' size='small' onClick={e => clickStartStop(e, ite?.id, 'start')}>启动</Button>
+                                  : <Button variant='tertiary' size='small' onClick={e => clickStartStop(e, ite?.id, 'stop')}>关闭</Button>
                               }
                             </span>}
                             {canAddDelete(item?.user_id) && <Popconfirm
@@ -438,7 +439,7 @@ const InferenceService = () => {
                               okText="是"
                               cancelText="否"
                             >
-                              <Button type='link' size="small" danger>删除</Button>
+                              <Button variant='tertiary' size="small" danger>删除</Button>
                             </Popconfirm>}
                           </div>
                         </div>,

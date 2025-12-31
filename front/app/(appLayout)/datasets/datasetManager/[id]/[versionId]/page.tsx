@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Breadcrumb, Button, Card, Checkbox, Col, Pagination, Popconfirm, Row, Space, Table, Typography } from 'antd'
+import { Breadcrumb,, , Card, Checkbox, Col, Pagination, Popconfirm, Row, Space, Table, Typography } from 'antd'
 import type { TableProps } from 'antd'
 import { useRouter } from 'next/navigation'
 import { useAntdTable } from 'ahooks'
@@ -16,6 +16,7 @@ import { useApplicationContext } from '@/shared/hooks/app-context'
 
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import 'react-photo-view/dist/react-photo-view.css'
+import { Button } from '@/app/components/ui'
 
 type DataType = {
   key: string
@@ -200,7 +201,7 @@ const DatasetVersionDetail = (req) => {
             okText="是"
             cancelText="否"
           >
-            <Button type='link' size='small' disabled={!canEdit()} danger>删除</Button>
+            <Button variant='tertiary' size='small' disabled={!canEdit()} danger>删除</Button>
           </Popconfirm>
         </>
       ),
@@ -261,7 +262,7 @@ const DatasetVersionDetail = (req) => {
             okText="是"
             cancelText="否"
           >
-            <Button type='link' size='small' disabled={!canEdit()} danger>删除</Button>
+            <Button variant='tertiary' size='small' disabled={!canEdit()} danger>删除</Button>
           </Popconfirm>
         </>
       ),
@@ -369,8 +370,8 @@ const DatasetVersionDetail = (req) => {
             文件列表
           </div>}>
             <div className={styles.tableHeader}>
-              <Button className='mr-4' type='primary' disabled={selectedKey.length === 0 || !canEdit()} onClick={batchDelete} ghost>批量删除</Button>
-              {info?.from_type === 'upload' && <Button type='primary' disabled={!canEdit()} onClick={handleAdd}>添加数据</Button>}
+              <Button className='mr-4' variant='primary' disabled={selectedKey.length === 0 || !canEdit()} onClick={batchDelete} ghost>批量删除</Button>
+              {info?.from_type === 'upload' && <Button variant='primary' disabled={!canEdit()} onClick={handleAdd}>添加数据</Button>}
             </div>
             <Table rowSelection={canEdit() && rowSelection} rowKey='id' columns={info.from_type === 'upload' ? columns : returnColumns} {...tableProps} />
           </Card>
@@ -379,8 +380,8 @@ const DatasetVersionDetail = (req) => {
           </div>}>
 
             {info.version_type === 'branch' && <div className={styles.tableHeader}>
-              <Button className='mr-4' type='primary' disabled={selectedKey.length === 0 || !canEdit()} onClick={batchDelete} ghost>批量删除</Button>
-              <Button type='primary' disabled={!canEdit()} onClick={handleAdd}>添加数据</Button>
+              <Button className='mr-4' variant='primary' disabled={selectedKey.length === 0 || !canEdit()} onClick={batchDelete} ghost>批量删除</Button>
+              <Button variant='primary' disabled={!canEdit()} onClick={handleAdd}>添加数据</Button>
             </div>}
             <Row className={styles.picList} gutter={[16, 16]}>
               {picList.map((item, index) => {

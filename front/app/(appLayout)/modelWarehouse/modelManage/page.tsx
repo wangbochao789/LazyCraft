@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { RadioChangeEvent } from 'antd'
-import { Button, Col, Empty, Form, Input, Popconfirm, Radio, Row, Select, Spin, Tag, Tooltip } from 'antd'
+import { Col,, , Form,, , Popconfirm, Radio, Row, Select, Spin, Tag, Tooltip } from 'antd'
 import { useRouter } from 'next/navigation'
 import ProcessCom from '../components/processCom'
 import ModelList from './ModelListModal'
@@ -19,6 +19,7 @@ import TagMode from '@/app/components/tagSelect/TagMode'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
 import { pageCache } from '@/shared/utils'
+import { Button, Empty, Input } from '@/app/components/ui'
 
 const TagContainer = ({ tags }) => {
   const wrapperRef = useRef(null)
@@ -190,7 +191,7 @@ const ModelWarehouse = () => {
         <div className={styles.pageTop}>
           <div></div>
           <div>
-            <Button type='primary' onClick={handleCreate}>新建模型</Button>
+            <Button variant='primary' onClick={handleCreate}>新建模型</Button>
           </div>
         </div>
 

@@ -1,16 +1,17 @@
 'use client'
-import { Button } from 'antd'
+
 import React, { useEffect, useRef, useState } from 'react'
 import AgentChatBox from './agent-chat-box'
 import styles from './page.module.scss'
 import { useAgentContext } from '@/shared/hooks/agent-context'
+import { Button } from '@/app/components/ui'
 
 const SideBar = (
   { detailData, createEvent, chatSelect, agentHistoryList }:
   { detailData: any; createEvent: any; chatSelect: any; agentHistoryList: any }) => {
   return <div className={styles.agentSidebar}>
     <div style={{ textAlign: 'center', padding: '20px 0' }}>
-      <Button type='primary' onClick={createEvent} style={{ width: '80%' }} disabled={detailData.isStreaming}>新建对话</Button>
+      <Button variant='primary' onClick={createEvent} style={{ width: '80%' }} disabled={detailData.isStreaming}>新建对话</Button>
     </div>
     <div className={styles.agentHistory}>
       <div className={styles.agentTopics} onClick={chatSelect}>

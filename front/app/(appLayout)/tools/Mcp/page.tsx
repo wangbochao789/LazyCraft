@@ -1,13 +1,14 @@
 'use client'
 import React, { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Button, Card, Col, Form, Input, Popconfirm, Row, Select, message } from 'antd'
+import { Card, Col, Form,, , Popconfirm, Row, Select, message } from 'antd'
 import styles from '../info/page.module.scss'
 import KeyValueList from '../keyValueList'
 import McpToolTesting from './mcptoolTesting'
 import { editMcp, getMcp, getMcpDetail, publishMcp } from '@/infrastructure/api/toolmcp'
 import { ssePost } from '@/infrastructure/api/base'
 import type { CreateUpdateMcpResponse, GetMcpParams, McpTool, TestMcpResponse } from '@/shared/types/toolsMcp'
+import { Button, Input } from '@/app/components/ui'
 
 // 通用的键值对数据格式转换函数
 const convertObjectToKeyValueArray = (data: any, fieldName: string) => {
@@ -145,7 +146,7 @@ const McpToolPageContent = () => {
         cancelText="取消"
         placement="bottom"
       >
-        <Button type='primary'>{buttonText}</Button>
+        <Button variant='primary'>{buttonText}</Button>
       </Popconfirm>
     )
   }
@@ -284,7 +285,7 @@ const McpToolPageContent = () => {
         </div>}
         {mcpData?.publish && mcpData?.publish_type == '正式发布' && <div className={styles.submitBtn}>
           {renderPublishButton('正式发布', '更新发布')}
-          <Button type='primary' onClick={() => handlePublish('')}>取消发布</Button>
+          <Button variant='primary' onClick={() => handlePublish('')}>取消发布</Button>
         </div>}
       </div>
       <div className={styles.outer}>
@@ -434,7 +435,7 @@ const McpToolPageContent = () => {
                           </Form.Item>
                         </>
                       )}
-                      <Button type='primary' loading={saveLoading} onClick={handleSave}>保存</Button>
+                      <Button variant='primary' loading={saveLoading} onClick={handleSave}>保存</Button>
                     </Form>
                   </Card>
                 </Col>
@@ -458,7 +459,7 @@ const McpToolPageContent = () => {
                         }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 12 }}>
                             <Button
-                              type="primary"
+                              variant='primary'
                               loading={syncStatus === 'running'}
                               disabled={syncStatus !== 'running' && !canProceed}
                               onClick={() => {

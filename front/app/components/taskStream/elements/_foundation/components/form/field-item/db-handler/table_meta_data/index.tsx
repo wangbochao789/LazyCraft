@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React, { useState } from 'react'
-import { Button } from 'antd'
+
 import { PaperClipOutlined } from '@ant-design/icons'
 import { v4 as uuid4 } from 'uuid'
 import { useUpdateEffect } from 'ahooks'
@@ -11,6 +11,7 @@ import OuterDbSourceEditModal from './external_db_panel'
 import PlatformDbSourceEditModal from './internal_db_panel'
 import IconFont from '@/app/components/base/iconFont'
 import './index.scss'
+import { Button } from '@/app/components/ui'
 
 /** sqlManager资源 表信息编辑 */
 const FieldItem: FC<Partial<FieldItemProps>> = ({
@@ -41,7 +42,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
   return (
     <div className='relative min-h-[32px]'>
       {(!readOnly && !disabled) && <Button
-        type='text'
+        variant='ghost'
         className="tables-info-dict-column-add-btn"
         style={{
           position: 'absolute',

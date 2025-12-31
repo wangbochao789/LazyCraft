@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { Affix, Button, Modal, message } from 'antd'
+import { Affix, Modal, message } from 'antd'
 import { CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useNodes } from '@xyflow/react'
 import type { Node } from '@xyflow/react'
@@ -42,6 +42,7 @@ import LazyLLMPatentBack from './prevState'
 import LazyLLMHistoryPreviewButton from './pastViewBtn'
 import LazyLLMDrawPanelButton from './canvasBoardBtn'
 
+import { Button } from '@/app/components/ui'
 import { useStore as useAppStore } from '@/app/components/app/store'
 import { getAppDebuggingEnableStatus, publishWorkflow, restoreAppVersion, startAppDebuggingEnableStatus, stopAppDebuggingEnableStatus } from '@/infrastructure/api/workflow'
 import { useFeatures } from '@/app/components/base/features'

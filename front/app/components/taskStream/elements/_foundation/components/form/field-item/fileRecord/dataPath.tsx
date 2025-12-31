@@ -2,7 +2,7 @@
 import type { FC } from 'react'
 import React, { useEffect, useRef, useState } from 'react'
 import classNames from 'classnames'
-import { Button, Modal, Progress, message } from 'antd'
+import { Modal, Progress, message } from 'antd'
 import { useDebounceFn } from 'ahooks'
 import type { FieldItemProps } from '../../types'
 import { useParseStore } from './dataParser'
@@ -12,6 +12,7 @@ import { useSyncDraft } from '@/app/components/taskStream/logicHandlers'
 import { useStore as useAppStore } from '@/app/components/app/store'
 
 import { sleep } from '@/shared/utils'
+import { Button } from '@/app/components/ui'
 
 const FieldItem: FC<Partial<FieldItemProps>> = ({
   name,
@@ -651,7 +652,7 @@ const FieldItem: FC<Partial<FieldItemProps>> = ({
       </div>
       <div className="absolute right-0" style={{ top: '-35px' }}>
         <Button
-          type="primary"
+          variant='primary'
           onClick={handleParseData}
           loading={isLoading}
           disabled={disabled || readOnly || !value}

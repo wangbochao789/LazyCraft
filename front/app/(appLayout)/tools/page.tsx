@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Button, Col, Form, Input, Modal, Popconfirm, Row, Switch, Tabs, Tag, Tooltip } from 'antd'
+import { Col, Form,, , Modal, Popconfirm, Row, Switch, Tabs, Tag, Tooltip } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import styles from './page.module.scss'
 import InfoModal from './InfoModule'
@@ -20,6 +20,7 @@ import type { DeleteMcpParams, DeleteMcpResponse, McpItem, McpListResponse, TagI
 import ReferenceResultModal from '@/app/components/referenceResultModal'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import { pageCache } from '@/shared/utils'
+import { Button, Input } from '@/app/components/ui'
 
 const Tools = () => {
   // 自定义工具
@@ -285,7 +286,7 @@ const Tools = () => {
         <div className={styles.pageTop}>
           {/* <Radio.Group options={options.filter(item => userSpecified?.tenant?.status === 'private' ? item.value !== 'group' : true)} value={type} onChange={onChange} optionType="button" /> */}
           <TagMode ref={selectToolRef} selectLabels={selectTags} setSelectLabels={setSelectTags} type='tool' />
-          <Button type='primary' onClick={handleCreate}>新建工具</Button>
+          <Button variant='primary' onClick={handleCreate}>新建工具</Button>
         </div>
         <div><ClassifyMode label='形态' selectLabels={selectLabels} setSelectLabels={setSelectLabels} type='toolType' /></div>
         <div><ClassifyMode needSpace={false} label='发布情况' selectLabels={selectStatus} setSelectLabels={setSelectStatus} type='toolStatu' /></div>
@@ -361,7 +362,7 @@ const Tools = () => {
                         {
                           item?.ref_status && item?.enable && (
                             <Button
-                              type="link"
+                              variant='tertiary'
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setRefId(item.id)
@@ -398,7 +399,7 @@ const Tools = () => {
                                 okText="是"
                                 cancelText="否"
                               >
-                                <Button className='text-[12px]' onClick={stopPropagation} type='link' size='small'>去授权</Button>
+                                <Button className='text-[12px]' onClick={stopPropagation} variant='tertiary' size='small'>去授权</Button>
                               </Popconfirm>
                             </span>
                           }
@@ -412,7 +413,7 @@ const Tools = () => {
                                 okText="是"
                                 cancelText="否"
                               >
-                                <Button className='text-[12px]' type='link' onClick={stopPropagation} size='small'>取消授权</Button>
+                                <Button className='text-[12px]' variant='tertiary' onClick={stopPropagation} size='small'>取消授权</Button>
                               </Popconfirm>
                             </span>
                           }
@@ -508,7 +509,7 @@ const Tools = () => {
       <div className={styles.tabsWrap}>
         <div className={styles.pageTop}>
           <TagMode ref={selectMcpRef} selectLabels={tagList} setSelectLabels={setTagList} type='mcp' />
-          <Button type='primary' onClick={handleCreateMcp}>新建插件</Button>
+          <Button variant='primary' onClick={handleCreateMcp}>新建插件</Button>
         </div>
         <div className='flex justify-between'>
           <Form.Item label="其他选项">
@@ -577,7 +578,7 @@ const Tools = () => {
                         {
                           item?.ref_status && item?.enable && (
                             <Button
-                              type="link"
+                              variant='tertiary'
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setRefId(item.id)

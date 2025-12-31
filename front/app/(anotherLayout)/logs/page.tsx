@@ -1,12 +1,13 @@
 'use client'
 import React, { useState } from 'react'
-import { Button, DatePicker, Flex, Form, Input, Space, Table } from 'antd'
+import { DatePicker, Flex, Form,, , Space, Table } from 'antd'
 import { useAntdTable, useRequest } from 'ahooks'
 import dayjs from 'dayjs'
 import styles from './page.module.scss'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { queryOperationLogs } from '@/infrastructure/api/log'
 import { getCurrentGroupList } from '@/infrastructure/api/user'
+import { Button, Input } from '@/app/components/ui'
 
 const { RangePicker } = DatePicker
 
@@ -181,7 +182,7 @@ const Logs = () => {
                   />
                 </Form.Item>
                 <Form.Item style={{ flex: 'auto', marginInlineEnd: 0 }}>
-                  <Button type="primary" ghost onClick={handleReset}>
+                  <Button variant='primary' ghost onClick={handleReset}>
                     重置
                   </Button>
                 </Form.Item>

@@ -1,13 +1,14 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Button, Space, Table, message } from 'antd'
+import { Space, Table, message } from 'antd'
 import type { TableProps } from 'antd'
 import dayjs from 'dayjs'
 import styles from './index.module.scss'
 import QuotaApprovalModal from './pageModel'
 import type { QuotaRecord } from './types'
 import { getquotaApproval, getquotaList } from '@/infrastructure/api/user'
+import { Button } from '@/app/components/ui'
 
 const QuotaPage = () => {
   const [loading, setLoading] = useState(false)
@@ -170,7 +171,7 @@ const QuotaPage = () => {
           {record.status === 'pending' && (
             <>
               <Button
-                type="primary"
+                variant='primary'
                 size="small"
                 onClick={() => handleApprove(record)}
                 loading={loading}

@@ -7,7 +7,7 @@ import {
   useUpdateNodeInternals,
 } from '@xyflow/react'
 import produce from 'immer'
-import { Button } from 'antd'
+
 import type { FieldItemProps } from '../types'
 import Input from '../base/input'
 import IconFont from '@/app/components/base/iconFont'
@@ -18,6 +18,7 @@ import {
 import './config-ports.scss'
 
 import {
+import { Button } from '@/app/components/ui'
   updateNodeInternalsAsync,
 } from '@/app/components/taskStream/logicHandlers/itemDataUpdate'
 
@@ -76,7 +77,7 @@ const ConfigPorts: FC<Partial<FieldItemProps>> = ({
         'absolute top-[-40px] right-0 z-1',
       )}>
         <Button
-          type="text"
+          variant='ghost'
           className="field-item-extra-add-btn"
           onClick={() => handleAddPort()}
         >

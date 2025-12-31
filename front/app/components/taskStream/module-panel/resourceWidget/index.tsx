@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { cloneDeep, groupBy } from 'lodash-es'
 import { v4 as uuidV4 } from 'uuid'
-import { Button, Col, Input, Row } from 'antd'
+import { Col,, , Row } from 'antd'
 import produce from 'immer'
 import Image from 'next/image'
 import type { Resource } from '../../types'
@@ -25,6 +25,7 @@ import HoverTip from '@/app/components/base/hover-tip'
 import IconFont from '@/app/components/base/iconFont'
 import { IWorkflowHistoryEvent, useWorkflowLog } from '@/app/components/taskStream/logicHandlers'
 import './index.scss'
+import { Button, Input } from '@/app/components/ui'
 
 /**
  * ResourceWidget
@@ -53,7 +54,7 @@ const ResourceWidget = () => {
 
   const renderAddButton = useCallback(() => {
     return (
-      <Button type='primary' ghost className="mb-1 w-full">
+      <Button variant='primary' ghost className="mb-1 w-full">
         <span>{'添加资源'}</span>
       </Button>
     )

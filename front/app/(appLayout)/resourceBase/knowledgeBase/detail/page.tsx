@@ -5,7 +5,7 @@ import { ReadOutlined } from '@ant-design/icons'
 import {
   useSearchParams,
 } from 'next/navigation'
-import { Breadcrumb, Button, Form, Input, Modal, Popconfirm, Table, message } from 'antd'
+import { Breadcrumb,, , Form,, , Modal, Popconfirm, Table, message } from 'antd'
 import type { TableProps } from 'antd'
 import { useMount } from 'ahooks'
 import Link from 'next/link'
@@ -18,6 +18,7 @@ import { useApplicationContext } from '@/shared/hooks/app-context'
 import { getJoins } from '@/infrastructure/api/apps'
 import { usePermitCheck } from '@/app/components/app/permit-check'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
+import { Button, Input } from '@/app/components/ui'
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection']
 
@@ -139,8 +140,8 @@ const KnowledgeBaseDetailContent = () => {
       align: 'right',
       render: (_, record) => (
         <>
-          <Button type='link' size='small' disabled={!canEdit} onClick={() => { handleJumpDetail(record) }}>查看</Button>
-          <Button type='link' size='small' onClick={() => { handleDownload(record) }}>下载</Button>
+          <Button variant='tertiary' size='small' disabled={!canEdit} onClick={() => { handleJumpDetail(record) }}>查看</Button>
+          <Button variant='tertiary' size='small' onClick={() => { handleDownload(record) }}>下载</Button>
           <Popconfirm
             title="提示"
             description="是否确认删除"
@@ -148,7 +149,7 @@ const KnowledgeBaseDetailContent = () => {
             okText="是"
             cancelText="否"
           >
-            <Button size='small' type='link' disabled={!canEdit} danger>删除</Button>
+            <Button size='small' variant='tertiary' disabled={!canEdit} danger>删除</Button>
           </Popconfirm>
         </>
       ),
@@ -276,16 +277,16 @@ const KnowledgeBaseDetailContent = () => {
               <Search placeholder="请输入文件名称" onSearch={onSearch} style={{ width: 270 }} allowClear />
             </div>
             <div className={styles.extraWrap}>
-              {/* <Button type='primary' className='mr-4' onClick={() => setCreateFolderVisible(true)}>
+              {/* <Button variant='primary' className='mr-4' onClick={() => setCreateFolderVisible(true)}>
                 新建文件夹
               </Button> */}
-              <Button type="primary" disabled={selectedRowKeys.length === 0 || !canEdit} onClick={() => setOpen(true)}>
+              <Button variant='primary' disabled={selectedRowKeys.length === 0 || !canEdit} onClick={() => setOpen(true)}>
                 批量删除
               </Button>
-              <Button type="primary" className='ml-4' disabled={selectedRowKeys.length == 0} onClick={batchDownload}>
+              <Button variant='primary' className='ml-4' disabled={selectedRowKeys.length == 0} onClick={batchDownload}>
                 批量下载
               </Button>
-              <Button type="primary" className='ml-4' disabled={!canEdit} onClick={upFile}>
+              <Button variant='primary' className='ml-4' disabled={!canEdit} onClick={upFile}>
                 新建文件
               </Button>
             </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Form, Input, Popconfirm, Table, Tag } from 'antd'
+import { Form,, , Popconfirm, Table, Tag } from 'antd'
 import type { TableProps } from 'antd'
 import { useAntdTable, useUpdateEffect } from 'ahooks'
 import { useRouter } from 'next/navigation'
@@ -13,6 +13,7 @@ import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { cancelModel, deleteModel, getModelList, startModel, stopModel } from '@/infrastructure/api/modelAdjust'
+import { Button, Input } from '@/app/components/ui'
 
 type DataType = {
   key: string
@@ -244,10 +245,10 @@ const ModelAdjust = () => {
         <>
           {
             // 新增停止和开始训练按钮
-            (record?.status === 'Suspended') && canEdit(record?.created_by_account?.id) && <Button size='small' type='link' onClick={() => startTrain(record)}>开始训练</Button>
+            (record?.status === 'Suspended') && canEdit(record?.created_by_account?.id) && <Button size='small' variant='tertiary' onClick={() => startTrain(record)}>开始训练</Button>
           }
           {
-            record?.status === 'InProgress' && canEdit(record?.created_by_account?.id) && <Button size='small' type='link' onClick={() => stopTrain(record)}>停止训练</Button>
+            record?.status === 'InProgress' && canEdit(record?.created_by_account?.id) && <Button size='small' variant='tertiary' onClick={() => stopTrain(record)}>停止训练</Button>
           }
 
           {(record?.status === 'InQueue' || record?.status === 'Running' || record?.status === 'Pending')
@@ -258,10 +259,10 @@ const ModelAdjust = () => {
             okText="是"
             cancelText="否"
           >
-            <Button size='small' type='link'>取消训练</Button>
+            <Button size='small' variant='tertiary'>取消训练</Button>
           </Popconfirm>
           }
-          <Button type='link' size='small' onClick={() => handleJumpDetail(record)}>详情</Button>
+          <Button variant='tertiary' size='small' onClick={() => handleJumpDetail(record)}>详情</Button>
           {canAddDelete(record?.created_by_account?.id) && <Popconfirm
             title="提示"
             description="是否确认删除"
@@ -269,7 +270,7 @@ const ModelAdjust = () => {
             okText="是"
             cancelText="否"
           >
-            <Button type='link' size='small' danger disabled={record?.status === 'InProgress'}>删除</Button>
+            <Button variant='tertiary' size='small' danger disabled={record?.status === 'InProgress'}>删除</Button>
           </Popconfirm>}
         </>
       ),
@@ -279,7 +280,7 @@ const ModelAdjust = () => {
     <div className={styles.content}>
       <div className={styles.craBtn}>
         <ClassifyMode needSpace={false} label='运行状态' selectLabels={selectLabels} setSelectLabels={setSelectLabels} type='modelAdjust' />
-        {authValue === 'mine' && <Button type='primary' onClick={handleCreate}>创建微调</Button>}
+        {authValue === 'mine' && <Button variant='primary' onClick={handleCreate}>创建微调</Button>}
       </div>
       <div className={styles.tableHeader}>
         <Form.Item label="其他选项">

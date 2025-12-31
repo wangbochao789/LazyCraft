@@ -1,11 +1,12 @@
 'use client'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Breadcrumb, Button, Card, Table } from 'antd'
+import { Breadcrumb,, , Card, Table } from 'antd'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import InfoTitle from '../../../components/InfoTitle'
 import styles from './index.module.scss'
 import { getAdjustInfo } from '@/infrastructure/api/modelAdjust'
+import { Button } from '@/app/components/ui'
 
 const Dimension = (req) => {
   const { id } = req.params
@@ -44,7 +45,7 @@ const Dimension = (req) => {
       title: '操作',
       align: 'right',
       render: (_, record: any) => (
-        <Button size='small' type='link' onClick={() => handleJumpDetail(record)}>查看详情</Button>
+        <Button size='small' variant='tertiary' onClick={() => handleJumpDetail(record)}>查看详情</Button>
       ),
     },
   ]
@@ -69,7 +70,7 @@ const Dimension = (req) => {
       title: '操作',
       align: 'right',
       render: (_, record: any) => (
-        <Button size='small' type='link' onClick={() => router.push(`/modelWarehouse/modelTest/${id}/aiDimension?option_id=${record?.option_id || 999}`)}>查看详情</Button>
+        <Button size='small' variant='tertiary' onClick={() => router.push(`/modelWarehouse/modelTest/${id}/aiDimension?option_id=${record?.option_id || 999}`)}>查看详情</Button>
       ),
     },
   ]

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { Suspense, useState } from 'react'
-import { Breadcrumb, Divider, Form, Input, message } from 'antd'
+import { Breadcrumb,, , Form,, , message } from 'antd'
 import Link from 'next/link'
 
 import {
@@ -13,6 +13,7 @@ import EditableTable from './editableTable'
 
 import style from './index.module.scss'
 import { createDatabaseTable, getDataBaseTable } from '@/infrastructure/api/database'
+import { Divider, Input } from '@/app/components/ui'
 
 const DatabaseDetailCreateContent = () => {
   const [form] = Form.useForm()

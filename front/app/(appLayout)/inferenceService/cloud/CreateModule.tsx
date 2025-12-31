@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, Modal, Select, Space } from 'antd'
+import { Form,, , Modal, Select, Space } from 'antd'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import styles from './page.module.scss'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { createModel } from '@/infrastructure/api/modelWarehouse'
 import { noOnlySpacesRule } from '@/shared/utils'
 import IconModal from '@/app/components/iconModal'
+import { Button, Input } from '@/app/components/ui'
 
 const { Option } = Select
 
@@ -128,7 +129,7 @@ const CreateModal = (props: CreateModalProps) => {
                     </Space>
                   ))}
                   <Form.Item>
-                    <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                    <Button variant="secondary" onClick={() => add()} icon={<PlusOutlined />}>
                       添加模型
                     </Button>
                   </Form.Item>

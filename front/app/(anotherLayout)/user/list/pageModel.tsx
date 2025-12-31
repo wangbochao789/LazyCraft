@@ -1,7 +1,8 @@
 'use client'
 import React, { useState } from 'react'
-import { Form, Input } from 'antd'
+import { Form } from 'antd'
 import IconFont from '@/app/components/base/iconFont'
+import { Input } from '@/app/components/ui'
 
 type PageModelProps = {
   onOk: (values: any) => void

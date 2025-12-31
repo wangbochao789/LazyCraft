@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React, { useCallback, useMemo, useRef } from 'react'
-import { Button } from 'antd'
+
 import { CloseOutlined, LoadingOutlined } from '@ant-design/icons'
 // import type { Props as FormProps } from './form'
 import Form from '@/app/components/taskStream/elements/_foundation/components/form/field-layout'
@@ -10,6 +10,7 @@ import { ExecutionNodeStatus } from '@/app/components/taskStream/types'
 import ResultPanel from '@/app/components/taskStream/driveFlow/result-panel'
 import Toast from '@/app/components/base/flash-notice'
 import { formatShapeInputsValues } from '@/app/components/taskStream/elements/_foundation/components/variable/utils'
+import { Button } from '@/app/components/ui'
 
 type BeforeRunFormProps = {
   nodeName: string
@@ -117,7 +118,7 @@ const BeforeRunForm: FC<BeforeRunFormProps> = ({
                 <IconFont type='icon-camera12' className='w-4 h-4 text-gray-500' />
               </div>
             )}
-            <Button disabled={isRunning} type='primary' className='w-0 grow space-x-2' onClick={handleRun}>
+            <Button disabled={isRunning} variant='primary' className='w-0 grow space-x-2' onClick={handleRun}>
               {isRunning && <LoadingOutlined className='animate-spin w-4 h-4 text-white' />}
               <div>{isRunning ? '运行中' : '开始运行'}</div>
             </Button>

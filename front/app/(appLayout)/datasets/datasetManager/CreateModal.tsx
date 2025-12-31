@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons'
 import type { UploadFile, UploadProps } from 'antd'
-import { Divider, Form, Input, Modal, Radio, Select, Space, Tooltip, Upload } from 'antd'
+import { Form,, , Modal, Radio, Select, Space, Tooltip, Upload } from 'antd'
 import styles from './index.module.scss'
 import { createDataset } from '@/infrastructure/api/data'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
@@ -9,6 +9,7 @@ import { noOnlySpacesRule } from '@/shared/utils'
 import TagSelect from '@/app/components/tagSelect'
 import { bindTags } from '@/infrastructure/api/tagManage'
 import { apiPrefix } from '@/app-specs'
+import { Divider, Input } from '@/app/components/ui'
 
 const { Dragger } = Upload
 const CreateModal = (props: any) => {
@@ -289,7 +290,7 @@ const CreateModal = (props: any) => {
               <div>导入要求：</div>
               <div>1. 为json、csv、jsonl、txt、parquet格式文件或包含上述文件类型的tar.gz、zip压缩包文件上传</div>
               <div>2.文件大小在1G以内</div>
-              <Space size="small" split={<Divider type="vertical" />}>模版示例：{templateMap[dataFormat].map((item, index) => {
+              <Space size="small" split={<Divider orientation="vertical" />}>模版示例：{templateMap[dataFormat].map((item, index) => {
                 return <a key={index} href={item.url}>{item.name}</a>
               })} </Space>
             </div>
@@ -320,7 +321,7 @@ const CreateModal = (props: any) => {
               <div>导入要求：</div>
               <div>1. URL路径下为json、csv、jsonl、txt、parquet格式文件或包含上述文件类型的tar.gz、zip压缩包文件上传</div>
               <div>2.文件大小在1G以内</div>
-              <Space size="small" split={<Divider type="vertical" />}>模版示例：{templateMap[dataFormat].map((item, index) => {
+              <Space size="small" split={<Divider orientation="vertical" />}>模版示例：{templateMap[dataFormat].map((item, index) => {
                 return <a key={index} href={item.url}>{item.name}</a>
               })} </Space>
             </div>

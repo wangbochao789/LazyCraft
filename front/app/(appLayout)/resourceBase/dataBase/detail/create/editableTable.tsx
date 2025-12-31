@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import type { GetRef, InputRef, TableProps } from 'antd'
-import { Button, Cascader, Form, Input, InputNumber, Popconfirm, Select, Table, Tooltip } from 'antd'
+import { Cascader, Form,, , InputNumber, Popconfirm, Select, Table, Tooltip } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { COLUMN_DICT, DATA_TYPE_DICT, booleanTypeOptions, dataTypeOptions, defaultAddVal, handleTableCellValue } from '../utils'
 
 import { getDataBaseTableStructureByName } from '@/infrastructure/api/database'
+import { Button, Input } from '@/app/components/ui'
 
 type FormInstance<T> = GetRef<typeof Form<T>>
 
@@ -331,7 +332,7 @@ const EditableTable = (props: any) => {
         dataSource.length >= 1
           ? (
             <Popconfirm title="确认删除?" onConfirm={() => handleDelete((page - 1) * 10 + index)}>
-              <Button type="link" danger>删除</Button>
+              <Button variant='tertiary' danger>删除</Button>
             </Popconfirm>
           )
           : null,
@@ -378,7 +379,7 @@ const EditableTable = (props: any) => {
     <div>
       <div className='flex justify-between'>
         <span className='text-[#5E6472] text-sm'>输入数据表信息</span>
-        <Button onClick={handleAdd} type="link">
+        <Button onClick={handleAdd} variant='tertiary'>
           添加字段
         </Button>
       </div>
@@ -399,7 +400,7 @@ const EditableTable = (props: any) => {
       />
 
       <div className='text-right mt-5'>
-        <Button type="primary" onClick={() => onSubmit && onSubmit(dataSource)}>保存</Button>
+        <Button variant='primary' onClick={() => onSubmit && onSubmit(dataSource)}>保存</Button>
       </div>
     </div>
   )

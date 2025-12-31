@@ -1,7 +1,8 @@
 import React from 'react'
-import { Divider, Drawer } from 'antd'
+import { Drawer } from 'antd'
 import InfoTitle from '../components/InfoTitle'
 import InfoItem from '../components/InfoItem'
+import { Divider } from '@/app/components/ui'
 
 const AddModal = (props: any) => {
   const { visible, onClose, baseInfo } = props

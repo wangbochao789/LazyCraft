@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo } from 'react'
-import { Input, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import type { InputProps } from 'antd/lib/input'
 import classNames from 'classnames'
 import './index.scss'
 import { InfoCircleOutlined } from '@ant-design/icons'
+import { Input } from '@/app/components/ui'
 type CustomInputProps = {
   readOnly?: boolean
   tooltip?: string

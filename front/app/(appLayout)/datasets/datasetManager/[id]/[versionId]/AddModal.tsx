@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { InboxOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
-import { Divider, Form, Input, Modal, Select, Space, Upload } from 'antd'
+import { Form,, , Modal, Select, Space, Upload } from 'antd'
 import styles from './index.module.scss'
 import { addFile } from '@/infrastructure/api/data'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Divider, Input } from '@/app/components/ui'
 
 const { Dragger } = Upload
 
@@ -215,7 +216,7 @@ const AddModal = (props: any) => {
             <div>导入要求：</div>
             <div>1. 为json、csv、jsonl、txt、parquet格式文件或包含上述文件类型的tar.gz、zip压缩包文件上传</div>
             <div>2.文件大小在1G以内</div>
-            <Space size="small" split={<Divider type="vertical" />}>模版示例：{templateMap[dataFormat].map((item, index) => {
+            <Space size="small" split={<Divider orientation="vertical" />}>模版示例：{templateMap[dataFormat].map((item, index) => {
               return <a key={index} href={item.url}>{item.name}</a>
             })} </Space>
           </div>
@@ -246,7 +247,7 @@ const AddModal = (props: any) => {
             <div>导入要求：</div>
             <div>1. URL路径下为为json、csv、jsonl、txt、parquet格式文件或包含上述文件类型的tar.gz、zip压缩包文件上传</div>
             <div>2.文件大小在1G以内</div>
-            <Space size="small" split={<Divider type="vertical" />}>模版示例：{templateMap[dataFormat].map((item, index) => {
+            <Space size="small" split={<Divider orientation="vertical" />}>模版示例：{templateMap[dataFormat].map((item, index) => {
               return <a key={index} href={item.url}>{item.name}</a>
             })} </Space>
           </div>

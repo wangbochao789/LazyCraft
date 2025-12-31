@@ -1,6 +1,6 @@
 'use client'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Breadcrumb, Button, Card, Divider, Form, Input, Radio, Space, Spin } from 'antd'
+import { Breadcrumb,, , Card,, , Form,, , Radio, Space, Spin } from 'antd'
 import { useDebounceFn } from 'ahooks'
 // import useUrlState from '@ahooksjs/use-url-state';
 import { useSearchParams } from 'next/navigation'
@@ -9,6 +9,7 @@ import InfoTitle from '../../../components/InfoTitle'
 import styles from './index.module.scss'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { getAdjustInfo, getResultInfo, saveChoose } from '@/infrastructure/api/modelTest'
+import { Button, Divider, Input } from '@/app/components/ui'
 
 const Dimension = (req) => {
   const { id } = req.params
@@ -194,7 +195,7 @@ const Dimension = (req) => {
         <div className={styles.saveWrap}>
           <Divider style={{ marginBottom: 10, marginTop: 0 }} />
           <Button onClick={prevClick} disabled={page === 1} style={{ marginRight: 20 }}>&lt; 上一个</Button>
-          {!option_select_id && <Button onClick={run} type='primary' style={{ marginRight: 20 }}>保存 {page === maxPage ? '' : '>'}</Button>}
+          {!option_select_id && <Button onClick={run} variant='primary' style={{ marginRight: 20 }}>保存 {page === maxPage ? '' : '>'}</Button>}
           {option_select_id && <Button disabled={page === maxPage} onClick={nextClick} style={{ marginRight: 20 }}>下一个 &gt;</Button>}
           <Divider style={{ marginTop: 10, marginBottom: 5 }} />
         </div>

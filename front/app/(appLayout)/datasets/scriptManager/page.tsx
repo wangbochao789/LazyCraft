@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Empty, Form, Input, Modal, Popconfirm, Radio, Select, Spin, Tooltip, Upload, message } from 'antd'
+import { Form,, , Modal, Popconfirm, Radio, Select, Spin, Tooltip, Upload, message } from 'antd'
 import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useUpdateEffect } from 'ahooks'
@@ -15,6 +15,7 @@ import useAuthPermissions from '@/shared/hooks/use-radio-auth'
 import { createPrompt, deletePrompt } from '@/infrastructure/api/prompt'
 import { getDatasetListNew } from '@/infrastructure/api/data'
 import { API_PREFIX } from '@/app-specs'
+import { Button, Empty, Input } from '@/app/components/ui'
 const { Dragger } = Upload
 const ScriptManage = () => {
   const [form] = Form.useForm()
@@ -344,7 +345,7 @@ const ScriptManage = () => {
       <div className={style.top}>
         {/* <Radio.Group options={authRadio.is_self_space ? mineAuthOptions : authOptions} onChange={altChange} value={authValue} optionType="button" /> */}
         <ClassifyMode selectLabels={selectLabels} setSelectLabels={setSelectLabels} type='script' singleSelect={true} />
-        <Button type='primary' onClick={handleCreateScript}>新建脚本</Button>
+        <Button variant='primary' onClick={handleCreateScript}>新建脚本</Button>
       </div>
       <div className={style.search}>
         {/* <Radio.Group options={options} onChange={onChange} value={value} optionType="button" /> */}

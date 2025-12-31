@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { Col, Input, Row, Spin } from 'antd'
+import { Col,, , Row, Spin } from 'antd'
 import { useRequest } from 'ahooks'
 import Image from 'next/image'
 import { useStoreApi } from '@xyflow/react'
@@ -14,6 +14,7 @@ import { generateDefaultConfig } from '../components/utils'
 import { dragApp, fetchAppList } from '@/infrastructure/api//apps'
 import HoverTip from '@/app/components/base/hover-tip'
 import DefaultLogo from '@/app/components/app-hub/app-list/app-default-logo.png'
+import { Input } from '@/app/components/ui'
 
 const App = () => {
   const { data, loading, run: requestAppData } = useRequest<any, any>(async params => fetchAppList({ url: '/apps', params: { page: 1, limit: 100, qtype: 'already', is_published: true, ...params } }))

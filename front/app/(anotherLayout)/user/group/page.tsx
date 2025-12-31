@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { Button, Form, Input, Modal, Popconfirm, Select, Space, Table, Tag, message } from 'antd'
+import { Form,, , Modal, Popconfirm, Select, Space, Table, Tag, message } from 'antd'
 import { useAntdTable } from 'ahooks'
 import ModalOperate from './ModalOperate'
 import AiModel from './pageAiModel'
@@ -10,6 +10,7 @@ import { useApplicationContext } from '@/shared/hooks/app-context'
 import { addUserGroup, deleteGroup, exitGroup, getGroupDetail, getUserGroupList, moveUserAssets } from '@/infrastructure/api/user'
 import PermitCheck, { usePermitCheck } from '@/app/components/app/permit-check'
 import { getModelListAI, toggleAiStatus } from '@/infrastructure/api/modelWarehouse'
+import { Button, Input } from '@/app/components/ui'
 
 type AiToolData = {
   id: number | string
@@ -354,7 +355,7 @@ const UserGroup = () => {
             {/* 条件性显示AI能力操作按钮 */}
             {showAiFeatures && (
               <Button
-                type='link'
+                variant='tertiary'
                 size='small'
                 onClick={() => handleAiToggle(record)}
               >
@@ -362,7 +363,7 @@ const UserGroup = () => {
               </Button>
             )}
             {
-              (isOwner || isAdmin || userSpecified.name === 'administrator') && (record.role === 'owner' || record.role === 'super') && <Button type='link' size='small' onClick={() => handleUserEdit(record)}>编辑</Button>
+              (isOwner || isAdmin || userSpecified.name === 'administrator') && (record.role === 'owner' || record.role === 'super') && <Button variant='tertiary' size='small' onClick={() => handleUserEdit(record)}>编辑</Button>
             }
             {
               (JSON.parse(localStorage.getItem('loginData') || '{}').name !== 'administrator')
@@ -373,7 +374,7 @@ const UserGroup = () => {
                 okText="是"
                 cancelText="否"
               >
-                <Button type='link' size='small' danger>删除</Button>
+                <Button variant='tertiary' size='small' danger>删除</Button>
               </Popconfirm>
             }
             {
@@ -384,7 +385,7 @@ const UserGroup = () => {
                 okText="是"
                 cancelText="否"
               >
-                <Button type='link' size='small' danger>退出</Button>
+                <Button variant='tertiary' size='small' danger>退出</Button>
               </Popconfirm>
             }
           </Space>
@@ -410,7 +411,7 @@ const UserGroup = () => {
       {
         JSON.parse(localStorage.getItem('loginData') || '{}').name !== 'administrator' && <div>
           <PermitCheck value='AUTH_0001'>
-            <Button type='primary' onClick={handleCreate}>添加工作空间</Button>
+            <Button variant='primary' onClick={handleCreate}>添加工作空间</Button>
           </PermitCheck>
         </div>
       }

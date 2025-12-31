@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { v4 as uuid4 } from 'uuid'
-import { Button, Form, Image, Input, Modal, Select, Space, Tooltip, Upload, message } from 'antd'
+import { Form, Image,, , Modal, Select, Space, Tooltip, Upload, message } from 'antd'
 import { DeleteOutlined, ExclamationCircleOutlined, InboxOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons' // QuestionCircleOutlined
 import type { GetProp, UploadProps } from 'antd'
 import type { RcFile } from 'antd/es/upload/interface'
@@ -17,6 +17,7 @@ import { bindTags, deleteFile, getTagList } from '@/infrastructure/api/tagManage
 import { useModalContext } from '@/shared/hooks/modal-context'
 import Iconfont from '@/app/components/base/iconFont'
 import IconModal from '@/app/components/iconModal'
+import { Button, Input } from '@/app/components/ui'
 const MAX_CONCURRENT_UPLOADS = 5 // 设置最大并发数
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 const { Dragger } = Upload
@@ -595,7 +596,7 @@ const CreateModal = (props: any) => {
                 : uploadButton}
             </Upload>
             <div className='text-[#C1C3C9] text-xs mt-2'>注：建议尺寸 128px * 128px，支持.jpg、.png，大小不超过1MB。</div>
-            <Button style={{ position: 'absolute', top: 75, left: 95 }} type='link' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
+            <Button style={{ position: 'absolute', top: 75, left: 95 }} variant='tertiary' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
           </Form.Item>
           <Form.Item
             name="model_type"
@@ -813,7 +814,7 @@ const CreateModal = (props: any) => {
                         </Space>
                       ))}
                       <Form.Item>
-                        <Button type="dashed" onClick={() => add()} icon={<PlusOutlined />}>
+                        <Button variant="secondary" onClick={() => add()} icon={<PlusOutlined />}>
                           添加模型
                         </Button>
                       </Form.Item>

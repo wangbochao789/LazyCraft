@@ -1,12 +1,13 @@
 'use client'
 
-import { Button, DatePicker, Form, Input, Modal, Popconfirm, Select, Space, Table, Tag, message } from 'antd'
+import { DatePicker, Form,, , Modal, Popconfirm, Select, Space, Table, Tag, message } from 'antd'
 import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import styles from './page.module.scss'
 import Iconfont from '@/app/components/base/iconFont'
 import { createApikey, deleteApikey, getApikeyList, getCurrentWorkspace, updateApikeyStatus } from '@/infrastructure/api/user'
 import type { IApiKeyData, IApiResponse, ITenant, IWorkspaceResponse } from '@/core/data/common'
+import { Button, Input } from '@/app/components/ui'
 
 export default function TagsManagePage() {
   const [loading, setLoading] = useState(false)
@@ -259,17 +260,17 @@ export default function TagsManagePage() {
               okText="确定"
               cancelText="取消"
             >
-              <Button type="link" danger>删除</Button>
+              <Button variant='tertiary' danger>删除</Button>
             </Popconfirm>
             {!isExpired && (
               <>
                 {record.status === 'disabled' && (
-                  <Button type="link" style={{ color: '#52c41a' }} onClick={() => handleUpdateStatus(record.id, 'active')}>
+                  <Button variant='tertiary' style={{ color: '#52c41a' }} onClick={() => handleUpdateStatus(record.id, 'active')}>
                     启用
                   </Button>
                 )}
                 {record.status === 'active' && (
-                  <Button type="link" danger onClick={() => handleUpdateStatus(record.id, 'disabled')}>
+                  <Button variant='tertiary' danger onClick={() => handleUpdateStatus(record.id, 'disabled')}>
                     禁用
                   </Button>
                 )}
@@ -297,7 +298,7 @@ export default function TagsManagePage() {
         <div className={styles.topWrap}>
           <div style={{ margin: '50px' }}>
             <Button
-              type="primary"
+              variant='primary'
               style={{ marginRight: '10px', position: 'absolute', right: '52px', top: '70px' }}
               onClick={showModal}
             >
@@ -323,7 +324,7 @@ export default function TagsManagePage() {
           <Button key="cancel" onClick={handleCancel}>
             取消
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
+          <Button key="submit" variant='primary' onClick={handleOk}>
             确定
           </Button>,
         ]}
