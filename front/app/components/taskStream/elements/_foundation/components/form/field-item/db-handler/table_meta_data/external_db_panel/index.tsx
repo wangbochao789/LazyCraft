@@ -1,6 +1,6 @@
 'use client'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { Form,, , Modal, Select, Switch, Table } from 'antd'
+import { Form, Modal, Select, Switch, Table } from 'antd'
 import { v4 as uuid4 } from 'uuid'
 import classNames from 'classnames'
 import style from './index.module.scss'

@@ -2,12 +2,12 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Col, Form,, , Modal, Popconfirm, Row, Switch, Tabs, Tag, Tooltip } from 'antd'
+import { Col, Form, Modal, Popconfirm, Row, Tabs, Tag, Tooltip } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import styles from './page.module.scss'
-import InfoModal from './InfoModule'
-import InfoMcpModel from './InfomcpModel'
-import PageDrawer from './pageDrawer'
+import InfoToolModal from './InfoModule'
+import InfoToolMcpModal from './InfomcpModel'
+import ToolDrawer from './pageDrawer'
 import TagMode from '@/app/components/tagSelect/TagMode'
 import ClassifyMode from '@/app/components/tagSelect/ClassifyMode'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
@@ -20,7 +20,7 @@ import type { DeleteMcpParams, DeleteMcpResponse, McpItem, McpListResponse, TagI
 import ReferenceResultModal from '@/app/components/referenceResultModal'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import { pageCache } from '@/shared/utils'
-import { Button, Input } from '@/app/components/ui'
+import { Button, Input, Switch } from '@/app/components/ui'
 
 const Tools = () => {
   // 自定义工具
@@ -292,9 +292,7 @@ const Tools = () => {
         <div><ClassifyMode needSpace={false} label='发布情况' selectLabels={selectStatus} setSelectLabels={setSelectStatus} type='toolStatu' /></div>
         <div className='flex justify-between'>
           {/* <SearchSelect ref={selectRef} value={sValue} onChange={sChange} type='tool' /> */}
-          <Form.Item label="其他选项">
-            <CreatorSelect value={creator} setCreator={setCreator} type='tool' />
-          </Form.Item>
+          <CreatorSelect value={creator} setCreator={setCreator} type='tool' />
           <Input.Search
             placeholder='请输入搜索内容'
             value={searchVal}
@@ -471,7 +469,7 @@ const Tools = () => {
             </Row>
           )}
       </div>
-      <InfoModal
+      <InfoToolModal
         gettaglist={async () => {
           setSelectTags([])
           await selectToolRef.current?.getList?.()
@@ -485,7 +483,7 @@ const Tools = () => {
           // 当标签被删除时，清空筛选状态
           setSelectTags([])
         }}
-      ></InfoModal>
+      ></InfoToolModal>
 
     </div>
   ), [
@@ -627,20 +625,20 @@ const Tools = () => {
             </Row>
           )}
       </div>
-      <InfoMcpModel
+      <InfoToolMcpModal
         gettaglist={refreshMcpTags}
         visible={showInfoModuleMap}
         data={itemMap}
         onSuccess={handleSuccessMcp}
         getmcpList={getmcpList}
         onClose={() => setShowInfoModuleMap(false)}
-      ></InfoMcpModel>
-      <PageDrawer
+      ></InfoToolMcpModal>
+      <ToolDrawer
         visible={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         gettaglist={refreshMcpTags}
         getmcpList={getmcpList}
-      ></PageDrawer>
+      ></ToolDrawer>
     </div>
   ), [
     mcpList,

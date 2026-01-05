@@ -21,6 +21,14 @@
   display: none !important;
 }
 
+#graph-canvas .react-flow__background {
+  fill: #E4E5E7 !important;
+}
+
+#graph-canvas .react-flow__background pattern circle {
+  fill: #E4E5E7 !important;
+}
+
 .canvas-panel-wrap {
   border-radius: 0;
 }

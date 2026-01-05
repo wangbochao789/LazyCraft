@@ -23,18 +23,28 @@ export type TooltipProps = {
   /** 是否隐藏箭头 */
   noArrow?: boolean
   /** 显示位置 */
-  position?: 'top' | 'bottom' | 'left' | 'right'
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight' | 'leftTop' | 'leftBottom' | 'rightTop' | 'rightBottom'
   /** 提示内容（与 content 相同，优先级更高） */
   title?: React.ReactNode
+  /** 直接指定 placement（优先级高于 position） */
+  placement?: AntdTooltipProps['placement']
 } & Omit<AntdTooltipProps, 'title' | 'placement' | 'arrow'>
 
 // 映射 position 到 antd Tooltip 的 placement
-const positionToPlacement = {
+const positionToPlacement: Record<string, AntdTooltipProps['placement']> = {
   top: 'top',
   bottom: 'bottom',
   left: 'left',
   right: 'right',
-} as const
+  topLeft: 'topLeft',
+  topRight: 'topRight',
+  bottomLeft: 'bottomLeft',
+  bottomRight: 'bottomRight',
+  leftTop: 'leftTop',
+  leftBottom: 'leftBottom',
+  rightTop: 'rightTop',
+  rightBottom: 'rightBottom',
+}
 
 /**
  * Tooltip 工具提示组件
@@ -61,6 +71,7 @@ export const Tooltip: FC<TooltipProps> = ({
   content,
   disabled,
   position = 'top',
+  placement: placementProp,
   children,
   htmlContent,
   className,
@@ -70,7 +81,8 @@ export const Tooltip: FC<TooltipProps> = ({
   ...props
 }) => {
   const tooltipTitle = title || htmlContent || content
-  const placement = positionToPlacement[position] || 'top'
+  // 优先级：placementProp > position > 'top'
+  const placement = placementProp || positionToPlacement[position] || 'top'
 
   if (disabled || !tooltipTitle)
     return <>{children}</>

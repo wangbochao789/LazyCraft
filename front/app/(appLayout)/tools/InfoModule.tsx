@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Image,, , Modal, Upload } from 'antd'
+import { Form, Modal, Upload } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import type { GetProp, UploadProps } from 'antd'
 
@@ -148,7 +148,7 @@ const CreateModal = (props: any) => {
               onChange={handleIconChange}
             >
 
-              {form.getFieldValue('icon') ? <Image src={form.getFieldValue('icon').replace('app', 'static')} alt="avatar" preview={false} width={100} height={100} /> : uploadButton}
+              {form.getFieldValue('icon') ? <img src={form.getFieldValue('icon').replace('app', 'static')} alt="avatar" style={{ width: 100, height: 100 }} /> : uploadButton}
             </Upload>
             <p className={'text-[#C1C3C9] text-xs mt-2'}>注：建议尺寸 128px * 128px，支持.jpg、.png，大小不超过1MB。</p>
             <Button style={{ position: 'absolute', top: 75, left: 95 }} variant='tertiary' onClick={() => { setIconModal(true) }}>查看更多图标</Button>

@@ -1140,6 +1140,14 @@ class WorkflowImageGenerator {
       backgroundColor: options.backgroundColor,
       pixelRatio: options.pixelRatio,
       quality: options.quality,
+      filter: (node: HTMLElement) => {
+        // 过滤掉可能导致黑色背景的元素
+        const exclusionClasses = ['react-flow__minimap', 'react-flow__controls']
+        return !exclusionClasses.some(className => node.classList?.contains(className))
+      },
+      style: {
+        backgroundColor: options.backgroundColor || '#F0F2F7',
+      },
     })
   }
 
@@ -1246,7 +1254,12 @@ export const generateWorkflowImage = async (
 
 // 兼容性函数，保持原有 API
 export const generateFlowImg = (callBack: (dataUrl: string) => void): void => {
-  generateWorkflowImage({ format: 'png', width: 360, height: 270 })
+  generateWorkflowImage({
+    format: 'png',
+    width: 360,
+    height: 270,
+    backgroundColor: '#F0F2F7', // 设置为画布背景色
+  })
     .then((result) => {
       if (result.success && result.dataUrl)
         callBack(result.dataUrl)

@@ -1,7 +1,7 @@
 'use client'
 
 import { memo } from 'react'
-import { Checkbox, Form,, , Select } from 'antd'
+import { Checkbox, Form, Select } from 'antd'
 import Icon from '@/app/components/base/iconFont'
 import './ConfigInputName.scss'
 import { Button, Input } from '@/app/components/ui'

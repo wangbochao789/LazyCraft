@@ -1,7 +1,8 @@
 'use client'
 import type { FC } from 'react'
 import React, { useState } from 'react'
-import { InputNumber, Slider, Switch } from 'antd'
+import { InputNumber, Slider } from 'antd'
+import { Switch } from '@/app/components/ui'
 
 type TTSSettings = {
   speed: number
@@ -97,7 +98,7 @@ const TTSSettingsContent: FC<TTSSettingsContentProps> = ({
             <label className="text-sm text-gray-700 w-20">笑声 laugh</label>
             <div className="flex-1">
               <Switch
-                checked={settings.laugh}
+                value={settings.laugh}
                 onChange={value => updateSettings({ laugh: value })}
                 disabled={readOnly}
               />
@@ -132,7 +133,7 @@ const TTSSettingsContent: FC<TTSSettingsContentProps> = ({
                 disabled={readOnly}
               />
               <Switch
-                checked={settings.randomTone}
+                value={settings.randomTone}
                 onChange={value => updateSettings({ randomTone: value })}
                 disabled={readOnly}
               />

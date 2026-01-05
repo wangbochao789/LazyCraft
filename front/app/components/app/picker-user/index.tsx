@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { CloseOutlined } from '@ant-design/icons'
-import { Checkbox,, , Modal, Select, Typography, message } from 'antd'
+import { Checkbox, Modal, Select, Typography, message } from 'antd'
 import { RoleCategory, roleOptions } from './constants'
 import { getGroupDetail, getUserList, moveUserAssets, removeGroupUser } from '@/infrastructure/api//user'
 import PermitCheck, { usePermitCheck } from '@/app/components/app/permit-check'

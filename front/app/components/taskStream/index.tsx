@@ -569,9 +569,10 @@ const WorkflowComponent: FC<WorkflowComponentProps> = memo(({
         id='reactFlowEle'
       >
         <Background
+          variant="dots"
           gap={[14, 14]}
           size={2}
-          color='#E4E5E7'
+          color='#f6f6f6'
         />
       </DynamicReactFlow>
     </div>

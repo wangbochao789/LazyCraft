@@ -1,5 +1,6 @@
 import { type FC, type ReactElement, cloneElement, memo, useCallback, useEffect, useState } from 'react'
-import { Modal, Switch, Tooltip, message } from 'antd'
+import { Modal, Tooltip, message } from 'antd'
+import { Switch } from '@/app/components/ui'
 import { useToggle } from 'ahooks'
 import { CloseOutlined, PartitionOutlined } from '@ant-design/icons'
 import { useParams } from 'next/navigation'
@@ -185,7 +186,7 @@ const BasePanel: FC<BasePanelProps> = ({
       <>
         <Tooltip title={`${localEnableBackflow ? '关闭' : '开启'}数据回流`}>
           <Switch
-            checked={localEnableBackflow}
+            value={localEnableBackflow}
             onChange={(e) => {
               setLocalEnableBackflow(e)
               handleDataReflow(e)

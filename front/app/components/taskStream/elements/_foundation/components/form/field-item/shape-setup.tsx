@@ -2,7 +2,6 @@
 import type { FC } from 'react'
 import React, { useEffect, useMemo, useRef } from 'react'
 import { v4 as uuid4 } from 'uuid'
-import { as BtnAntd, Tooltip } from 'antd'
 import type { FieldItemProps } from '../types'
 import { ValueType, formatValueByType } from './utils'
 import cn from '@/shared/utils/classnames'
@@ -14,7 +13,7 @@ import { currentLanguage } from '@/app/components/taskStream/elements/script/typ
 import Icon from '@/app/components/base/iconFont'
 import './config-shape.scss'
 import { EffectType, generateTypeReadOnlyShape } from '@/infrastructure/api/universeNodes/universe_default_config'
-import { Button } from '@/app/components/ui'
+import { Button, Tooltip } from '@/app/components/ui'
 
 const baseTypeOptions = [
   { label: 'str', value: 'str' },
@@ -847,14 +846,14 @@ const ConfigShape: FC<Partial<FieldItemProps>> = ({
         'absolute top-[-40px] right-0 z-1',
       )}>
         {
-          <BtnAntd
-            type="text"
+          <Button
+            variant="ghost"
             className="field-item-extra-add-btn"
             onClick={handleAddParam}
           >
             添加{simpleTitle || filedTitle}
             <Icon type="icon-tianjia1" style={{ color: '#0E5DD8' }} />
-          </BtnAntd>
+          </Button>
         }
       </div>}
       <div>

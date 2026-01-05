@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Col,, , Popconfirm, Row, Switch, Tag, Tooltip, Typography } from 'antd'
+import { Col, Popconfirm, Row, Tag, Tooltip, Typography } from 'antd'
 import { DownloadOutlined, PlusOutlined } from '@ant-design/icons'
 import NextImage from 'next/image'
 import { debounce } from 'lodash'
@@ -10,7 +10,7 @@ import DefaultLogo from '../app-list/app-default-logo.png'
 import styles from './index.module.scss'
 import Iconfont from '@/app/components/base/iconFont'
 import type { AppItem } from '@/core/data/common'
-import { Button, Divider } from '@/app/components/ui'
+import { Button, Divider, Switch } from '@/app/components/ui'
 
 const { Paragraph } = Typography
 
@@ -202,7 +202,7 @@ const AppCard: React.FC<AppCardProps> = ({
                     <Switch
                       className="mr-4"
                       onChange={debounce(handleEnableApi, 500)}
-                      checked={(item as AppItem).enable_api}
+                      value={(item as AppItem).enable_api}
                     />
                   </Tooltip>
                 )}

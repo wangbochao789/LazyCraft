@@ -1,7 +1,6 @@
 import React from 'react'
-import { Switch } from 'antd'
-import type { SwitchProps } from 'antd/lib/switch'
-import classNames from 'classnames'
+import { Switch as UiSwitch } from '@/app/components/ui'
+import type { SwitchProps } from '@/app/components/ui/switch'
 import './index.scss'
 
 type CustomSwitchProps = {
@@ -9,13 +8,15 @@ type CustomSwitchProps = {
 } & SwitchProps
 
 const CustomSwitch: React.FC<CustomSwitchProps> = (props) => {
-  const { readOnly, disabled, className, checked, ...restProps } = props
+  const { readOnly, checked, value, ...restProps } = props
+  // 兼容 checked 属性，转换为 value
+  const switchValue = value !== undefined ? value : checked
+  
   return (
-    <Switch
-      disabled={disabled || readOnly}
-      className={classNames('custom-switch', className, { 'custom-switch-readonly': !!readOnly })}
+    <UiSwitch
+      value={switchValue}
+      readOnly={readOnly}
       {...restProps}
-      defaultChecked={checked}
     />
   )
 }

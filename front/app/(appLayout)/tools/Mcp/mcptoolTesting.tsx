@@ -1,11 +1,11 @@
 'use client'
 import React, { useState } from 'react'
-import { Card, Form,, , InputNumber, Select, Space, Switch, Tag, Typography, message } from 'antd'
+import { Card, Form,, , InputNumber, Select, Space, Tag, Typography, message } from 'antd'
 import Editor from '@monaco-editor/react'
 import styles from '../info/page.module.scss'
 import type { JsonSchemaField, McpTool, TestMcpResponse } from '@/shared/types/toolsMcp'
 import { testMcp } from '@/infrastructure/api/toolmcp'
-import { Button, Input } from '@/app/components/ui'
+import { Button, Input, Switch } from '@/app/components/ui'
 
 const { Title, Text } = Typography
 const { Option } = Select

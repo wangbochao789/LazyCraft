@@ -16,11 +16,7 @@ import {
   useLazyLLMEdgesInteractions,
 } from '@/app/components/taskStream/logicHandlers'
 import './config-ports.scss'
-
-import {
 import { Button } from '@/app/components/ui'
-  updateNodeInternalsAsync,
-} from '@/app/components/taskStream/logicHandlers/itemDataUpdate'
 
 const ConfigPorts: FC<Partial<FieldItemProps>> = ({
   label,

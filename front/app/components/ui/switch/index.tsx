@@ -3,6 +3,8 @@
 import React from 'react'
 import { Switch as AntdSwitch } from 'antd'
 import type { SwitchProps as AntdSwitchProps } from 'antd'
+import classNames from 'classnames'
+import './index.scss'
 
 export type SwitchProps = {
   /** 值变化回调 */
@@ -13,6 +15,8 @@ export type SwitchProps = {
   value?: boolean
   /** 是否禁用 */
   disabled?: boolean
+  /** 是否只读 */
+  readOnly?: boolean
   /** 自定义类名 */
   className?: string
 } & Omit<AntdSwitchProps, 'checked' | 'defaultChecked' | 'onChange'>
@@ -35,6 +39,11 @@ export type SwitchProps = {
  *   onChange={setIsEnabled}
  *   disabled={isLoading}
  * />
+ *
+ * <Switch
+ *   value={isEnabled}
+ *   readOnly={true}
+ * />
  * ```
  */
 export const Switch = ({
@@ -42,6 +51,7 @@ export const Switch = ({
   defaultValue = false,
   value,
   disabled = false,
+  readOnly = false,
   className,
   ...props
 }: SwitchProps) => {
@@ -54,8 +64,8 @@ export const Switch = ({
       checked={value}
       defaultChecked={defaultValue}
       onChange={handleChange}
-      disabled={disabled}
-      className={className}
+      disabled={disabled || readOnly}
+      className={classNames('custom-switch', className, { 'custom-switch-readonly': !!readOnly })}
       {...props}
     />
   )

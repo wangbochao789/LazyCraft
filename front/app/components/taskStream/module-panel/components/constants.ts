@@ -18,10 +18,10 @@ export const BLOCK_CLASSIFICATIONS: string[] = [
 ]
 
 export const iconColorDict = {
-  [BlockClassificationEnum.FundamentalComponent]: '#0E5DD8',
-  [BlockClassificationEnum.BasicModel]: '#19B68D',
-  [BlockClassificationEnum.FunctionModule]: '#8F59CA',
-  [BlockClassificationEnum.ControlFlow]: '#454555',
+  [BlockClassificationEnum.FundamentalComponent]: '#6B9FEB', // 浅蓝色
+  [BlockClassificationEnum.BasicModel]: '#5DCAA8',           // 浅绿色
+  [BlockClassificationEnum.FunctionModule]: '#B894D6',       // 浅紫色
+  [BlockClassificationEnum.ControlFlow]: '#8B8B95',          // 浅灰色
 }
 
 // 本地定义的节点图标对应类型

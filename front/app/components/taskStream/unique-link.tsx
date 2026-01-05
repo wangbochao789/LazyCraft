@@ -15,7 +15,7 @@ import {
   getSmoothStepPath,
   useStoreApi,
 } from '@xyflow/react'
-import { Checkbox, Col,, , Modal, Row, Select } from 'antd'
+import { Checkbox, Col, Modal, Row, Select } from 'antd'
 import { FormOutlined } from '@ant-design/icons'
 
 import { useCheckNodeShape, useReadonlyNodes } from './logicHandlers'

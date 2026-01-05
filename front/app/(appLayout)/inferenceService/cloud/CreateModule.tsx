@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Form,, , Modal, Select, Space } from 'antd'
+import { Form, Modal, Select, Space } from 'antd'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import styles from './page.module.scss'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
@@ -47,7 +47,7 @@ const CreateModal = (props: CreateModalProps) => {
       const res = response as unknown as ApiResponse
       if (res && res.success) {
         Toast.notify({
-          type: 'success' as const,
+          type: ToastTypeEnum.Success,
           message: res.message || '添加成功',
         })
         form.resetFields()
@@ -57,7 +57,7 @@ const CreateModal = (props: CreateModalProps) => {
     catch (err) {
       console.error(err)
       Toast.notify({
-        type: 'error' as const,
+        type: ToastTypeEnum.Error,
         message: '添加失败',
       })
     }

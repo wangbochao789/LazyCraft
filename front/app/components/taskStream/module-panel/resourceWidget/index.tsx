@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { cloneDeep, groupBy } from 'lodash-es'
 import { v4 as uuidV4 } from 'uuid'
-import { Col,, , Row } from 'antd'
+import { Col, Row } from 'antd'
 import produce from 'immer'
 import Image from 'next/image'
 import type { Resource } from '../../types'

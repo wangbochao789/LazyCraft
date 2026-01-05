@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Card, Form, Image,, , Modal, Select, Upload, message } from 'antd'
+import { Card, Form, Modal, Select, Upload, message } from 'antd'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
 import { useRouter } from 'next/navigation'
@@ -271,7 +271,7 @@ const InfoMcpModel = (props: any) => {
                 onChange={handleIconChange}
               >
 
-                {form.getFieldValue('icon') ? <Image src={form.getFieldValue('icon').replace('app', 'static')} alt="avatar" preview={false} width={100} height={100} /> : uploadButton}
+                {form.getFieldValue('icon') ? <img src={form.getFieldValue('icon').replace('app', 'static')} alt="avatar" style={{ width: 100, height: 100 }} /> : uploadButton}
               </Upload>
               <p className={'text-[#C1C3C9] text-xs mt-2'}>注：建议尺寸 128px * 128px，支持.jpg、.png，大小不超过1MB。</p>
               <Button style={{ position: 'absolute', top: 75, left: 95 }} variant='tertiary' onClick={() => { setIconModal(true) }}>查看更多图标</Button>
