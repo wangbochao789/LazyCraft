@@ -3,7 +3,7 @@ import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons'
 import type { UploadFile, UploadProps } from 'antd'
 import { Divider, Form, Input, Modal, Radio, Select, Space, Tooltip, Upload } from 'antd'
 import styles from './index.module.scss'
-import { createDataset } from '@/infrastructure/api/data'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { noOnlySpacesRule } from '@/shared/utils'
 import TagSelect from '@/app/components/tagSelect'
@@ -89,7 +89,7 @@ const CreateModal = (props: any) => {
         data.file_paths = data.file_paths.fileList.map(item => item.response.file_path)
       data.from_type = 'upload' // upload 上传， return 回流
 
-      createDataset({ url: '/data/create_date_set', body: { ...data } }).then((res) => {
+      OpenAPIService.postDataCreateDateSet({ ...data } as any).then((res) => {
         if (res) {
           Toast.notify({
             type: ToastTypeEnum.Success, message: '创建成功',
@@ -113,7 +113,7 @@ const CreateModal = (props: any) => {
 
   const uploadProps: UploadProps = {
     name: 'file',
-    customRequest: async ({ file, onSuccess, onError, onProgress }) => {
+    customRequest: async ({ file, onSuccess, onError, onProgress: _onProgress }) => {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('file_type', form.getFieldValue('data_type'))
@@ -135,7 +135,7 @@ const CreateModal = (props: any) => {
         onSuccess?.(result)
       }
       catch (error) {
-        onError?.(error)
+        onError?.(error as any)
       }
     },
     accept: dataType === 'doc' ? allowedDocTypes.join(',') : allowedPicTypes.join(','),

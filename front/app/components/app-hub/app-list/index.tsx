@@ -32,7 +32,7 @@ import useTimestamp from '@/shared/hooks/use-timestamp'
 import IconModal from '@/app/components/iconModal'
 import ReferenceResultModal from '@/app/components/referenceResultModal'
 
-import { createApp, downloadAppJson, enableApi } from '@/infrastructure/api//apps'
+import { downloadAppJson, enableApi } from '@/infrastructure/api//apps'
 import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Iconfont from '@/app/components/base/iconFont'
 import PermitCheck from '@/app/components/app/permit-check'
@@ -328,7 +328,7 @@ const Apps = () => {
       }
       else {
         // 创建新应用
-        const res = await createApp(formValues)
+        const res = await OpenAPIService.postApps(formValues)
         if (res) {
           const bindResult = await bindTags({ url: 'tags/bindings/update', body: { type: 'app', tag_names: formValues?.tag_names, target_id: res?.id } })
           message.success('创建应用成功')

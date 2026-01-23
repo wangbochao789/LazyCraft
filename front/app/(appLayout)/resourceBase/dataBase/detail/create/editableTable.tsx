@@ -4,7 +4,7 @@ import { Button, Cascader, Form, Input, InputNumber, Popconfirm, Select, Table, 
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { COLUMN_DICT, DATA_TYPE_DICT, booleanTypeOptions, dataTypeOptions, defaultAddVal, handleTableCellValue } from '../utils'
 
-import { getDataBaseTableStructureByName } from '@/infrastructure/api/database'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 type FormInstance<T> = GetRef<typeof Form<T>>
 
@@ -73,7 +73,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
   const loadData = (selectedOptions: any[]) => {
     const targetOption = selectedOptions[selectedOptions.length - 1]
-    getDataBaseTableStructureByName({ database_id, table_name: targetOption.name })
+    OpenAPIService.getDatabaseTableName(Number(database_id), targetOption.name)
       .then((res: any) => {
         const temp = res.data.columns.filter(el => (el.is_primary_key || el.is_unique))
         targetOption.children = temp.map(el => ({ ...el, label: el.name, value: el.name }))
@@ -143,7 +143,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
         }
       }
       for (const key in values) {
-        if (values.hasOwnProperty(key) && values[key] === '')
+        if (Object.prototype.hasOwnProperty.call(values, key) && values[key] === '')
           values[key] = null
       }
       handleSave({ ...record, ...values })

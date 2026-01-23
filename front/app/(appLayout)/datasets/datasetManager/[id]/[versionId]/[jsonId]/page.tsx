@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation'
 import 'jsoneditor/dist/jsoneditor.css' // 引入 JSON 编辑器的样式
 import JSONEditor from 'jsoneditor'
 import styles from './index.module.scss'
-import { getJsonFile, updateFile } from '@/infrastructure/api/data'
 import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 
@@ -42,33 +41,29 @@ const JsonDetail = (req) => {
     const end = page * size
 
     if (from_type === 'upload') {
-      getJsonFile({
-        url: '/data/file',
-        body: {
-          data_set_file_id: jsonId,
-          start,
-          end,
-        },
-      }).then((res) => {
-        const contentLength = res.headers.get('Content-Length')
-        setLoading(false)
-        res.json().then((data) => {
-          setName(data.name)
-          setTotal(data.total || 0)
-          if (contentLength > 1024 * 1024 * 50) {
-            Toast.notify({ type: ToastTypeEnum.Error, message: '文件过大超过50M，暂不支持查看' })
+      OpenAPIService.postDataFile({
+        data_set_file_id: String(jsonId),
+        start,
+        end,
+      }).then((data: any) => {
+        setName(data?.name || '')
+        setTotal(data?.total || 0)
+
+        // OpenAPI 生成请求不会暴露 Response headers，这里用 JSON 体大小做近似判断
+        const approxBytes = new Blob([JSON.stringify(data?.json ?? {})]).size
+        if (approxBytes > 1024 * 1024 * 50) {
+          Toast.notify({ type: ToastTypeEnum.Error, message: '文件过大超过50M，暂不支持查看' })
+          return
+        }
+
+        try {
+          edi && edi?.set(data?.json)
+          if (isInit.current) {
+            setSaveDisabled(false)
+            isInit.current = false
           }
-          else {
-            try {
-              edi && edi?.set(data.json)
-              if (isInit.current) {
-                setSaveDisabled(false)
-                isInit.current = false
-              }
-            }
-            catch (e) { }
-          }
-        })
+        }
+        catch (e) { }
       }).finally(() => {
         setLoading(false)
       })
@@ -113,22 +108,20 @@ const JsonDetail = (req) => {
         const end = currentPage * pageSize
 
         if (from_type === 'upload') {
-          updateFile({
-            url: '/data/file/update',
-            body: {
-              data_set_file_id: jsonId,
-              data_set_file_name: name,
-              content: cont,
-              start,
-              end,
-            },
-          }).then((res) => {
+          OpenAPIService.postDataFileUpdate({
+            data_set_file_id: String(jsonId),
+            data_set_file_name: name,
+            content: cont,
+            start,
+            end,
+          }).then((res: any) => {
             if (showSuccessMessage)
               Toast.notify({ type: ToastTypeEnum.Success, message: '更新成功' })
 
             // 更新总条数
-            if (res.data && res.data.total)
-              setTotal(res.data.total)
+            const nextTotal = res?.data?.total ?? res?.total
+            if (nextTotal)
+              setTotal(nextTotal)
 
             // 如果需要返回上级页面
             if (shouldNavigateBack) {
@@ -147,7 +140,7 @@ const JsonDetail = (req) => {
           })
         }
         else {
-          updateFile({ url: '/data/reflux/update', body: { reflux_data_id: jsonId, data_set_file_name: name, content: cont } }).then((res) => {
+          OpenAPIService.postDataRefluxUpdate({ reflux_data_id: String(jsonId), data_set_file_name: name, content: cont } as any).then((res) => {
             if (showSuccessMessage)
               Toast.notify({ type: ToastTypeEnum.Success, message: '更新成功' })
 

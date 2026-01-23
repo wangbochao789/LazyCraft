@@ -8,8 +8,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import Register_phone from '@/app/register/phone'
-import * as commonApi from '@/infrastructure/api/common'
 import * as ecdh from '@/infrastructure/security/ecdh'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
@@ -23,10 +23,13 @@ jest.mock('next/navigation', () => ({
   })),
 }))
 
-// Mock API
-jest.mock('@/infrastructure/api/common', () => ({
-  commonPost: jest.fn(),
-  checkExist: jest.fn(),
+// Mock OpenAPI AuthService
+jest.mock('@/infrastructure/api/generated/services/AuthService', () => ({
+  AuthService: {
+    postRegister: jest.fn(),
+    postSendsms: jest.fn(),
+    postAccountValidateExist: jest.fn(),
+  },
 }))
 
 // Mock ECDH加密
@@ -87,23 +90,28 @@ jest.mock('antd', () => {
 
 describe('Register_phone - 注册页面', () => {
   const mockPush = jest.fn()
-  const mockCommonPost = commonApi.commonPost as jest.MockedFunction<typeof commonApi.commonPost>
-  const mockCheckExist = commonApi.checkExist as jest.MockedFunction<typeof commonApi.checkExist>
   const mockEncrypt = ecdh.encryptPayloadWithECDH as jest.MockedFunction<typeof ecdh.encryptPayloadWithECDH>
+  const mockPostRegister = AuthService.postRegister as jest.MockedFunction<typeof AuthService.postRegister>
+  const mockPostSendsms = AuthService.postSendsms as jest.MockedFunction<typeof AuthService.postSendsms>
+  const mockPostAccountValidateExist = AuthService.postAccountValidateExist as jest.MockedFunction<typeof AuthService.postAccountValidateExist>
 
   beforeEach(() => {
     // 清除所有mock
     jest.clearAllMocks()
 
     // 设置默认的mock返回值
-    mockCommonPost.mockResolvedValue({
+    mockPostRegister.mockResolvedValue({
       result: 'success',
       data: 'test_token_456',
     } as any)
 
-    mockCheckExist.mockResolvedValue({
+    mockPostSendsms.mockResolvedValue({
       result: 'success',
       data: 'verification_sent',
+    } as any)
+
+    mockPostAccountValidateExist.mockResolvedValue({
+      result: 'success',
     } as any)
 
     mockEncrypt.mockImplementation(() => Promise.resolve({
@@ -258,15 +266,10 @@ describe('Register_phone - 注册页面', () => {
 
     // 验证注册API被调用
     await waitFor(() => {
-      expect(mockCommonPost).toHaveBeenCalledWith({
-        url: '/register',
-        body: expect.any(Object),
-      })
-    })
-
-    // 验证注册API被调用且成功
-    await waitFor(() => {
-      expect(mockCommonPost).toHaveBeenCalled()
+      expect(mockPostRegister).toHaveBeenCalledWith({
+        encrypted_data: 'encrypted',
+        session_id: 'test_session',
+      } as any)
     })
 
     // 验证localStorage保存token
@@ -279,9 +282,9 @@ describe('Register_phone - 注册页面', () => {
       expect(mockPush).toHaveBeenCalledWith('/apps')
     })
 
-    // 验证成功消息被显示在DOM中
+    // 验证成功消息被触发
     await waitFor(() => {
-      expect(screen.getByText('注册成功')).toBeInTheDocument()
+      expect(mockMessageSuccess).toHaveBeenCalledWith('注册成功')
     })
   })
 
@@ -290,7 +293,7 @@ describe('Register_phone - 注册页面', () => {
 
     // Mock注册失败
     const errorMessage = '用户名已存在'
-    mockCommonPost.mockRejectedValue({
+    mockPostRegister.mockRejectedValue({
       json: async () => ({ message: errorMessage }),
     })
 
@@ -321,14 +324,14 @@ describe('Register_phone - 注册页面', () => {
     const user = userEvent.setup()
 
     // Mock延迟响应
-    mockCommonPost.mockImplementation(() =>
-      new Promise(resolve =>
+    mockPostRegister.mockImplementation(() => {
+      return new Promise((resolve) => {
         setTimeout(() => resolve({
           result: 'success',
           data: 'test_token',
-        } as any), 1000),
-      ),
-    )
+        } as any), 1000)
+      }) as any
+    })
 
     render(<Register_phone />)
 
@@ -443,8 +446,8 @@ describe('Register_phone - 注册页面', () => {
 
     // 等待API调用完成并验证成功消息显示
     await waitFor(() => {
-      expect(mockCommonPost).toHaveBeenCalled()
-      expect(screen.getAllByText('注册成功')[0]).toBeInTheDocument()
+      expect(mockPostRegister).toHaveBeenCalled()
+      expect(mockMessageSuccess).toHaveBeenCalledWith('注册成功')
     })
   })
 

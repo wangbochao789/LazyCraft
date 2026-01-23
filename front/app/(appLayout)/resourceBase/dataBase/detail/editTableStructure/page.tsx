@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { useRequest } from 'ahooks'
 import style from '../index.module.scss'
 import EditableTable from './editableTable'
-import { editTableStructure, getDataBaseSubTableList, getDataBaseTable } from '@/infrastructure/api/database'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 const EditTableStructureContent = () => {
   const searchParams = useSearchParams()
@@ -18,8 +18,9 @@ const EditTableStructureContent = () => {
   const database_id = searchParams.get('database_id')
   const table_id = searchParams.get('table_id')
 
-  const { data: tableList } = useRequest(() => getDataBaseTable({ database_id, page: 1, limit: 10000 }).then((res: any) => res.data.filter(el => el.id !== Number(table_id)).map(el => ({ ...el, label: el.name, value: el.name, isLeaf: false }))))
-  const { data } = useRequest<any, any>(() => getDataBaseSubTableList({ database_id, table_id }), {
+  const { data: tableList } = useRequest(() => OpenAPIService.getDatabaseTableList(Number(database_id), 1, 10000).then((res: any) =>
+    (res?.data || []).filter(el => el.id !== Number(table_id)).map(el => ({ ...el, label: el.name, value: el.name, isLeaf: false }))))
+  const { data } = useRequest<any, any>(() => OpenAPIService.getDatabaseTableData(Number(database_id), Number(table_id)), {
     onSuccess: (res) => {
       if (res)
         setFormVal(res.columns.columns)
@@ -51,7 +52,16 @@ const EditTableStructureContent = () => {
           : rest
       }),
     }
-    await editTableStructure(submitData)
+
+    await OpenAPIService.putDatabaseTable(
+      Number(database_id),
+      Number(table_id),
+      {
+        table_name: submitData.table_name,
+        comment: submitData.comment,
+        columns: submitData.columns,
+      } as any,
+    )
     message.success('更新成功')
     back()
   }

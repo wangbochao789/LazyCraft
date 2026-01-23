@@ -3,7 +3,7 @@ import { InboxOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
 import { Divider, Form, Input, Modal, Select, Space, Upload } from 'antd'
 import styles from './index.module.scss'
-import { addFile } from '@/infrastructure/api/data'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 
 const { Dragger } = Upload
@@ -84,7 +84,7 @@ const AddModal = (props: any) => {
         data.file_paths = data.file_paths.fileList.map(item => item.response.file_path)
       data.from_type = 'upload' // upload 上传， return 回流
       setConfirmLoading(true)
-      addFile({ url: '/data/version/add/file', body: { data_set_version_id: versionId, ...data } }).then(() => {
+      OpenAPIService.postDataVersionAddFile({ data_set_version_id: String(versionId), ...data } as any).then(() => {
         Toast.notify({
           type: ToastTypeEnum.Success, message: '创建成功',
         })

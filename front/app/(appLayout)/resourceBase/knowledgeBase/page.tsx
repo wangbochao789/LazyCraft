@@ -7,8 +7,8 @@ import { ReadOutlined } from '@ant-design/icons'
 import styles from './page.module.scss'
 import InfoModal from './InfoModal'
 import UploadModule from './UploadModule'
-import { deleteKnowledgeBase, getKnowledgeBaseList } from '@/infrastructure/api/knowledgeBase'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Iconfont from '@/app/components/base/iconFont'
 import TagMode from '@/app/components/tagSelect/TagMode'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
@@ -38,13 +38,19 @@ const KnowledgeBase = () => {
   const [refType] = useState<'kb'>('kb')
 
   const getCardList = async () => {
-    const res: any = await getKnowledgeBaseList({ url: '/kb/list', body: { page: '1', page_size: '999', search_tags: selectTags.map(item => item.name), search_name: sName, user_id: creator } })
-    setList(res.data)
+    const res: any = await OpenAPIService.postKbList({
+      page: 1,
+      page_size: 999,
+      search_tags: selectTags.map(item => item.name),
+      search_name: sName,
+      user_id: creator,
+    } as any)
+    setList(res?.data || [])
   }
   const handleDelete = async (item: any, e) => {
     e.stopPropagation()
-    await deleteKnowledgeBase({ url: '/kb/delete', body: { id: item.id } })
-    Toast.notify({ type: 'success', message: '删除成功' })
+    await OpenAPIService.postKbDelete({ id: String(item.id) })
+    Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
     getCardList()
   }
   const handleInfoSuccess = (id: string, type: 'create' | 'edit') => {

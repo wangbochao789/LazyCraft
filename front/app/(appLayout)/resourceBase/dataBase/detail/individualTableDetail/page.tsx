@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { useAntdTable } from 'ahooks'
 import style from '../index.module.scss'
 import DatabaseIcon from '@/public/images/resource-base/database.png'
-import { getDataBaseSubTableList } from '@/infrastructure/api/database'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 const { Column } = Table
 
@@ -24,12 +24,12 @@ const DatabaseDetailContent = () => {
   const { back } = useRouter()
 
   const getTableData = ({ current, pageSize }): Promise<any> => {
-    return getDataBaseSubTableList({
-      database_id: searchParams.get('database_id'),
-      table_id: searchParams.get('table_id'),
-      page: current,
-      limit: pageSize,
-    }).then((res: any) => {
+    return OpenAPIService.getDatabaseTableData(
+      Number(searchParams.get('database_id')),
+      Number(searchParams.get('table_id')),
+      current,
+      pageSize,
+    ).then((res: any) => {
       // 设置表格的列信息
       if (res.columns) {
         // 设置数据库表信息

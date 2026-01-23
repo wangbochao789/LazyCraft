@@ -1,6 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
+/* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
 import { ApiError } from './ApiError';
 import type { ApiRequestOptions } from './ApiRequestOptions';
@@ -239,6 +240,14 @@ export const getResponseBody = async (response: Response): Promise<any> => {
                 if (isJSON) {
                     return await response.json();
                 } else {
+                    const ct = contentType.toLowerCase();
+                    const isBinary = ct.startsWith('application/octet-stream')
+                        || ct.startsWith('application/vnd')
+                        || ct.startsWith('application/zip')
+                        || ct.startsWith('application/pdf');
+                    if (isBinary) {
+                        return await response.blob();
+                    }
                     return await response.text();
                 }
             }

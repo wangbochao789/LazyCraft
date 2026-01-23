@@ -4,8 +4,8 @@ import { Button, Popconfirm, Space, Table } from 'antd'
 import { useAntdTable } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import styles from './page.module.scss'
-import Toast from '@/app/components/base/flash-notice'
-import { deleteDoc, getDocList, publishDoc } from '@/infrastructure/api/docManage'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 type Result = {
   total: number
@@ -13,8 +13,8 @@ type Result = {
 }
 const Articles = () => {
   const router = useRouter()
-  const getTableData = ({ current, pageSize }, formData): Promise<Result> => {
-    return getDocList({ url: '/doc/manage/list', options: { params: { page: current, limit: pageSize } } }).then((res) => {
+  const getTableData = ({ current, pageSize }, _formData): Promise<Result> => {
+    return OpenAPIService.getDocManageList(current, pageSize).then((res: any) => {
       sessionStorage.setItem('doc_total_size', (res?.total + 1) || 1)
       return {
         total: res.total,
@@ -29,17 +29,18 @@ const Articles = () => {
     router.push(`/docManage/create?id=${record.id}`)
   }
   const handleAction = async (record) => {
-    const fetchUrl = record?.status === 'unpublish' ? 'doc/manage/publish' : 'doc/manage/unpublish'
-    const res = await publishDoc({ url: fetchUrl, options: { params: { id: record?.id } } })
+    const res = record?.status === 'unpublish'
+      ? await OpenAPIService.getDocManagePublish(Number(record?.id))
+      : await OpenAPIService.getDocManageUnpublish(Number(record?.id))
     if (res) {
-      Toast.notify({ type: 'success', message: '操作成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '操作成功' })
       search.submit()
     }
   }
   const handleDelete = async (record) => {
-    const res = await deleteDoc({ url: `/doc/manage?id=${record?.id}`, options: { params: { id: record?.id } } })
+    const res = await OpenAPIService.deleteDocManage(Number(record?.id))
     if (res) {
-      Toast.notify({ type: 'success', message: '删除成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
       search.submit()
     }
   }
@@ -105,7 +106,7 @@ const Articles = () => {
               showQuickJumper: true,
               showSizeChanger: true,
               total: pagination?.total || 0,
-              showTotal: (total, range) => <span style={{ position: 'absolute', left: 0 }}>共 {total} 条</span>,
+              showTotal: (total, _range) => <span style={{ position: 'absolute', left: 0 }}>共 {total} 条</span>,
             }}
           />
         </div>

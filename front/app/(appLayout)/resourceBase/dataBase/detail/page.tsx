@@ -14,7 +14,7 @@ import Image from 'next/image'
 
 import { useAntdTable } from 'ahooks'
 import dayjs from 'dayjs'
-import { deleteDatabaseTable, getDataBaseTable } from '@/infrastructure/api/database'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
 
 import DatabaseIcon from '@/public/images/resource-base/database.png'
@@ -30,18 +30,28 @@ const DatabaseDetailContent = () => {
   const [form] = Form.useForm()
 
   const getTableData = ({ current, pageSize }, formData): Promise<any> => {
-    const obj = {}
+    const databaseId = Number(id)
+    if (Number.isNaN(databaseId)) {
+      return Promise.resolve({ total: 0, list: [] })
+    }
+
+    const obj: Record<string, any> = {}
     for (const key in formData) {
       if (formData[key])
         obj[key] = formData[key]
     }
-    return getDataBaseTable({ database_id: id, page: current, limit: pageSize, ...obj })
-      .then((res: any) => {
-        return {
-          total: res.total,
-          list: res.data,
-        }
-      })
+
+    return OpenAPIService.getDatabaseTableList(
+      databaseId,
+      current,
+      pageSize,
+      obj.table_name || '',
+    ).then((res: any) => {
+      return {
+        total: res.total,
+        list: res.data,
+      }
+    })
   }
 
   const { tableProps, search, refresh } = useAntdTable(getTableData, {
@@ -50,7 +60,7 @@ const DatabaseDetailContent = () => {
   })
 
   const handleDelete = (data) => {
-    deleteDatabaseTable({ database_id: id, table_id: data.id }).then(() => {
+    OpenAPIService.deleteDatabaseTable(Number(id), Number(data.id)).then(() => {
       message.success('删除成功')
       refresh()
     })

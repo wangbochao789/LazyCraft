@@ -10,7 +10,7 @@ import DefaultLogo from '../app-default-logo.png'
 import { APP_MODE, appTabs, urlPrefix } from '../utils'
 import style from './index.module.scss'
 
-import { deleteAppTemplateList, fetchAppTemplateList } from '@/infrastructure/api//explore'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import useTimestamp from '@/shared/hooks/use-timestamp'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 
@@ -20,6 +20,18 @@ const AppTemplate = (props: any) => {
   const { formatTime } = useTimestamp()
   const { userSpecified } = useApplicationContext() // , permitData
   const [dataType, setDataType] = useState(APP_MODE.MINE)
+
+  const fetchAppTemplateList = (params: any = {}) => {
+    return OpenAPIService.getApptemplate(
+      params.page ?? 1,
+      params.limit ?? 20,
+      params.search_name,
+      params.search_tags,
+      params.qtype ?? APP_MODE.MINE,
+      params.is_published,
+    )
+  }
+
   const { data, loading, run } = useRequest<any, any>(fetchAppTemplateList)
 
   const onTabChange = (e) => {
@@ -32,7 +44,7 @@ const AppTemplate = (props: any) => {
       className: 'controller-modal-confirm',
       title: `是否确认删除${e.name}`,
       onOk: async () => {
-        await deleteAppTemplateList(e.id)
+        await OpenAPIService.deleteApptemplate(String(e.id))
         message.success('删除成功')
         run()
       },

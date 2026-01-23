@@ -11,8 +11,7 @@ import TagMode from '@/app/components/tagSelect/TagMode'
 import ClassifyMode from '@/app/components/tagSelect/ClassifyMode'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
-import Toast from '@/app/components/base/flash-notice'
-import { deleteDataset } from '@/infrastructure/api/data'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { pageCache } from '@/shared/utils'
@@ -82,8 +81,8 @@ const DataSetManager = () => {
   }
 
   const handleDelete = (record) => {
-    deleteDataset({ url: '/data/delete', body: { data_set_id: record.id } }).then(() => {
-      Toast.notify({ type: 'success', message: '删除成功' })
+    OpenAPIService.postDataDelete({ data_set_id: String(record.id) }).then(() => {
+      Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
       search.submit()
     })
   }

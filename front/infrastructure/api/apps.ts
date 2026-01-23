@@ -1,6 +1,5 @@
 import type { Fetcher } from 'swr'
-import { get, post, ssePost } from './base'
-import type { AppDetailResponse } from '@/core/data/app'
+import { get, ssePost } from './base'
 
 export const enableApi = ({ id, ...rest }, { onError, onFinish }) => {
   return ssePost(`apps/${id}/enable_api`, {
@@ -31,6 +30,6 @@ export const downloadAppJson: Fetcher<any, any> = (id) => {
 //   return get<AppListResult>(url, { params })
 // }
 
-export const createApp: Fetcher<AppDetailResponse, any> = (body) => {
-  return post<AppDetailResponse>('apps', { body })
-}
+// export const createApp: Fetcher<AppDetailResponse, any> = (body) => {
+//   return post<AppDetailResponse>('apps', { body })
+// }

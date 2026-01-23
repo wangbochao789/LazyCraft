@@ -7,7 +7,7 @@ import PreviewTxt from '@/app/components/preview/previewTxt'
 import PreviewDoc from '@/app/components/preview/previewDoc'
 import PreviewExcel from '@/app/components/preview/previewExcel'
 import PreviewPdf from '@/app/components/preview/previewPdf'
-import { getFilePathById } from '@/infrastructure/api/knowledgeBase'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import PreviewJson from '@/app/components/preview/previewJSON'
 import PreviewMD from '@/app/components/preview/previewMD'
 import PreviewHtml from '@/app/components/preview/previewHTML'
@@ -54,9 +54,9 @@ const PreviewPageContent = () => {
   }
   const getPath = async () => {
     try {
-      const res = await getFilePathById({ url: '/kb/file/get', body: { file_id: seachParams.get('id') } }) as any
-      setPath(res.file_path)
-      setType(res.file_type)
+      const res = await OpenAPIService.postKbFileGet({ file_id: seachParams.get('id') || '' }) as any
+      setPath(res.data?.file_path || res.file_path)
+      setType(res.data?.file_type || res.file_type)
     }
     catch (error) {
       console.error('获取文件路径失败:', error)

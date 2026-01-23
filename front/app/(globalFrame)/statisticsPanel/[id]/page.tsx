@@ -6,8 +6,8 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/atom-elements/card'
-import { fetchAppLogs } from '@/infrastructure/api//explore'
 import { post } from '@/infrastructure/api//base'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 // 模拟数据
 const defaultChartData: ChartDataPoint[] = [
   { date: '00:00', value: 0 },
@@ -282,7 +282,7 @@ export default function StatisticsPanel() {
   useEffect(() => {
     setStartDate(new Date(new Date().getTime() - Number(date) * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
     setEndDate(new Date().toISOString().split('T')[0])
-    fetchAppLogs(id as string).then((res) => {
+    OpenAPIService.getApps1(id as string).then((res) => {
       setData(res as dataWorkflow)
     })
     getAppStatistics()

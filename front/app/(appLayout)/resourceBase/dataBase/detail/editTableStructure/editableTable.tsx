@@ -7,7 +7,7 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { isEmpty } from 'lodash'
 import { COLUMN_DICT, booleanTypeOptions, dataTypeOptions, defaultAddVal, handleTableCellValue } from '../utils'
-import { getDataBaseTableStructureByName } from '@/infrastructure/api/database'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 type FormInstance<T> = GetRef<typeof Form<T>>
 
@@ -97,7 +97,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   const loadData = (selectedOptions: any[]) => {
     const targetOption = selectedOptions[selectedOptions.length - 1]
 
-    getDataBaseTableStructureByName({ database_id, table_name: targetOption.name })
+    OpenAPIService.getDatabaseTableName(Number(database_id), targetOption.name)
       .then((res: any) => {
         const temp = res.data.columns.filter(el => (el.is_primary_key || el.is_unique))
         targetOption.children = temp.map(el => ({ ...el, label: el.name, value: el.name }))

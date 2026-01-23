@@ -7,10 +7,10 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import styles from './page.module.scss'
 import MarkdownEditor from './md'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
-import { createDoc, editDoc, getDocInfo } from '@/infrastructure/api/docManage'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 // import MarkdownEditor from '@/app/components/preview/markdownEditor'
 
-const ArticleDetail = (req) => {
+const ArticleDetail = (_req) => {
   const router = useRouter()
   const [baseForm]: any = Form.useForm()
   const markdownRef = useRef<any>()
@@ -22,16 +22,16 @@ const ArticleDetail = (req) => {
   let doc_total_size: any = (sessionStorage?.getItem('doc_total_size')) || 1
   if (id)
     doc_total_size = doc_total_size - 1
-  const getInfoContent = () => {
-    getDocInfo({ url: 'doc/manage', options: { params: { id } } }).then((res) => {
-      setValue(res?.doc_content)
-      baseForm.setFieldsValue({ title: res?.title, index: res?.index, doc_content: res?.doc_content })
-    })
-  }
   useEffect(() => {
-    if (id)
-      getInfoContent()
-  }, [id])
+    if (!id)
+      return
+
+    OpenAPIService.getDocManage(Number(id)).then((res: any) => {
+      const data = res?.data || res
+      setValue(data?.doc_content)
+      baseForm.setFieldsValue({ title: data?.title, index: data?.index, doc_content: data?.doc_content })
+    })
+  }, [id, baseForm])
   const markdownImageUploadCb = (blob, callback) => {
     const d = new FormData()
     d.append('file', blob)
@@ -52,12 +52,16 @@ const ArticleDetail = (req) => {
 
   const handleSave = (isPublish: number) => {
     baseForm.validateFields().then((values: any) => {
-      const saveMethod: any = id ? editDoc : createDoc
       if (!id)
         delete values?.id
 
       setLoading(true)
-      saveMethod({ url: '/doc/manage', body: { ...values, publish: isPublish } }).then((res) => {
+      const reqBody = { ...values, publish: isPublish }
+      const req = id
+        ? OpenAPIService.putDocManage({ ...reqBody, id: Number(id) } as any)
+        : OpenAPIService.postDocManage(reqBody as any)
+
+      req.then((res) => {
         if (res) {
           Toast.notify({
             type: ToastTypeEnum.Success, message: '保存成功',

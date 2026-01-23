@@ -13,7 +13,6 @@ import UploadModule from '../UploadModule'
 import styles from './index.module.scss'
 import { API_PREFIX } from '@/app-specs'
 import ModalCooperation from '@/app/components/app/picker-user/ModalCooperation'
-import { deleteFile, getFileList } from '@/infrastructure/api/knowledgeBase'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { usePermitCheck } from '@/app/components/app/permit-check'
@@ -41,7 +40,7 @@ const KnowledgeBaseDetailContent = () => {
   const [total, setTotal] = useState(0)
   const [info, setInfo] = useState<any>({})
   const [uploadModuleVisible, setUploadModuleVisible] = useState(false)
-  const [data, setData] = useState<DataType[]>([])
+  const [data, setData] = useState<any[]>([])
   const [fileName, setFileName] = useState('')
   const [open, setOpen] = useState(false)
   const [createFolderVisible, setCreateFolderVisible] = useState(false)
@@ -53,10 +52,10 @@ const KnowledgeBaseDetailContent = () => {
   const [form] = Form.useForm()
 
   const getData = useCallback(async () => {
-    getFileList({ url: '/kb/file/list', options: { params: { file_name: fileName, knowledge_base_id: id, page: current, page_size: pageSize } } }).then((res) => {
+    OpenAPIService.getKbFileList(id, current, pageSize, fileName).then((res) => {
       setInfo(res.knowledge_base_info)
-      setData(res.data)
-      setTotal(res.total)
+      setData(res.data || [])
+      setTotal(res.total || 0)
     })
   }, [current, fileName, pageSize, id])
 
@@ -68,7 +67,7 @@ const KnowledgeBaseDetailContent = () => {
   }, [state])
 
   const handleDelete = (data) => {
-    deleteFile({ url: '/kb/file/delete', body: { file_ids: [data.id] } }).then(() => {
+    OpenAPIService.postKbFileDelete({ file_ids: [String(data.id)] }).then(() => {
       // Toast.notify({ type: 'success', message: '删除成功' })
       message.success('删除成功')
       getData()
@@ -203,7 +202,7 @@ const KnowledgeBaseDetailContent = () => {
   }
 
   const batchDelete = () => {
-    deleteFile({ url: '/kb/file/delete', body: { file_ids: selectedRowKeys } }).then(() => {
+    OpenAPIService.postKbFileDelete({ file_ids: selectedRowKeys.map(key => String(key)) }).then(() => {
       // Toast.notify({ type: 'success', message: '删除成功' })
       message.success('删除成功')
       getData()
@@ -336,7 +335,7 @@ const KnowledgeBaseDetailContent = () => {
               {
                 validator: (_, value) => {
                   if (value && value.trim() === '')
-                    return Promise.reject('文件夹名称不能为空格')
+                    return Promise.reject(new Error('文件夹名称不能为空格'))
 
                   return Promise.resolve()
                 },

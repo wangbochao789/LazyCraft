@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Form, Input, Modal, Select } from 'antd'
-import { addBranch, getDatasetTagList } from '@/infrastructure/api/data'
-import Toast from '@/app/components/base/flash-notice'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { noOnlySpacesRule } from '@/shared/utils'
 
 const AddModal = (props: any) => {
@@ -11,8 +11,8 @@ const AddModal = (props: any) => {
 
   const handleOk = async () => {
     form.validateFields().then((values) => {
-      addBranch({ url: '/data/version/create_by_tag', body: { ...values } }).then(() => {
-        Toast.notify({ type: 'success', message: '创建成功' })
+      OpenAPIService.postDataVersionCreateByTag(values as any).then(() => {
+        Toast.notify({ type: ToastTypeEnum.Success, message: '创建成功' })
         onSuccess()
       }).catch((err) => {
         console.error(err)
@@ -21,7 +21,7 @@ const AddModal = (props: any) => {
   }
 
   const getTagList = useCallback(async () => {
-    const res = await getDatasetTagList({ url: '/data/tag/list', options: { params: { data_set_id: id } } })
+    const res: any = await OpenAPIService.getDataTagList(String(id))
     setTags(res.data.map(item => ({ value: item.id, label: `${item.name} ${item.version}` })))
     return res
   }, [id])

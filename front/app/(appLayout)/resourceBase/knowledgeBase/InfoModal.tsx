@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Form, Input, Modal } from 'antd'
-import { createKnowledgeBase, updateKnowledgeBase } from '@/infrastructure/api/knowledgeBase'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { noOnlySpacesRule } from '@/shared/utils'
 import TagSelect from '@/app/components/tagSelect'
 import { bindTags } from '@/infrastructure/api/tagManage'
@@ -14,18 +14,20 @@ const CreateModal = (props: any) => {
     gettaglist()
     form.validateFields().then((values) => {
       if (data) {
-        updateKnowledgeBase({ url: '/kb/update', body: { ...data, ...values } }).then((res) => {
-          Toast.notify({ type: 'success', message: '更新成功' })
-          bindTags({ url: 'tags/bindings/update', body: { type: 'knowledgebase', tag_names: values?.tags, target_id: res?.id } }).then(() => {
-            onSuccess(res.id, 'edit')
+        OpenAPIService.postKbUpdate({ ...data, ...values, id: String(data.id) } as any).then((res: any) => {
+          const nextId = res?.data?.id || res?.id || data.id
+          Toast.notify({ type: ToastTypeEnum.Success, message: '更新成功' })
+          bindTags({ url: 'tags/bindings/update', body: { type: 'knowledgebase', tag_names: values?.tags, target_id: nextId } }).then(() => {
+            onSuccess(nextId, 'edit')
           })
         })
       }
       else {
-        createKnowledgeBase({ url: '/kb/create', body: values }).then((res) => {
-          bindTags({ url: 'tags/bindings/update', body: { type: 'knowledgebase', tag_names: values?.tags, target_id: res?.id } }).then(() => {
-            onSuccess(res.id, 'create')
-            onSuccess(res.id)
+        OpenAPIService.postKbCreate(values as any).then((res: any) => {
+          const nextId = res?.data?.id || res?.id
+          bindTags({ url: 'tags/bindings/update', body: { type: 'knowledgebase', tag_names: values?.tags, target_id: nextId } }).then(() => {
+            onSuccess(nextId, 'create')
+            onSuccess(nextId)
           })
         })
       }

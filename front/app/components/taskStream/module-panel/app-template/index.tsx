@@ -3,18 +3,28 @@ import { Col, Input, Row, Spin } from 'antd'
 import { useRequest } from 'ahooks'
 import { useStoreApi } from 'reactflow'
 import { MenuOutlined } from '@ant-design/icons'
+import { useParams } from 'next/navigation'
 import { ExecutionBlockEnum } from '../../types'
 
 import { generateDefaultConfig } from '../components/utils'
-import { fetchAppTemplateList } from '@/infrastructure/api//explore'
 import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import HoverTip from '@/app/components/base/hover-tip'
 
 import IconFont from '@/app/components/base/iconFont'
-import { useParams } from 'next/navigation'
 
 const AppTemplate = () => {
-  const { data, loading, run } = useRequest<any, any>(params => fetchAppTemplateList({ qtype: 'already', ...params }))
+  const fetchAppTemplateList = (params: any = {}) => {
+    return OpenAPIService.getApptemplate(
+      params.page ?? 1,
+      params.limit ?? 20,
+      params.search_name,
+      params.search_tags,
+      'already',
+      params.is_published,
+    )
+  }
+
+  const { data, loading, run } = useRequest<any, any>(params => fetchAppTemplateList({ ...params }))
 
   const store = useStoreApi()
   const params = useParams()

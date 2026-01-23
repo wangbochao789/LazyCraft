@@ -13,7 +13,6 @@ import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { formatDatasetTag } from '@/shared/utils/format'
 import ModalCooperation from '@/app/components/app/picker-user/ModalCooperation'
 import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
-import { deleteDataset, deleteDatasetVersion, getDatasetInfo, getDatasetVersionList, publish } from '@/infrastructure/api/data'
 import { usePermitCheck } from '@/app/components/app/permit-check'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
@@ -104,7 +103,7 @@ const DatasetDetail = (req) => {
   const { hasPermit } = usePermitCheck()
 
   const getInfo = useCallback(() => {
-    getDatasetInfo({ url: '/data', options: { params: { data_set_id: id } } }).then((res) => {
+    OpenAPIService.getData(String(id)).then((res) => {
       setDatasetInfo(res)
     })
   }, [id])
@@ -121,7 +120,7 @@ const DatasetDetail = (req) => {
   }, [])
 
   const getTableData = ({ current, pageSize }): Promise<Result> => {
-    return getDatasetVersionList({ url: '/data/version/list', options: { params: { page: current, page_size: pageSize, data_set_id: id, version_type: type } } }).then((res) => {
+    return OpenAPIService.getDataVersionList(current, pageSize, type as any, String(id)).then((res) => {
       return {
         total: res.total,
         list: res.data,
@@ -170,12 +169,12 @@ const DatasetDetail = (req) => {
     if (record.status != 2)
       return
     if (datasetInfo.from_type === 'return') {
-      publish({ url: '/data/version/publish', body: { data_set_version_id: record.id } }).then(() => {
+      OpenAPIService.postDataVersionPublish({ data_set_version_id: String(record.id) }).then(() => {
         Toast.notify({ type: ToastTypeEnum.Success, message: '发布成功' })
       })
     }
     else {
-      publish({ url: '/data/version/publish', body: { data_set_version_id: record.id } }).then(() => {
+      OpenAPIService.postDataVersionPublish({ data_set_version_id: String(record.id) }).then(() => {
         Toast.notify({
           type: ToastTypeEnum.Success, message: '发布成功',
         })
@@ -202,8 +201,8 @@ const DatasetDetail = (req) => {
         content: '删除此版本后，该数据集将不再有任何版本，整个数据集将被删除。',
         onOk() {
           // 用户确认后，先删除版本，再删除数据集
-          deleteDatasetVersion({ url: '/data/version/delete', body: { data_set_version_id: record?.id } }).then(() => {
-            deleteDataset({ url: '/data/delete', body: { data_set_id: id } }).then(() => {
+          OpenAPIService.postDataVersionDelete({ data_set_version_id: String(record?.id) }).then(() => {
+            OpenAPIService.postDataDelete({ data_set_id: String(id) }).then(() => {
               Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
               router.push('/datasets/datasetManager')
             })
@@ -213,7 +212,7 @@ const DatasetDetail = (req) => {
     }
     else {
       // 不是最后一个版本，直接删除版本
-      deleteDatasetVersion({ url: '/data/version/delete', body: { data_set_version_id: record?.id } }).then(() => {
+      OpenAPIService.postDataVersionDelete({ data_set_version_id: String(record?.id) }).then(() => {
         Toast.notify({
           type: ToastTypeEnum.Success, message: '删除成功',
         })

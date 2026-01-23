@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Form, Input, Modal, Select } from 'antd'
-import { createKnowledgeBase, updateKnowledgeBase } from '@/infrastructure/api/knowledgeBase'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { categoryItems } from '@/shared/utils'
 
 const EnhanceModal = (props: any) => {
@@ -11,15 +11,16 @@ const EnhanceModal = (props: any) => {
   const handleOk = async () => {
     form.validateFields().then((values) => {
       if (data) {
-        updateKnowledgeBase({ url: '/kb/update', body: { ...data, ...values } }).then((res) => {
-          Toast.notify({ type: 'success', message: '更新成功' })
-          onSuccess(res.id, 'edit')
+        OpenAPIService.postKbUpdate({ ...data, ...values, id: String(data.id) } as any).then((res: any) => {
+          Toast.notify({ type: ToastTypeEnum.Success, message: '更新成功' })
+          onSuccess(res?.data?.id || res?.id || data.id, 'edit')
         })
       }
       else {
-        createKnowledgeBase({ url: '/kb/create', body: values }).then((res) => {
-          onSuccess(res.id, 'create')
-          onSuccess(res.id)
+        OpenAPIService.postKbCreate(values as any).then((res: any) => {
+          const nextId = res?.data?.id || res?.id
+          onSuccess(nextId, 'create')
+          onSuccess(nextId)
         })
       }
     }).catch((err) => {

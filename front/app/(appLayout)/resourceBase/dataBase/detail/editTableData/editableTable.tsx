@@ -9,7 +9,7 @@ import { useToggle } from 'ahooks'
 import { DATA_TYPE_DICT, handleTableCellValue, handleTableData, isNumberType } from '../utils'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
 
-import { downloadTemplate } from '@/infrastructure/api/database'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { prefixUrl } from '@/shared/utils'
 
 const { Dragger } = Upload
@@ -98,7 +98,7 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
                 onPressEnter={save}
                 onBlur={save}
                 placeholder="请输入"
-                max={isNumericType ? 9999999999 : isBigIntType ? 9999999999999999999 : Number.MAX_SAFE_INTEGER}
+                max={isNumericType ? 9999999999 : Number.MAX_SAFE_INTEGER}
                 style={{ width: '100%' }}
                 precision={isNumericType ? 4 : 0}
                 stringMode={isBigIntType}
@@ -300,7 +300,7 @@ const EditableTable = (props: any) => {
   }
 
   const handleDownloadTemplate = () => {
-    downloadTemplate({ database_id, table_id }).then((res: any) => {
+    OpenAPIService.getDatabaseImport(Number(database_id), Number(table_id)).then((res: any) => {
       // 创建一个链接元素
       const link = document.createElement('a')
       link.href = URL.createObjectURL(res) // 创建 Blob URL

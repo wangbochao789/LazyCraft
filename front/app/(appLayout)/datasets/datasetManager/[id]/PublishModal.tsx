@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Form, Modal, Select } from 'antd'
-import Toast from '@/app/components/base/flash-notice'
-import { publish } from '@/infrastructure/api/data'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 const PublishModal = (props: any) => {
   const { visible, onClose, onSuccess, id } = props
@@ -9,8 +9,8 @@ const PublishModal = (props: any) => {
 
   const handleOk = async () => {
     form.validateFields().then((values) => {
-      publish({ url: '/data/version/publish', body: { data_set_version_id: id, ...values } }).then((res) => {
-        Toast.notify({ type: 'success', message: '发布成功' })
+      OpenAPIService.postDataVersionPublish({ data_set_version_id: String(id), ...values } as any).then(() => {
+        Toast.notify({ type: ToastTypeEnum.Success, message: '发布成功' })
         onSuccess()
       })
     }).catch((err) => {

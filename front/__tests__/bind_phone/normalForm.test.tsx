@@ -8,7 +8,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import NormalForm from '@/app/bind_phone/normalForm'
-import * as commonApi from '@/infrastructure/api/common'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
@@ -28,10 +28,12 @@ jest.mock('next/navigation', () => ({
   })),
 }))
 
-// Mock API
-jest.mock('@/infrastructure/api/common', () => ({
-  login: jest.fn(),
-  checkExist: jest.fn(),
+// Mock OpenAPI AuthService
+jest.mock('@/infrastructure/api/generated/services/AuthService', () => ({
+  AuthService: {
+    postOauthAuthorize: jest.fn(),
+    postSendsms: jest.fn(),
+  },
 }))
 
 // Mock Captcha 组件
@@ -60,20 +62,20 @@ jest.mock('@/app/register/captcha', () => {
 
 describe('NormalForm - 绑定手机号登录表单', () => {
   const mockPush = jest.fn()
-  const mockLogin = commonApi.login as jest.MockedFunction<typeof commonApi.login>
-  const mockCheckExist = commonApi.checkExist as jest.MockedFunction<typeof commonApi.checkExist>
+  const mockPostOauthAuthorize = AuthService.postOauthAuthorize as jest.MockedFunction<typeof AuthService.postOauthAuthorize>
+  const mockPostSendsms = AuthService.postSendsms as jest.MockedFunction<typeof AuthService.postSendsms>
 
   beforeEach(() => {
     // 清除所有mock
     jest.clearAllMocks()
 
     // 设置默认的mock返回值
-    mockLogin.mockResolvedValue({
+    mockPostOauthAuthorize.mockResolvedValue({
       result: 'success',
       data: 'test_token_123',
     } as any)
 
-    mockCheckExist.mockResolvedValue({
+    mockPostSendsms.mockResolvedValue({
       result: 'success',
       data: 'verification_sent',
     } as any)
@@ -178,14 +180,14 @@ describe('NormalForm - 绑定手机号登录表单', () => {
 
     // 验证API被正确调用
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith({
-        url: '/oauth/authorize/wechat',
-        body: {
+      expect(mockPostOauthAuthorize).toHaveBeenCalledWith(
+        'wechat',
+        {
           phone: '13800138000',
           verify_code: '123456',
           openid: 'test_openid_123',
         },
-      })
+      )
     })
 
     // 验证localStorage保存token
@@ -203,7 +205,7 @@ describe('NormalForm - 绑定手机号登录表单', () => {
     const user = userEvent.setup()
 
     // Mock登录失败的响应
-    mockLogin.mockResolvedValue({
+    mockPostOauthAuthorize.mockResolvedValue({
       result: 'error',
       message: 'Login failed',
     } as any)
@@ -232,14 +234,14 @@ describe('NormalForm - 绑定手机号登录表单', () => {
     const user = userEvent.setup()
 
     // Mock一个延迟的API响应
-    mockLogin.mockImplementation(() =>
-      new Promise(resolve =>
+    mockPostOauthAuthorize.mockImplementation(() => {
+      return new Promise((resolve) => {
         setTimeout(() => resolve({
           result: 'success',
           data: 'test_token',
-        } as any), 1000),
-      ),
-    )
+        } as any), 1000)
+      }) as any
+    })
 
     render(<NormalForm />)
 
@@ -285,7 +287,7 @@ describe('NormalForm - 绑定手机号登录表单', () => {
 
     // 验证没有调用登录API
     await waitFor(() => {
-      expect(mockLogin).not.toHaveBeenCalled()
+      expect(mockPostOauthAuthorize).not.toHaveBeenCalled()
     })
   })
 

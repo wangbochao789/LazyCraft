@@ -10,7 +10,6 @@ import AddModal from './AddModal'
 import styles from './index.module.scss'
 import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { formatDatasetTag } from '@/shared/utils/format'
-import { deleteFile, getDatasetFileList, getDatasetVersionInfo } from '@/infrastructure/api/data'
 import { usePermitCheck } from '@/app/components/app/permit-check'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 
@@ -81,7 +80,11 @@ const DatasetVersionDetail = (req) => {
     })
   }, [])
   const getTableData = ({ current, pageSize }): Promise<Result> => {
-    return getDatasetFileList({ url: info.from_type === 'upload' ? '/data/file/list' : 'data/reflux/list', options: { params: { page: current, page_size: pageSize, data_set_version_id: params.versionId } } }).then((res) => {
+    const reqPromise = info.from_type === 'upload'
+      ? OpenAPIService.getDataFileList(current, pageSize, params.versionId)
+      : OpenAPIService.getDataRefluxList(current, pageSize, params.versionId)
+
+    return reqPromise.then((res) => {
       return {
         total: res.total,
         list: info.data_type === 'doc'
@@ -134,7 +137,7 @@ const DatasetVersionDetail = (req) => {
   }, [tableProps.dataSource, tableProps.current, search])
 
   const getInfo = () => {
-    getDatasetVersionInfo({ url: '/data/version', options: { params: { data_set_version_id: versionId } } }).then((res) => {
+    OpenAPIService.getDataVersion(String(versionId)).then((res) => {
       setInfo(res)
     })
   }
@@ -149,7 +152,12 @@ const DatasetVersionDetail = (req) => {
     router.push(`/datasets/datasetManager/${id}/${versionId}/${record.id}?from_type=${info.from_type}`)
   }
   const handleDelete = (item) => {
-    deleteFile({ url: info.from_type === 'upload' ? '/data/file/delete' : '/data/reflux/delete', body: { [info.from_type === 'upload' ? 'data_set_file_ids' : 'reflux_data_ids']: [item.id] } }).then((res) => {
+    const ids = [Number(item.id)].filter(n => !Number.isNaN(n))
+    const reqPromise = info.from_type === 'upload'
+      ? OpenAPIService.postDataFileDelete({ data_set_file_ids: ids })
+      : OpenAPIService.postDataRefluxDelete({ reflux_data_ids: ids })
+
+    reqPromise.then(() => {
       search.submit()
       Toast.notify({
         type: ToastTypeEnum.Success, message: '删除成功',
@@ -269,7 +277,12 @@ const DatasetVersionDetail = (req) => {
   ]
 
   const batchDelete = () => {
-    deleteFile({ url: info.from_type === 'upload' ? '/data/file/delete' : '/data/reflux/delete', body: { [info.from_type === 'upload' ? 'data_set_file_ids' : 'reflux_data_ids']: selectedKey } }).then(() => {
+    const ids = selectedKey.map(k => Number(k)).filter(n => !Number.isNaN(n))
+    const reqPromise = info.from_type === 'upload'
+      ? OpenAPIService.postDataFileDelete({ data_set_file_ids: ids })
+      : OpenAPIService.postDataRefluxDelete({ reflux_data_ids: ids })
+
+    reqPromise.then(() => {
       search.submit()
       Toast.notify({
         type: ToastTypeEnum.Success, message: '删除成功',

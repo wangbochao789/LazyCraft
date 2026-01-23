@@ -6,7 +6,7 @@ import { useAntdTable, useToggle, useUpdateEffect } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import dayjs from 'dayjs'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
-import { createDatabase, deleteDatabase, getDataBaseList } from '@/infrastructure/api/database'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { noOnlySpacesRule } from '@/shared/utils'
@@ -24,7 +24,7 @@ const Database = () => {
   const [searchVal, setSearchVal] = useState('')
   const [sName, setSName] = useState('')
   const getTableData = ({ current, pageSize }): Promise<any> => {
-    return getDataBaseList('/database/list/page', { page: current, limit: pageSize, db_name: sName, user_id: creator })
+    return OpenAPIService.postDatabaseListPage({ page: current, limit: pageSize, db_name: sName, user_id: creator })
       .then((res: any) => {
         return {
           total: res.total,
@@ -42,7 +42,7 @@ const Database = () => {
   const onSubmit = async (values: any) => {
     try {
       setSubmitting(true)
-      await createDatabase(values)
+      await OpenAPIService.postDatabase(values as any)
       message.success('创建数据库成功')
       toggle()
       refresh()
@@ -57,7 +57,7 @@ const Database = () => {
   }
 
   const handleDelete = async (record) => {
-    const res = await deleteDatabase(record?.id)
+    const res = await OpenAPIService.deleteDatabase(Number(record?.id))
     if (res) {
       message.success('删除成功')
       search.submit()

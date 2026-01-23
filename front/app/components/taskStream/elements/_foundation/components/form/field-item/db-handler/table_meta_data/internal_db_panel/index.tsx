@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { Form, Input, Modal, Select, Table } from 'antd'
 import { useRequest } from 'ahooks'
-import { getDataBaseTable, getDataBaseTableStructureByName } from '@/infrastructure/api//database'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 type TableEditModalProps = {
   type: 'add' | 'edit'
@@ -20,8 +20,8 @@ const TableEditModal: React.FC<any> = (props: TableEditModalProps) => {
   const [page, setPage] = useState(1)
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
   const { data } = useRequest(() =>
-    getDataBaseTable({ database_id, page: 1, limit: 999999 })
-      .then((res: any) => ({ ...res, data: res.data.map(el => ({ ...el, label: el.name, value: el.name })) })),
+    OpenAPIService.getDatabaseTableList(Number(database_id), 1, 999999)
+      .then((res: any) => ({ ...res, data: (res?.data || []).map(el => ({ ...el, label: el.name, value: el.name })) })),
   {
     refreshDeps: [database_id],
     ready: !!database_id,
@@ -88,7 +88,7 @@ const TableEditModal: React.FC<any> = (props: TableEditModalProps) => {
   ]
 
   const handleSingleDatabaseTable = async (e) => {
-    const res: any = await getDataBaseTableStructureByName({ database_id, table_name: e, page: 1, limit: 99999 })
+    const res: any = await OpenAPIService.getDatabaseTableName(Number(database_id), e)
     setDataSource(res.data.columns)
     const allKeys = res.data.columns.map((_, index) => index.toString())
     setSelectedKeys(allKeys)

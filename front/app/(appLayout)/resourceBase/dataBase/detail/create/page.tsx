@@ -12,15 +12,15 @@ import { useRequest } from 'ahooks'
 import EditableTable from './editableTable'
 
 import style from './index.module.scss'
-import { createDatabaseTable, getDataBaseTable } from '@/infrastructure/api/database'
-
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 const DatabaseDetailCreateContent = () => {
   const [form] = Form.useForm()
-  const [formVal, setFormVal] = useState([])
+  const [_formVal, _setFormVal] = useState([])
   const { back } = useRouter()
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
-  const { data: tableList } = useRequest(() => getDataBaseTable({ database_id: id, page: 1, limit: 10000 }).then((res: any) => res.data.map(el => ({ ...el, label: el.name, value: el.name, isLeaf: false }))))
+  const { data: tableList } = useRequest(() => OpenAPIService.getDatabaseTableList(Number(id), 1, 10000).then((res: any) =>
+    (res?.data || []).map(el => ({ ...el, label: el.name, value: el.name, isLeaf: false }))))
 
   const handleTableSubmit = async (tableData) => {
     const formValues = await form.validateFields()
@@ -45,12 +45,12 @@ const DatabaseDetailCreateContent = () => {
           : rest
       }),
     }
-    await createDatabaseTable(submitData)
+    await OpenAPIService.postDatabaseTable(Number(id), submitData as any)
     message.success('创建成功')
     back()
   }
 
-  const onFormFinish = async (val) => {
+  const onFormFinish = async (_val) => {
     // 这个函数现在主要用于处理基础信息的验证
     // 实际提交由handleTableSubmit处理
   }
@@ -86,7 +86,7 @@ const DatabaseDetailCreateContent = () => {
           <span className='text-[#071127] text-lg font-medium'>数据表结构</span>
         </div>
         <Divider style={{ margin: '13px 0' }} />
-        <EditableTable isCreateMode onSave={setFormVal} tableList={tableList} database_id={id} onSubmit={handleTableSubmit} />
+        <EditableTable isCreateMode onSave={_setFormVal} tableList={tableList} database_id={id} onSubmit={handleTableSubmit} />
       </Form>
     </div>
   )
