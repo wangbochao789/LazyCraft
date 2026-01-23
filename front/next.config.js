@@ -34,19 +34,23 @@ const nextConfig = {
       // 减少不必要的统计信息输出
       config.stats = 'errors-warnings'
 
-      // 优化 splitChunks
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              chunks: 'all',
+      // NOTE:
+      // 之前这里强制 splitChunks(chunks:'all') 会让 dev 的 chunk 更碎，体感更像“懒加载/一直在拉包”。
+      // 默认交回给 Next 的策略；如确实需要此优化，可手动开启环境变量 ENABLE_DEV_SPLIT_CHUNKS=true
+      if (process.env.ENABLE_DEV_SPLIT_CHUNKS === 'true') {
+        config.optimization = {
+          ...config.optimization,
+          splitChunks: {
+            chunks: 'all',
+            cacheGroups: {
+              vendor: {
+                test: /[\\/]node_modules[\\/]/,
+                name: 'vendors',
+                chunks: 'all',
+              },
             },
           },
-        },
+        }
       }
     }
 

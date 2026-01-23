@@ -18,7 +18,7 @@ import { useStore, useWorkflowStore } from '@/app/components/taskStream/store'
 import Iconfont from '@/app/components/base/iconFont'
 import ModalCooperation from '@/app/components/app/picker-user/ModalCooperation'
 import Button from '@/app/components/base/click-unit'
-import { cancelPublish, enableBackflow } from '@/infrastructure/api//apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import {
   AnchorPortal,
   AnchorPortalLauncher,
@@ -315,7 +315,7 @@ const AppCirculator = ({
   const onConfirmDataReflow = async () => {
     try {
       const nextStatus = !appDetail?.enable_backflow
-      await enableBackflow({ enable_backflow: nextStatus, app_id: appDetail?.id })
+      await OpenAPIService.postAppsEnableBackflow(String(appDetail?.id), { enable_backflow: nextStatus })
       const data = await fetchTraceList({
         url: `/costaudit/apps/${appDetail?.id}`,
       })
@@ -329,7 +329,7 @@ const AppCirculator = ({
   }
 
   const handleCancenPublish = useCallback(async () => {
-    const response = await cancelPublish({ app_id: appDetail?.id })
+    const response = await OpenAPIService.postAppsWorkflowsCancelPublish(String(appDetail?.id))
     if (response) {
       setIsPublished(false)
       messageApi.success('取消发布成功')

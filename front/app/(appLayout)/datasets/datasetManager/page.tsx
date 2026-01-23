@@ -12,7 +12,8 @@ import ClassifyMode from '@/app/components/tagSelect/ClassifyMode'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import Toast from '@/app/components/base/flash-notice'
-import { deleteDataset, getDatasetListNew } from '@/infrastructure/api/data'
+import { deleteDataset } from '@/infrastructure/api/data'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { pageCache } from '@/shared/utils'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
@@ -48,7 +49,14 @@ const DataSetManager = () => {
   const tagModeRef: any = useRef()
 
   const getTableData = ({ current, pageSize }): Promise<Result> => {
-    return getDatasetListNew({ url: '/data/list', body: { page: current, page_size: pageSize, data_type: selectLabels.map(item => item?.id), search_tags: selectTags.map(item => item?.name), user_id: creator, search_name: sName } }).then((res) => {
+    return OpenAPIService.postDataList({
+      page: current,
+      page_size: pageSize,
+      data_type: selectLabels.map(item => item?.id),
+      search_tags: selectTags.map(item => item?.name),
+      user_id: creator,
+      search_name: sName,
+    }).then((res: any) => {
       return {
         total: res.total,
         list: res.data,

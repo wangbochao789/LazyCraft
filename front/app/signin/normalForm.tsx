@@ -9,7 +9,7 @@ import IconFont from '../components/base/iconFont'
 import { AgreementButton, GitHubLoginButton, UserAgreementContent } from './components'
 import style from './page.module.scss'
 import { userEmailValidationRegex } from '@/app-specs'
-import { checkExist, login, sendForgotPasswordEmail } from '@/infrastructure/api/common'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
 
 // 常量定义
@@ -42,12 +42,13 @@ const NormalForm = () => {
   // 处理登录提交
   const handleSubmit = useCallback(async (values: Record<string, any>) => {
     const plainParams = loginType === 'pwd' ? { ...values, remember_me: rememberMe } : { ...values }
-    const resUrl = loginType === 'pwd' ? '/login' : 'login_sms'
 
     try {
       setIsLoading(true)
       const encryptedPayload = await encryptPayloadWithECDH(plainParams)
-      const res = await login({ url: resUrl, body: encryptedPayload })
+      const res = loginType === 'pwd'
+        ? await AuthService.postLogin(encryptedPayload)
+        : await AuthService.postLoginSms(encryptedPayload)
 
       if (res.result === 'success') {
         localStorage.setItem('console_token', res.data)
@@ -105,10 +106,7 @@ const NormalForm = () => {
   const getFakeCaptcha = useCallback(async () => {
     try {
       const values = await form.validateFields(['phone'])
-      return await checkExist({
-        url: '/sendsms',
-        body: { ...values, operation: 'login' },
-      })
+      return await AuthService.postSendsms({ ...values, operation: 'login' })
     }
     catch (error) {
       return Promise.reject(error)
@@ -131,10 +129,7 @@ const NormalForm = () => {
   const handleForgotPassword = useCallback(async () => {
     try {
       const values = await emailForm.validateFields()
-      const res = await sendForgotPasswordEmail({
-        url: '/forgot-password',
-        body: values,
-      })
+      const res = await AuthService.postForgotPassword(values)
       if (res.result === 'success') {
         setIsEmailSent(true)
         setEmail(values.email)

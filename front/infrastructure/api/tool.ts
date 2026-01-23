@@ -1,6 +1,6 @@
 import { get, post } from './base'
 
-export const cancelPublish = ({ url, body }: { url: string; body: any }) => post(url, { body })
+// export const cancelPublish = ({ url, body }: { url: string; body: any }) => post(url, { body })
 
 export const testTool = ({ url, body }: { url: string; body: any }) => post(url, { body })
 

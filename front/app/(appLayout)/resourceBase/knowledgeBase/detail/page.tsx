@@ -15,7 +15,7 @@ import { API_PREFIX } from '@/app-specs'
 import ModalCooperation from '@/app/components/app/picker-user/ModalCooperation'
 import { deleteFile, getFileList } from '@/infrastructure/api/knowledgeBase'
 import { useApplicationContext } from '@/shared/hooks/app-context'
-import { getJoins } from '@/infrastructure/api/apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { usePermitCheck } from '@/app/components/app/permit-check'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
 
@@ -157,8 +157,8 @@ const KnowledgeBaseDetailContent = () => {
 
   useEffect(() => {
     // 获取协作数据
-    getJoins({ url: '/workspaces/coop/joins', options: { params: { target_type: 'knowledgebase' } } }).then((res) => {
-      setJoins(res.data)
+    OpenAPIService.getWorkspacesCoopJoins('knowledge_base').then((res: any) => {
+      setJoins(res?.data || [])
     })
   }, [])
 

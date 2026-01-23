@@ -4,15 +4,15 @@ import type {
   BaseResponse,
 } from '@/core/data/common'
 
-export const getDatasetFileRefluxList: Fetcher<BaseResponse, { url: string; options: { params: { reflux_data_id: string } } }> = ({ url, options }) =>
-  get<BaseResponse>(url, options)
+// export const getDatasetFileRefluxList: Fetcher<BaseResponse, { url: string; options: { params: { reflux_data_id: string } } }> = ({ url, options }) =>
+//   get<BaseResponse>(url, options)
 
-export const getDatasetListNew: Fetcher<Promise<BaseResponse>, { url: string; body: any }> = ({ url, body }) => {
-  return post<BaseResponse>(url, { body })
-}
+// export const getDatasetListNew: Fetcher<Promise<BaseResponse>, { url: string; body: any }> = ({ url, body }) => {
+//   return post<BaseResponse>(url, { body })
+// }
 
-export const getDatasetList: Fetcher<Promise<BaseResponse>, { url: string; options: { params: { page: string; page_size: string; label?: string; data_type: string; qtype: string; name?: string } } }> = ({ url, options }) =>
-  get<BaseResponse>(url, options)
+// export const getDatasetList: Fetcher<Promise<BaseResponse>, { url: string; options?: any }> = ({ url, options }) =>
+//   get<BaseResponse>(url, options)
 
 export const getDatasetVersionList: Fetcher<BaseResponse, { url: string; options: { params: { page: string; page_size: string; data_set_id: string; version_type: string } } }> = ({ url, options }) =>
   get<BaseResponse>(url, options)

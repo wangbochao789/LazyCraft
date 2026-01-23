@@ -9,7 +9,7 @@ import { useShallow } from 'zustand/react/shallow'
 import styles from './stylelayout.module.css'
 import cn from '@/shared/utils/classnames'
 import { useStore } from '@/app/components/app/store'
-import { fetchAppDetail } from '@/infrastructure/api//apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Loading from '@/app/components/base/loading'
 import useResponsiveBreakpoints from '@/shared/hooks/use-breakpoints'
 
@@ -45,7 +45,7 @@ const AppDetailLayout: FC<AppDetailLayoutParams> = (componentProps) => {
 
   const handleAppDetailFetch = () => {
     setAppDetail()
-    fetchAppDetail({ url: '/apps', id: appId }).then((response) => {
+    OpenAPIService.getApps1(appId).then((response) => {
       if (LazyLLMcurrentPathname === `/app/${appId}` || LazyLLMcurrentPathname === `/app/${appId}/`)
         LazyLLMnavigationRouter.replace(`/app/${appId}/workflow`)
 

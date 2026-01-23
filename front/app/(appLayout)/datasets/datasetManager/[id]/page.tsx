@@ -12,7 +12,7 @@ import DataModal from './DataModal'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { formatDatasetTag } from '@/shared/utils/format'
 import ModalCooperation from '@/app/components/app/picker-user/ModalCooperation'
-import { getJoins } from '@/infrastructure/api/apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { deleteDataset, deleteDatasetVersion, getDatasetInfo, getDatasetVersionList, publish } from '@/infrastructure/api/data'
 import { usePermitCheck } from '@/app/components/app/permit-check'
 import { useApplicationContext } from '@/shared/hooks/app-context'
@@ -115,8 +115,8 @@ const DatasetDetail = (req) => {
 
   useEffect(() => {
     // 获取协作者
-    getJoins({ url: '/workspaces/coop/joins', options: { params: { target_type: 'dataset' } } }).then((res) => {
-      setJoins(res.data)
+    OpenAPIService.getWorkspacesCoopJoins('dataset').then((res: any) => {
+      setJoins(res?.data || [])
     })
   }, [])
 

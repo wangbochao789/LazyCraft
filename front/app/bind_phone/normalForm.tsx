@@ -5,7 +5,7 @@ import { UserOutlined } from '@ant-design/icons'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Captcha from '../register/captcha'
 import style from './page.module.scss'
-import { checkExist, login } from '@/infrastructure/api/common'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 
 const NormalForm = () => {
   const router = useRouter()
@@ -27,14 +27,10 @@ const NormalForm = () => {
       return
     }
 
-    const params = { ...values, openid }
-    const resUrl = `/oauth/authorize/${provider}`
+    const { phone, verify_code } = values as any
     try {
       setIsLoading(true)
-      const res = await login({
-        url: resUrl,
-        body: params,
-      })
+      const res = await AuthService.postOauthAuthorize(provider as any, { openid, phone, verify_code })
       if (res.result === 'success') {
         if (typeof window !== 'undefined')
           localStorage.setItem('console_token', res.data)
@@ -49,10 +45,7 @@ const NormalForm = () => {
     return form
       .validateFields(['phone'])
       .then(async (values: any) => {
-        const res: any = await checkExist({
-          url: '/sendsms',
-          body: { ...values, operation: 'relate' },
-        })
+        const res: any = await AuthService.postSendsms({ ...values, operation: 'relate' })
         return Promise.resolve(res)
       })
       .catch((e) => {

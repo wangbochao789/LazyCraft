@@ -3,11 +3,11 @@ import React from 'react'
 import { Table } from 'antd'
 import { useAntdTable } from 'ahooks'
 import styles from './page.module.scss'
-import { getDatasetList } from '@/infrastructure/api/data'
+import { CostAuditService } from '@/infrastructure/api/generated/services/CostAuditService'
 
 const CostAccounting = () => {
   const getTableData = (): any => {
-    return getDatasetList({ url: '/costaudit/stats', options: { params: {} } }).then((res) => {
+    return CostAuditService.getCostauditStats().then((res) => {
       const { categories, total } = res
       return {
         list: [...categories, { ...total, category: '总计' }],

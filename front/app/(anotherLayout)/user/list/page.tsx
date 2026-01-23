@@ -9,7 +9,7 @@ import PageModel from './pageModel'
 import PasswordReset from './passwordReset'
 import PermitCheck from '@/app/components/app/permit-check'
 import { deleteUser, getUserList, updateUserSpace } from '@/infrastructure/api/user'
-import { addUser, resetPassword } from '@/infrastructure/api/common'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 
 type Result = {
   total: number
@@ -69,7 +69,7 @@ const UserList = () => {
   })
 
   const handleUserDel = (record) => {
-    deleteUser({ account_id: record.id }).then((res) => {
+    deleteUser({ account_id: record.id }).then((_res) => {
       message.success('操作成功')
       refresh()
     }, (errData) => {
@@ -103,7 +103,7 @@ const UserList = () => {
   }
   const handleOk = () => {
     form.validateFields().then((data) => {
-      updateUserSpace({ ...data }).then((res) => {
+      updateUserSpace({ ...data }).then((_res) => {
         message.success('操作成功')
         refresh()
         setVisible(false)
@@ -117,7 +117,7 @@ const UserList = () => {
       email: values.email || '',
       phone: values.phone || '',
     }
-    const res = await addUser({ url: '/account/add_user', body: submitData }) as AddUserResponse
+    const res = await AuthService.postAccountAddUser(submitData) as AddUserResponse
     if (res.result === 'success') {
       message.success('添加用户成功')
       addUserForm.resetFields()
@@ -139,13 +139,10 @@ const UserList = () => {
 
   const handlePasswordResetSubmit = async (values) => {
     try {
-      await resetPassword({
-        url: '/forgot-password/admin-resets',
-        body: {
-          name: values.name,
-          new_password: values.new_password,
-          password_confirm: values.password_confirm,
-        },
+      await AuthService.postForgotPasswordAdminResets({
+        name: values.name,
+        new_password: values.new_password,
+        password_confirm: values.password_confirm,
       })
       message.success('密码重置成功')
       setShowPasswordReset(false)

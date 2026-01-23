@@ -3,6 +3,7 @@ import { Col, Divider, Input, Row } from 'antd'
 import { useStoreApi } from 'reactflow'
 import { groupBy } from 'lodash-es'
 import { MenuOutlined } from '@ant-design/icons'
+import { useParams } from 'next/navigation'
 import { useStore } from '../../store'
 import { generateDefaultConfig } from './utils'
 import {
@@ -13,7 +14,7 @@ import {
   nameMatchColorDict,
 } from './constants'
 import HoverTip from '@/app/components/base/hover-tip'
-import { dragEmptySubmodule } from '@/infrastructure/api//apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 import IconFont from '@/app/components/base/iconFont'
 
@@ -27,6 +28,7 @@ const CLASSIFICATION_NAMES: Record<string, string> = {
 
 const Components = () => {
   const store = useStoreApi()
+  const params = useParams()
   const universeNodes = useStore(s => s.universeNodes)
   const [searchText, setSearchText] = useState('')
 
@@ -59,7 +61,9 @@ const Components = () => {
 
   const moduleDrop = useCallback(async (e: any, blockItem: any) => {
     if (dragEmptyAppScope.includes(blockItem.name)) { // 子模块需要单独处理，先调接口拿取数据
-      const res = await dragEmptySubmodule({})
+      const res = await OpenAPIService.postAppsWorkflowsDragEmpty({
+        app_id: String((params as any).appId),
+      })
       if (res && res.app_id) {
         const defaultConfig = generateDefaultConfig({ ...blockItem, payload__patent_id: res.app_id }, store)
         sessionStorage.setItem('drag_module_info', JSON.stringify(defaultConfig))

@@ -8,7 +8,7 @@ import classNames from 'classnames'
 import { Button, Form, Modal, message } from 'antd'
 import PasswordModel from './passwordModel'
 import Avatar from '@/app/components/base/user-avatar'
-import { logout, updatePassword } from '@/infrastructure/api//common'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import PermitCheck from '@/app/components/app/permit-check'
 
@@ -40,10 +40,7 @@ export default function AccountSelector({ isMobileView }: AccountSelectorProps) 
 
   // 处理用户登出
   const handleLogout = async () => {
-    await logout({
-      url: '/logout',
-      params: {},
-    })
+    await AuthService.getLogout()
 
     if (localStorage?.getItem('console_token'))
       localStorage.removeItem('console_token')
@@ -60,10 +57,7 @@ export default function AccountSelector({ isMobileView }: AccountSelectorProps) 
   // 处理密码更新
   const handlePasswordUpdate = async (formData: PasswordFormData) => {
     try {
-      await updatePassword({
-        url: '/account/password',
-        body: formData,
-      })
+      await AuthService.postAccountPassword(formData)
       message.success('密码修改成功')
       handlePasswordModalClose()
     }

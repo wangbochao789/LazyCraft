@@ -13,7 +13,7 @@ import ClassifyMode, { tagList } from '@/app/components/tagSelect/ClassifyMode'
 import Iconfont from '@/app/components/base/iconFont'
 import useAuthPermissions from '@/shared/hooks/use-radio-auth'
 import { createPrompt, deletePrompt } from '@/infrastructure/api/prompt'
-import { getDatasetListNew } from '@/infrastructure/api/data'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { API_PREFIX } from '@/app-specs'
 const { Dragger } = Upload
 const ScriptManage = () => {
@@ -38,21 +38,17 @@ const ScriptManage = () => {
   const [refreshFlag, setRefreshFlag] = useState({})
 
   const getList = async (flag: any, page) => {
-    const url = '/script/list'
     const param: any = {
       ...pageOption,
       page,
-      per_page: 16,
+      page_size: 16,
       name,
       script_type: selectLabels?.map(item => item?.id),
       user_id: creator,
     }
     setLoading(true)
     try {
-      const res: any = await getDatasetListNew({
-        url,
-        body: param,
-      })
+      const res: any = await OpenAPIService.postScriptList(param)
       if (res.data) {
         const { data = [], hasAdditional } = res
         if (flag === 1)

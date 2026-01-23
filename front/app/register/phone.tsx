@@ -6,9 +6,9 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import IconFont from '../components/base/iconFont'
 import Captcha from './captcha'
 import style from './phone.module.scss'
-import { checkExist, commonPost } from '@/infrastructure/api/common'
 import { encryptPayloadWithECDH } from '@/infrastructure/security/ecdh'
 import { userEmailValidationRegex } from '@/app-specs'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 
 const Register_phone = () => {
   const [form] = Form.useForm()
@@ -34,10 +34,7 @@ const Register_phone = () => {
     try {
       setLoading(true)
       const encryptedPayload = await encryptPayloadWithECDH(values)
-      const res: any = await commonPost({
-        url: '/register',
-        body: encryptedPayload,
-      })
+      const res: any = await AuthService.postRegister(encryptedPayload)
       if (res.result == 'success') {
         message.success('注册成功')
         localStorage.setItem('console_token', res.data)
@@ -69,10 +66,7 @@ const Register_phone = () => {
     return form
       .validateFields(['phone'])
       .then(async (values: any) => {
-        const res: any = await checkExist({
-          url: '/sendsms',
-          body: { ...values, operation: 'register' },
-        })
+        const res: any = await AuthService.postSendsms({ ...values, operation: 'register' })
         return Promise.resolve(res)
       })
       .catch((e) => {
@@ -94,10 +88,7 @@ const Register_phone = () => {
       [names]: value,
     }
     try {
-      const res: any = await checkExist({
-        url: '/account/validate_exist',
-        body: data,
-      })
+      const res: any = await AuthService.postAccountValidateExist(data)
       if (res?.result === 'failed')
         return cb(res.message)
       return cb()

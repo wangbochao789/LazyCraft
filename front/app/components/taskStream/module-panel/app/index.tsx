@@ -11,18 +11,32 @@ import {
 import { ExecutionBlockEnum } from '../../types'
 
 import { generateDefaultConfig } from '../components/utils'
-import { dragApp, fetchAppList } from '@/infrastructure/api//apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import HoverTip from '@/app/components/base/hover-tip'
 import DefaultLogo from '@/app/components/app-hub/app-list/app-default-logo.png'
 
 const App = () => {
-  const { data, loading, run: requestAppData } = useRequest<any, any>(async params => fetchAppList({ url: '/apps', params: { page: 1, limit: 100, qtype: 'already', is_published: true, ...params } }))
+  const { data, loading, run: requestAppData } = useRequest<any, any>(
+    (params) => {
+      return OpenAPIService.getApps(
+        1,
+        100,
+        params?.search_name,
+        undefined,
+        'already',
+        true,
+      )
+    },
+  )
   const searchParams = useParams()
   const store = useStoreApi()
 
   const appDragStart = useCallback(async (e: any, blockItem: any) => {
     const { id, name, ...rest } = blockItem
-    const res = await dragApp({ app_id: id, main_app_id: searchParams.appId })
+    const res = await OpenAPIService.postAppsWorkflowsDragApp({
+      app_id: String(id),
+      target_app_id: String((searchParams as any).appId),
+    })
     const type = ExecutionBlockEnum.SubModule
     if (res && res.app_id) {
       const defaultConfig = generateDefaultConfig({ ...rest, payload__kind: 'App', payload__patent_id: res.app_id, title: name, name: type, type }, store)

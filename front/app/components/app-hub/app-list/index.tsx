@@ -32,7 +32,8 @@ import useTimestamp from '@/shared/hooks/use-timestamp'
 import IconModal from '@/app/components/iconModal'
 import ReferenceResultModal from '@/app/components/referenceResultModal'
 
-import { appAddToTemplateApp, createApp, createTemplateApp, deleteApp, downloadAppJson, enableApi, importApp, updateAppInfo } from '@/infrastructure/api//apps'
+import { createApp, downloadAppJson, enableApi } from '@/infrastructure/api//apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Iconfont from '@/app/components/base/iconFont'
 import PermitCheck from '@/app/components/app/permit-check'
 import { useApplicationContext } from '@/shared/hooks/app-context'
@@ -204,7 +205,7 @@ const Apps = () => {
     }
   }
   const handleDelete = async (id: any) => {
-    await deleteApp(id)
+    await OpenAPIService.deleteApps(String(id))
     message.success('删除成功')
     getTagsList()
     setSelectLabels([])
@@ -212,9 +213,7 @@ const Apps = () => {
   }
   const onImportDSLSubmit = async (values: any) => {
     try {
-      const formData = new FormData()
-      formData.append('file', values.dsl.file)
-      const res = await importApp({ data: formData })
+      const res = await OpenAPIService.postAppsImport({ file: values.dsl.file })
       message.success('导入Json文件成功')
       toggleDSLModal()
       sessionStorage.removeItem('canvas-tab-active-key')
@@ -281,8 +280,7 @@ const Apps = () => {
 
       if (isEditMode) {
         try {
-          const res = await updateAppInfo({
-            appID: curApp.id,
+          const res = await OpenAPIService.putApps(String(curApp.id), {
             name: formValues.name,
             description: formValues.description,
             icon: formValues.icon || '',
@@ -310,12 +308,12 @@ const Apps = () => {
       }
       else if (!isEmpty(curApp)) {
         if (curApp.convertToTemplate) {
-          await appAddToTemplateApp({ id: curApp.id, ...formValues })
+          await OpenAPIService.postAppsToApptemplate({ app_id: curApp.id } as any)
           message.success('添加为应用模版成功，请在应用模版中查看')
           toggle()
         }
         else {
-          const res = await createTemplateApp({ ...formValues, id: templateId })
+          const res = await OpenAPIService.postApptemplateToApps({ app_id: templateId, ...formValues } as any)
           // const res = await createApp(formValues)
           if (res) {
             const bindResult = await bindTags({ url: 'tags/bindings/update', body: { type: 'app', tag_names: formValues?.tag_names, target_id: res?.id } })

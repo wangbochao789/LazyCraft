@@ -1,4 +1,4 @@
-import { keyExchange } from '@/infrastructure/api/common'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 
 const HKDF_INFO = 'ecdh-aes-key-exchange'
 const AES_KEY_LENGTH = 256
@@ -148,7 +148,7 @@ const performEncryption = async (aesKey: CryptoKey, payload: Record<string, any>
 
 const exchangeKeyWithBackend = async (frontendPublicKey: string): Promise<KeyExchangeResult> => {
   try {
-    const result = await keyExchange({ frontend_public_key: frontendPublicKey })
+    const result = await AuthService.postKeyExchange({ frontend_public_key: frontendPublicKey })
     return normalizeKeyExchangeResponse(result as KeyExchangeAPIResponse)
   }
   catch (error) {

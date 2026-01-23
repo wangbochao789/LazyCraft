@@ -3,7 +3,7 @@
 import { useRequest } from 'ahooks'
 import { createContext, useContext } from 'use-context-selector'
 import type { FC, ReactNode } from 'react'
-import { getAgentInit, getAgentSessions } from '@/infrastructure/api//agent'
+import { ConversationService } from '@/infrastructure/api/generated/services/ConversationService'
 
 type AgentContextValue = {
   agentToken: undefined | string
@@ -15,8 +15,8 @@ type AgentContextValue = {
 const AgentContext = createContext<AgentContextValue>({
   agentToken: undefined,
   agentHistoryList: undefined,
-  getAgentToken: (payload: any) => { },
-  getAgentHistorys: (payload: any) => { },
+  getAgentToken: (_payload: any) => { },
+  getAgentHistorys: (_payload: any) => { },
 })
 
 type AgentContextProviderProps = {
@@ -24,8 +24,14 @@ type AgentContextProviderProps = {
 }
 
 export const AgentContextProvider: FC<AgentContextProviderProps> = ({ children }) => {
-  const { data: resData, run: getAgentHistorys } = useRequest<any, any>(getAgentSessions, { manual: true })
-  const { data: tokenData, run: getAgentToken } = useRequest<any, any>(getAgentInit, { manual: true })
+  const { data: resData, run: getAgentHistorys } = useRequest<any, any>(
+    ({ appId }) => ConversationService.getConversationSessions(String(appId), ''),
+    { manual: true },
+  )
+  const { data: tokenData, run: getAgentToken } = useRequest<any, any>(
+    ({ appId }) => ConversationService.getConversationInit(String(appId)),
+    { manual: true },
+  )
 
   return (
     <AgentContext.Provider value={{

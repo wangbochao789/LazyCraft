@@ -11,9 +11,10 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import styles from './page.module.scss'
 import Api from './Api'
 import IDE from './IDEMode'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 
-import { cancelPublish, getToolDetail, publishTools } from '@/infrastructure/api/tool'
+import { getToolDetail, publishTools } from '@/infrastructure/api/tool'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 type Detail = {
   created_at: string
@@ -67,18 +68,18 @@ const ToolsInfoContent = () => {
     const isCancel = !type || type === ''
     // 提醒取消发布成功
     if (isCancel) {
-      cancelPublish({ url: '/tool/cancel_publish', body: { id } }).then(() => {
-        Toast.notify({ type: 'success', message: '取消发布成功' })
+      OpenAPIService.postToolCancelPublish({ id }).then(() => {
+        Toast.notify({ type: ToastTypeEnum.Success, message: '取消发布成功' })
         router.replace('/tools?tab=custom')
       })
       return
     }
     if (state === 0 && !isCancel) {
-      Toast.notify({ type: 'warning', message: '测试通过后才能发布' })
+      Toast.notify({ type: ToastTypeEnum.Warning, message: '测试通过后才能发布' })
       return
     }
     publishTools({ url: '/tool/publish_tool', body: { id, publish_type: type } }).then(() => {
-      Toast.notify({ type: 'success', message: '发布成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '发布成功' })
       router.replace('/tools?tab=custom')
     })
   }

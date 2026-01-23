@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { PhotoSlider } from 'react-photo-view'
 import AddModal from './AddModal'
 import styles from './index.module.scss'
-import { getJoins } from '@/infrastructure/api/apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { formatDatasetTag } from '@/shared/utils/format'
 import { deleteFile, getDatasetFileList, getDatasetVersionInfo } from '@/infrastructure/api/data'
 import { usePermitCheck } from '@/app/components/app/permit-check'
@@ -76,8 +76,8 @@ const DatasetVersionDetail = (req) => {
   const router = useRouter()
   useEffect(() => {
     // 获取协作者
-    getJoins({ url: '/workspaces/coop/joins', options: { params: { target_type: 'dataset' } } }).then((res) => {
-      setJoins(res.data)
+    OpenAPIService.getWorkspacesCoopJoins('dataset').then((res: any) => {
+      setJoins(res?.data || [])
     })
   }, [])
   const getTableData = ({ current, pageSize }): Promise<Result> => {

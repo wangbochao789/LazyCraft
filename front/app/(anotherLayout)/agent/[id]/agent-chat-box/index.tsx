@@ -11,7 +11,7 @@ import { API_PREFIX } from '@/app-specs'
 import { getKeyboardKeyCodeBySystem } from '@/app/components/taskStream/utils'
 import { useAgentContext } from '@/shared/hooks/agent-context'
 import { ssePost } from '@/infrastructure/api/base'
-import { chatFeedback, getChatDetail } from '@/infrastructure/api/agent'
+import { ConversationService } from '@/infrastructure/api/generated/services/ConversationService'
 import BytesPreview from '@/app/components/taskStream/elements/_foundation/components/form/field-item/preview/bytes-preview'
 import HoverGuide from '@/app/components/base/hover-tip-pro'
 import Icon from '@/app/components/base/iconFont'
@@ -87,7 +87,11 @@ const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }
 
   useEffect(() => {
     if (detailData.chatId && !detailData.isStreaming) {
-      getChatDetail({ url: `conversation/${agentId}/history`, options: { params: { sessionid: detailData.chatId } } }).then((res) => {
+      ConversationService.getConversationHistory(
+        String(agentId),
+        String(detailData.chatId),
+        '',
+      ).then((res) => {
         const resList = res?.data || []
         setChatList(resList)
       })
@@ -274,8 +278,7 @@ const AgentChatBox = ({ agentId, sidebar, draft, currentChatId, onChatIdChange }
     const { is_satisfied, id } = chatItem || {}
     if ((targetValue && is_satisfied) || (!targetValue && is_satisfied === false))
       return
-    chatFeedback({
-      appId: agentId,
+    ConversationService.postConversationFeedback(String(agentId), '', {
       sessionid: chatId,
       speak_id: id,
       is_satisfied: targetValue,

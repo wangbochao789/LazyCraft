@@ -4,7 +4,8 @@ import { Select, Table } from 'antd'
 import { useAntdTable } from 'ahooks'
 import styles from './page.module.scss'
 import IconFont from '@/app/components/base/iconFont'
-import { getDatasetList } from '@/infrastructure/api/data'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
+import { CostAuditService } from '@/infrastructure/api/generated/services/CostAuditService'
 import PermitCheck, { usePermitCheck } from '@/app/components/app/permit-check'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 
@@ -14,7 +15,7 @@ const CostAccounting = () => {
   const [perNum, setPerNum] = useState<number | string>('')
   const [groups, setGroup] = useState([])
   const getTableData = (): any => {
-    return getDatasetList({ url: '/costaudit/stats', options: { params: { tenant_id: type } } }).then((res) => {
+    return CostAuditService.getCostauditStats(type || undefined).then((res) => {
       const { categories, total } = res
       return {
         list: [...categories, { ...total, category: '总计' }],
@@ -32,7 +33,7 @@ const CostAccounting = () => {
     search.submit()
   }
   const getGroupList = async () => {
-    const res: any = await getDatasetList({ url: '/workspaces/all/tenants', options: { params: { page: 1, limit: 100000 } } })
+    const res: any = await OpenAPIService.getWorkspacesAllTenants(1, 100000)
     if (res) {
       const temp: any = [...res?.data, { name: '全平台用户空间', id: 'all_user_space' }]
       setGroup(temp)
@@ -44,7 +45,11 @@ const CostAccounting = () => {
     }
   }
   const getPerNum = async () => {
-    const res: any = await getDatasetList({ url: '/workspaces/detail', options: { params: { tenant_id: userSpecified?.tenant?.id } } })
+    const tenantId = userSpecified?.tenant?.id
+    if (!tenantId)
+      return
+
+    const res: any = await OpenAPIService.getWorkspacesDetail(String(tenantId))
     if (res) {
       setPerNum(res?.accounts?.length)
       search.submit()

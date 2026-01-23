@@ -17,9 +17,10 @@ import ToolPng from '@/public/images/workflow/tools.png'
 import HoverTip from '@/app/components/base/hover-tip'
 import { fetchToolList } from '@/infrastructure/api/workflow'
 import type { ToolDetailInfo } from '@/infrastructure/api/types'
-import { dragEmptySubmodule } from '@/infrastructure/api/apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
 // import { prefixUrl } from '@/shared/utils'
+import { useParams } from 'next/navigation'
 
 enum ToolModeEnum {
   IDE = 'IDE',
@@ -28,6 +29,7 @@ enum ToolModeEnum {
 
 const ToolsTab = () => {
   const store = useStoreApi()
+  const params = useParams()
   const { data: tools } = useRequest(() => fetchToolList({ page: 1, page_size: 9999, published: ['true'], qtype: 'already', enabled: ['true'] }))
   const [searchText, setSearchText] = useState('')
 
@@ -153,7 +155,9 @@ const ToolsTab = () => {
     const blockItem: any = getToolBlockInitData(toolItem)
 
     if (dragEmptyAppScope.includes(blockItem.name)) { // 子模块需要单独处理，先调接口拿取数据
-      const res = await dragEmptySubmodule({})
+      const res = await OpenAPIService.postAppsWorkflowsDragEmpty({
+        app_id: String((params as any).appId),
+      })
       if (res && res.app_id) {
         const defaultConfig = generateDefaultConfig({ ...blockItem, payload__patent_id: res.app_id }, store)
         sessionStorage.setItem('drag_module_info', JSON.stringify(defaultConfig))

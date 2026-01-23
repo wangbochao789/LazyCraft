@@ -7,19 +7,24 @@ import { ExecutionBlockEnum } from '../../types'
 
 import { generateDefaultConfig } from '../components/utils'
 import { fetchAppTemplateList } from '@/infrastructure/api//explore'
-import { dragAppTemplate } from '@/infrastructure/api//apps'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import HoverTip from '@/app/components/base/hover-tip'
 
 import IconFont from '@/app/components/base/iconFont'
+import { useParams } from 'next/navigation'
 
 const AppTemplate = () => {
   const { data, loading, run } = useRequest<any, any>(params => fetchAppTemplateList({ qtype: 'already', ...params }))
 
   const store = useStoreApi()
+  const params = useParams()
   const appDragStart = useCallback(async (e: any, blockItem: any) => {
     e.dataTransfer.effectAllowed = 'move'
     const { id, name, ...rest } = blockItem
-    const res = await dragAppTemplate({ app_id: id })
+    const res = await OpenAPIService.postAppsWorkflowsDragTemplate({
+      app_id: String((params as any).appId),
+      template_id: String(id),
+    })
     const type = ExecutionBlockEnum.SubModule
     if (res && res.app_id) {
       const defaultConfig = generateDefaultConfig({ ...rest, payload__kind: 'Template', payload__patent_id: res.app_id, title: name, name: type, type }, store)

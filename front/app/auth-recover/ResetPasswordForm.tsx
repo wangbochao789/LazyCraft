@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import cn from 'classnames'
 import IconFont from '../components/base/iconFont'
 import style from './page.module.scss'
-import { changePasswordWithToken } from '@/infrastructure/api/common'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 
 const ResetPasswordForm = () => {
   const searchParams = useSearchParams()
@@ -17,12 +17,9 @@ const ResetPasswordForm = () => {
   const handleSubmit = async (values: any) => {
     setLoading(true)
     try {
-      const res: any = await changePasswordWithToken({
-        url: '/forgot-password/resets',
-        body: {
-          ...values,
-          token,
-        },
+      const res: any = await AuthService.postForgotPasswordResets({
+        ...values,
+        token,
       })
       if (res.result == 'success') {
         message.success('重置成功')

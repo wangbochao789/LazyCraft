@@ -9,7 +9,8 @@ import { useRouter } from 'next/navigation'
 import 'jsoneditor/dist/jsoneditor.css' // 引入 JSON 编辑器的样式
 import JSONEditor from 'jsoneditor'
 import styles from './index.module.scss'
-import { getDatasetFileRefluxList, getJsonFile, updateFile } from '@/infrastructure/api/data'
+import { getJsonFile, updateFile } from '@/infrastructure/api/data'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 
 const JsonDetail = (req) => {
@@ -73,7 +74,7 @@ const JsonDetail = (req) => {
       })
     }
     else {
-      getDatasetFileRefluxList({ url: '/data/reflux/detail', options: { params: { reflux_data_id: jsonId } } }).then((res) => {
+      OpenAPIService.getDataRefluxDetail(String(jsonId)).then((res: any) => {
         try {
           edi && edi?.set(res.message.content)
         }

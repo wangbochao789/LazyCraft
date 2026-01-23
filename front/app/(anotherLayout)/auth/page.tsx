@@ -3,7 +3,7 @@ import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import { Result, Spin } from 'antd'
 import { useSearchParams } from 'next/navigation'
 import styles from './page.module.scss'
-import { getDatasetList } from '@/infrastructure/api/data'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 const AuthPageContent = () => {
   const searchParams = useSearchParams()
@@ -13,7 +13,7 @@ const AuthPageContent = () => {
   const [loading, setLoading] = useState<any>(true)
   const getAuth = useCallback(() => {
     setLoading(true)
-    getDatasetList({ url: '/tool/auth', options: { params: { code, state } } }).then((res) => {
+    OpenAPIService.getToolAuth(code ?? undefined, state ?? undefined).then((res) => {
       if (res)
         setStatu(res?.message)
     }).finally(() => {
@@ -22,7 +22,7 @@ const AuthPageContent = () => {
   }, [state, code])
   useEffect(() => {
     state && getAuth()
-  }, [getAuth])
+  }, [getAuth, state])
   return (
     <Spin spinning={loading}>
       <div className={styles.outerWrap}>

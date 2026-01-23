@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react'
 import { createContext, useContext } from 'use-context-selector'
 import type { FC, ReactNode } from 'react'
 import Loading from '@/app/components/base/loading'
-import { getUserInfo } from '@/infrastructure/api//common'
 import { getPermissionList } from '@/infrastructure/api//permit'
-import { getCoopJoins } from '@/infrastructure/api//user'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
+import { AuthService } from '@/infrastructure/api/generated/services/AuthService'
 import type { UserProfileResult } from '@/core/data/common'
 import { isAgentPage } from '@/shared/utils'
 
@@ -37,7 +37,7 @@ type AppContextProviderProps = {
 }
 
 export const RootStateHubProvider: FC<AppContextProviderProps> = ({ children }) => {
-  const { data: userSpecified, mutate: convertuserSpecified } = useRequest<any, any>(getUserInfo, { manual: isAgentPage() })
+  const { data: userSpecified, mutate: convertuserSpecified } = useRequest<any, any>(AuthService.getAccountProfile, { manual: isAgentPage() })
   const [tempFile, setTempFile] = useState<any>()
   const [permitData, setPermitData] = useState<any>({})
   const [teamData, setTeamData] = useState<any>({})
@@ -48,7 +48,7 @@ export const RootStateHubProvider: FC<AppContextProviderProps> = ({ children }) 
         if (res)
           setPermitData(userSpecified.tenant?.role ? (res[userSpecified.tenant.role] || {}) : {})
       })
-      getCoopJoins({ url: '/workspaces/coop/joins', options: { params: { target_type: 'app' } } }).then((res: any) => {
+      OpenAPIService.getWorkspacesCoopJoins('app').then((res: any) => {
         const coopAppIds = res?.data || []
         setTeamData({ coopAppIds })
       })
