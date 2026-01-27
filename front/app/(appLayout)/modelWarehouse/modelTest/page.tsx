@@ -7,8 +7,8 @@ import { useAntdTable } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import styles from './index.module.scss'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
-import Toast from '@/app/components/base/flash-notice'
-import { deleteTest, getTestList } from '@/infrastructure/api/modelTest'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { apiPrefix } from '@/app-specs'
 
 type DataType = {
@@ -42,17 +42,7 @@ const ModelAdjust = () => {
   const pollTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const getTableData = ({ current, pageSize }, formData): Promise<Result> => {
-    return getTestList({
-      url: '/model_evalution/list',
-      options: {
-        params: {
-          page: current,
-          per_page: pageSize,
-          keyword: formData.name || '',
-          qtype: authValue,
-        } as any,
-      },
-    })
+    return OpenAPIService.getModelEvalutionList(current, pageSize, formData.name || '', authValue)
       .then((res: any) => {
         return {
           total: res?.result?.total,
@@ -136,14 +126,14 @@ const ModelAdjust = () => {
     }
     catch (error) {
       console.error('下载出错:', error)
-      Toast.notify({ type: 'error', message: '下载失败，请稍后重试' })
+      Toast.notify({ type: ToastTypeEnum.Error, message: '下载失败，请稍后重试' })
     }
   }
 
   const handleDelete = async (record) => {
-    const res = await deleteTest({ url: `/model_evalution/delete_task/${record?.id}` })
+    const res = await OpenAPIService.postModelEvalutionDeleteTask(Number(record?.id))
     if (res) {
-      Toast.notify({ type: 'success', message: '删除成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
       search.submit()
     }
   }

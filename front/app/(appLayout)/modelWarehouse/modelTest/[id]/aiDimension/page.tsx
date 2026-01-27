@@ -7,7 +7,7 @@ import Link from 'next/link'
 import InfoTitle from '../../../components/InfoTitle'
 import styles from './index.module.scss'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
-import { getAdjustInfo, getResultInfo, saveChoose } from '@/infrastructure/api/modelTest'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 const Dimension = (req) => {
   const { id } = req.params
@@ -22,14 +22,14 @@ const Dimension = (req) => {
   // 获取参数值
   const option_select_id = searchParams.get('option_id')
   const getInfo = useCallback(() => {
-    getAdjustInfo({ url: `/model_evalution/task_info/${id}` }).then((res) => {
+    OpenAPIService.getModelEvalutionTaskInfo(Number(id)).then((res) => {
       setBaseInfo(res?.result?.task_info)
     })
   }, [id])
 
   const getLeftInfo = () => {
     setSpinning(true)
-    getResultInfo({ url: `/model_evalution/evaluation_data/${id}`, options: { params: { page } } }).then((res) => {
+    OpenAPIService.getModelEvalutionEvaluationData(Number(id), page).then((res) => {
       setResultInfo(res?.result?.data)
       setMaxPage(res?.result?.total_pages || 1)
       if (res?.result?.data?.evaluations.length > 0)
@@ -40,7 +40,7 @@ const Dimension = (req) => {
   }
 
   const getRightInfo = () => {
-    getAdjustInfo({ url: `/model_evalution/get_evaluation_dimensions/${id}` }).then((res) => {
+    OpenAPIService.getModelEvalutionGetEvaluationDimensions(Number(id)).then((res) => {
       setRightInfo(res?.result)
     })
   }
@@ -56,13 +56,13 @@ const Dimension = (req) => {
   }, [])
   const handleOk = () => {
     form.validateFields().then((values) => {
-      saveChoose({ url: '/model_evalution/evaluate_save', body: { ...values, task_id: +id, data_id: resultInfo?.id } }).then((res) => {
-        if (res.status === 500) {
+      OpenAPIService.postModelEvalutionEvaluateSave({ ...values, task_id: Number(id), data_id: resultInfo?.id } as any).then((res) => {
+        if (res.code === 500) {
           Toast.notify({
-            type: ToastTypeEnum.Error, message: res?.message,
+            type: ToastTypeEnum.Error, message: res?.message || '保存失败',
           })
         }
-        if (res?.status === 0) {
+        if (res?.code === 0) {
           Toast.notify({
             type: ToastTypeEnum.Success, message: '保存成功',
           })

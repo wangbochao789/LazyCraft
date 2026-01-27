@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Iconfont from '@/app/components/base/iconFont'
 import FloatingCustomPanel from '@/app/components/base/float-tip'
-import { getMessageList, getMessageRead } from '@/infrastructure/api//messageList'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 
 type MessageApiResponse = {
@@ -91,7 +91,7 @@ const MessageListContent = ({ onClose }: { onClose?: () => void }) => {
   const retrieveMessageList = async () => {
     setIsLoading(true)
     try {
-      const response = await getMessageList({ page: 1, pageSize: 100, user_read: currentTab === 'read' }) as MessageApiResponse
+      const response = await OpenAPIService.postNotificationsList({ page: 1, page_size: 100, user_read: currentTab === 'read' }) as MessageApiResponse
       const transformedMessages = convertApiDataToComponentData(response.items)
       setMessageItems(transformedMessages)
     }
@@ -116,7 +116,7 @@ const MessageListContent = ({ onClose }: { onClose?: () => void }) => {
   const processMessageClick = async (message: MessageItem) => {
     try {
       if (!message.isRead) {
-        await getMessageRead({ id: message.id })
+        await OpenAPIService.postNotificationsRead({ notification_id: message.id })
 
         setMessageItems(prevMessages =>
           prevMessages.map(msg =>

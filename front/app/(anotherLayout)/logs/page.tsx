@@ -5,7 +5,7 @@ import { useAntdTable, useRequest } from 'ahooks'
 import dayjs from 'dayjs'
 import styles from './page.module.scss'
 import { useApplicationContext } from '@/shared/hooks/app-context'
-import { queryOperationLogs } from '@/infrastructure/api/log'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { getCurrentGroupList } from '@/infrastructure/api/user'
 
 const { RangePicker } = DatePicker
@@ -91,12 +91,23 @@ const Logs = () => {
       }
     })
 
-    return queryOperationLogs({ params: { ...params } }).then((res) => {
+    return OpenAPIService.getLogs(
+      params.start_date,
+      params.end_date,
+      params.details,
+      params.page,
+      params.per_page,
+      params.organization_id || '',
+      params.account_id || '',
+      params.user_name,
+      params.module,
+      params.action,
+    ).then((res) => {
       // 更新筛选选项
-      updateFilterOptions(res?.result?.data)
+      updateFilterOptions(res?.data?.data)
       return {
-        list: [...res?.result?.data],
-        total: res?.result?.total,
+        list: [...(res?.data?.data || [])],
+        total: res?.data?.total || 0,
       }
     })
   }

@@ -27,7 +27,7 @@ import {
 import { useStore as useAppStore } from '@/app/components/app/store'
 import type { InputVar } from '@/app/components/taskStream/types'
 import { useApplicationContext } from '@/shared/hooks/app-context'
-import { fetchTraceList } from '@/infrastructure/api//log'
+import { CostAuditService } from '@/infrastructure/api/generated/services/CostAuditService'
 import { publishWorkflow } from '@/infrastructure/api//workflow'
 import { usePrePublishChecklist } from '@/app/components/taskStream/logicHandlers/checkList'
 import { useResources } from '@/app/components/taskStream/logicHandlers/resStore'
@@ -316,9 +316,7 @@ const AppCirculator = ({
     try {
       const nextStatus = !appDetail?.enable_backflow
       await OpenAPIService.postAppsEnableBackflow(String(appDetail?.id), { enable_backflow: nextStatus })
-      const data = await fetchTraceList({
-        url: `/costaudit/apps/${appDetail?.id}`,
-      })
+      const data = await CostAuditService.getCostauditApps(String(appDetail?.id))
       setCostAccount(data as any)
       setAppDetail(appDetail ? { ...appDetail, enable_backflow: nextStatus } : undefined)
       toggleDataReflowModal()

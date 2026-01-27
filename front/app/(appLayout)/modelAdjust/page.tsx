@@ -6,13 +6,13 @@ import type { TableProps } from 'antd'
 import { useAntdTable, useUpdateEffect } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import styles from './index.module.scss'
-import Toast from '@/app/components/base/flash-notice'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import ClassifyMode from '@/app/components/tagSelect/ClassifyMode'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
 import { useApplicationContext } from '@/shared/hooks/app-context'
-import { cancelModel, deleteModel, getModelList, startModel, stopModel } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 type DataType = {
   key: string
@@ -75,10 +75,10 @@ const ModelAdjust = () => {
   let stopPolling: () => void
 
   const getTableData = ({ current, pageSize }): Promise<Result> => {
-    return getModelList({ url: '/finetune/list/page', body: { page: current, limit: pageSize, search_name: sValue, user_id: creator, status: selectLabels.map(item => item?.id) } }).then((res: any) => {
+    return OpenAPIService.postFinetuneListPage({ page: current, limit: pageSize, search_name: sValue, user_id: creator, status: selectLabels.map(item => item?.id) }).then((res: any) => {
       const responseData = {
-        total: res.total,
-        list: res.data,
+        total: res.total || 0,
+        list: res.data || [],
       }
 
       // 检查是否需要轮询
@@ -141,16 +141,16 @@ const ModelAdjust = () => {
   }
 
   const handleDelete = async (record) => {
-    const res = await deleteModel({ url: `/finetune/delete/${record?.id}` })
+    const res = await OpenAPIService.deleteFinetuneDelete(Number(record?.id))
     if (res) {
-      Toast.notify({ type: 'success', message: '删除成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
       search.submit()
     }
   }
   const cancelTrain = async (record) => {
-    const res = await cancelModel({ url: `/finetune/cancel/${record?.id}` })
+    const res = await OpenAPIService.deleteFinetuneCancel(Number(record?.id))
     if (res) {
-      Toast.notify({ type: 'success', message: '取消成功' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '取消成功' })
       search.submit()
     }
   }
@@ -161,16 +161,16 @@ const ModelAdjust = () => {
     setSValue(e)
   }
   const startTrain = async (record) => {
-    const res = await startModel({ url: `/finetune/resume/${record?.id}` })
+    const res = await OpenAPIService.getFinetuneResume(Number(record?.id))
     if (res) {
-      Toast.notify({ type: 'success', message: '开始训练' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '开始训练' })
       search.submit()
     }
   }
   const stopTrain = async (record) => {
-    const res = await stopModel({ url: `/finetune/pause/${record?.id}` })
+    const res = await OpenAPIService.getFinetunePause(Number(record?.id))
     if (res) {
-      Toast.notify({ type: 'success', message: '停止训练' })
+      Toast.notify({ type: ToastTypeEnum.Success, message: '停止训练' })
       search.submit()
     }
   }

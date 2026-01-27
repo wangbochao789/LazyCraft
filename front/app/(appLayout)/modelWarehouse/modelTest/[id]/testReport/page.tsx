@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import InfoTitle from '../../../components/InfoTitle'
 import styles from './index.module.scss'
-import { getAdjustInfo } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 const Dimension = (req) => {
   const { id } = req.params
   const router = useRouter()
   const [reportInfo, setReportInfo] = useState<any>({})
   const getReportInfo = useCallback(() => {
-    getAdjustInfo({ url: `/model_evalution/evaluation_summary/${id}` }).then((res) => {
+    OpenAPIService.getModelEvalutionEvaluationSummary(Number(id)).then((res) => {
       setReportInfo(res?.result)
     })
   }, [id])

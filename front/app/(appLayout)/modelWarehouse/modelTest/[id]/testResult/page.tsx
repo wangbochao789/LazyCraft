@@ -5,13 +5,13 @@ import Link from 'next/link'
 import InfoTitle from '../../../components/InfoTitle'
 
 import styles from './index.module.scss'
-import { getAdjustInfo } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 const TestResult = (req) => {
   const { id } = req.params
   const [baseInfo, setBaseInfo] = useState<any>({})
   const getInfo = useCallback(() => {
-    getAdjustInfo({ url: `/finetune/detail/${id}` }).then((res) => {
+    OpenAPIService.getFinetuneDetail(Number(id)).then((res) => {
       setBaseInfo(res)
     })
   }, [id])

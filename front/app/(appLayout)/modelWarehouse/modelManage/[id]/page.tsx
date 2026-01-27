@@ -10,7 +10,7 @@ import AddModal from './AddModal'
 import AddModelList from './AddModelList'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { getModelInfo, reDown } from '@/infrastructure/api/modelWarehouse'
-import { deleteModel, getModelList } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { usePermitCheck } from '@/app/components/app/permit-check'
 
@@ -50,7 +50,7 @@ const ModelDetail = (req) => {
   }
 
   const getTableData = ({ current, pageSize }): Promise<any> => {
-    return getModelList({ url: '/mh/finetune_model_page', body: { page: current, page_size: pageSize, model_id: id, online_model_id: type, qtype, namespace: isMine } }).then((res) => {
+    return OpenAPIService.postMhFinetuneModelPage({ page: current, page_size: pageSize, model_id: id, online_model_id: type, qtype }).then((res) => {
       return {
         total: res.total,
         list: res.data,
@@ -81,7 +81,7 @@ const ModelDetail = (req) => {
     getInfo()
   }, [id])
   const handleDelete = async (record) => {
-    const res = await deleteModel({ url: `/mh/delete_finetune_model/${id}/${record?.id}` })
+    const res = await OpenAPIService.deleteMhDeleteFinetuneModel(Number(id), Number(record?.id))
     if (res) {
       Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
       search.submit()

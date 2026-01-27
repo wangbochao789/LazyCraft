@@ -8,7 +8,7 @@ import InfoTitle from '../components/InfoTitle'
 import DatasetTreeSelect from '../components/datasetTreeSelect'
 import styles from './index.module.scss'
 import { EMode, EType } from './config'
-import { createModel, deleteParam, getBaseModelList, getModelListFromFinetune } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 
@@ -42,19 +42,19 @@ const CreateModelAdjust = () => {
   const [finetuningType, setFinetuningType] = useState('LoRA')
   const isMine = userSpecified?.tenant?.status === 'private'
   const getModelList = async () => {
-    const modelList = await getModelListFromFinetune({ url: '/finetune/ft/models' })
+    const modelList = await OpenAPIService.getFinetuneFtModels()
     if (modelList?.data)
       setModelList(modelList.data as unknown as ModelItemType[])
   }
   const getDataset = async () => {
-    const res: any = await getBaseModelList({ url: `/finetune/datasets?qtype=${isMine ? 'mine' : 'already'}`, options: {} })
+    const res: any = await OpenAPIService.getFinetuneDatasets(isMine ? 'mine' : 'already')
     if (res)
-      setDatasetList(res)
+      setDatasetList(res?.data || res)
   }
   const getDefineList = async () => {
-    const res: any = await getBaseModelList({ url: '/finetune_param', options: {} })
+    const res: any = await OpenAPIService.getFinetuneParam()
     if (res)
-      setDefineList(res)
+      setDefineList(res?.data || res)
   }
   useEffect(() => {
     getModelList()
@@ -93,7 +93,7 @@ const CreateModelAdjust = () => {
             ...values,
           },
         }
-        createModel({ url: '/finetune', body: { ...para } }).then(() => {
+        OpenAPIService.postFinetune({ ...para } as any).then(() => {
           Toast.notify({
             type: ToastTypeEnum.Success, message: '创建成功',
           })
@@ -137,7 +137,7 @@ const CreateModelAdjust = () => {
         ...values,
         finetune_config: { ...temValue, training_type, val_size },
       }
-      createModel({ url: '/finetune_param', body: { ...para } }).then((res) => {
+      OpenAPIService.postFinetuneParam({ ...para } as any).then((res) => {
         if (res) {
           Toast.notify({
             type: ToastTypeEnum.Success, message: '保存成功',
@@ -158,7 +158,7 @@ const CreateModelAdjust = () => {
   }
   const handleDelete = async (id: any, e) => {
     e.stopPropagation()
-    const res = await deleteParam({ url: `/finetune_param?record_id=${id}`, options: { params: { record_id: id } } })
+    const res = await OpenAPIService.deleteFinetuneParam(Number(id))
     if (res) {
       Toast.notify({
         type: ToastTypeEnum.Success, message: '删除成功',

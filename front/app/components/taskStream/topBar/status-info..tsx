@@ -4,7 +4,7 @@ import { Tag } from 'antd'
 import { useWorkflow } from '../logicHandlers'
 import { useStore } from '@/app/components/taskStream/store'
 import useTimestamp from '@/shared/hooks/use-timestamp'
-import { fetchTraceList } from '@/infrastructure/api//log'
+import { CostAuditService } from '@/infrastructure/api/generated/services/CostAuditService'
 import { useStore as useAppStore } from '@/app/components/app/store'
 
 const LazyLLMEditingTitle = () => {
@@ -21,9 +21,7 @@ const LazyLLMEditingTitle = () => {
   // 获取成本统计数据
   useRequest(
     async () => {
-      const response = await fetchTraceList({
-        url: `/costaudit/apps/${appDetail?.id}`,
-      })
+      const response = await CostAuditService.getCostauditApps(String(appDetail?.id))
 
       // 从响应中提取成本统计信息
       const costData = {

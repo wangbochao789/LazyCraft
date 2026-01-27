@@ -9,7 +9,7 @@ import InfoTitle from '../../../modelAdjust/components/InfoTitle'
 import ModelTreeSelect from '../../components/modelTreeSelect'
 import styles from './index.module.scss'
 import Iconfont from '@/app/components/base/iconFont'
-import { createModel, getBaseModelList, getModelListDraw } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { noOnlySpacesRule } from '@/shared/utils'
 
@@ -42,16 +42,9 @@ const ModelTestCreate = () => {
   const [evaluation_type, setDatasetType] = useState('online')
   const [testType, setTestType] = useState('manual')
   const getMList = async () => {
-    const res: any = await getModelListDraw({
-      url: '/infer-service/list/draw',
-      body: {
-        qtype: 'already',
-        available: 1,
-        model_kind: 'localLLM',
-      },
-    })
+    const res: any = await OpenAPIService.getInferServiceListDraw('localLLM')
     if (res) {
-      const temp: any = res?.result?.result?.map((item) => {
+      const temp: any = res?.data?.result?.map((item) => {
         const serviceId = item?.services?.[0]?.id
 
         return {
@@ -67,7 +60,7 @@ const ModelTestCreate = () => {
     }
   }
   const getDataset = async () => {
-    const res: any = await getBaseModelList({ url: '/model_evalution/all_online_datasets', options: {} })
+    const res: any = await OpenAPIService.getModelEvalutionAllOnlineDatasets()
     if (res)
       setDatasetList(res?.result)
   }
@@ -94,10 +87,10 @@ const ModelTestCreate = () => {
       if (ai_evaluator_name?.[1])
         values.ai_evaluator_name = ai_evaluator_name[1]
 
-      createModel({ url: '/model_evalution/create_task', body: { ...values } }).then((res) => {
-        if (res.status === 500 || res.status === 400) {
+      OpenAPIService.postModelEvalutionCreateTask({ ...values } as any).then((res) => {
+        if (res.code === 500 || res.code === 400) {
           Toast.notify({
-            type: ToastTypeEnum.Error, message: res?.message,
+            type: ToastTypeEnum.Error, message: res?.message || '创建失败',
           })
         }
         else {

@@ -25,7 +25,7 @@ import { useWorkflowNodeResizePanel as useResizeContainer } from '@/app/componen
 import { toShapeOutputs } from '@/app/components/taskStream/elements/_foundation/components/variable/utils'
 import cn from '@/shared/utils/classnames'
 import Loading from '@/app/components/base/loading'
-import { fetchDebuggingList } from '@/infrastructure/api//log'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { getAppDebuggingEnableStatus } from '@/infrastructure/api//workflow'
 
 type TestHistoryRecord = {
@@ -53,7 +53,7 @@ const WorkflowPreview = () => {
   const [historyPanelVisible, setHistoryPanelVisible] = useState(false)
   const [selectedHistoryRecord, setSelectedHistoryRecord] = useState<TestHistoryRecord | null>(null)
 
-  const { data: excludeFinalNodeDebuggingList, runAsync: requestExcludeNodeDebuggingList } = useRequest(() => fetchDebuggingList(appId, 'single'), { manual: true })
+  const { data: excludeFinalNodeDebuggingList, runAsync: requestExcludeNodeDebuggingList } = useRequest(() => OpenAPIService.getAppsWorkflowsDebugDetail(appId, 'draft'), { manual: true })
 
   const nodes = useNodes<any>()
   const FinalNode = nodes.find(node => node.data?.type === ExecutionBlockEnum.FinalNode)

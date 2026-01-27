@@ -8,7 +8,7 @@ import { LazyCodeEditor } from '@/app/components/taskStream/elements/_foundation
 import { currentLanguage } from '@/app/components/taskStream/elements/script/types'
 import { useStore as useAppStore } from '@/app/components/app/store'
 import { useStore as useWorkflowStore } from '@/app/components/taskStream/store'
-import { fetchTraceList } from '@/infrastructure/api//log'
+import { CostAuditService } from '@/infrastructure/api/generated/services/CostAuditService'
 import './index.scss'
 
 export type ExecutionResultProps = {
@@ -49,9 +49,7 @@ const ExecutionResult: FC<ExecutionResultProps> = ({
     const retrieveCostData = async () => {
       if (status === 'succeeded' && appDetail?.id) {
         try {
-          const response = await fetchTraceList({
-            url: `/costaudit/apps/${appDetail.id}`,
-          })
+          const response = await CostAuditService.getCostauditApps(String(appDetail.id))
           // Extract cost data from response
           const costData = {
             run_call_num: response.data?.length || 0,

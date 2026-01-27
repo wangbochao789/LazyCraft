@@ -7,7 +7,8 @@ import { traveTree } from '../../field-item/utils'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { useStore } from '@/app/components/taskStream/store'
 import { useStore as useAppStore } from '@/app/components/app/store'
-import { createModel, getBaseModelList } from '@/infrastructure/api/modelAdjust'
+import { createModel } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 
 type ModelAdjustCreateBtnProps = {
@@ -37,8 +38,8 @@ const ModelAdjustCreateBtn: FC<any> = (props: ModelAdjustCreateBtnProps) => {
       fetchApiCalled.current = true
 
       Promise.all([
-        getBaseModelList({ url: '/finetune/datasets?qtype=already', options: {} }),
-        getBaseModelList({ url: '/finetune_param', options: {} }),
+        OpenAPIService.getFinetuneDatasets('already'),
+        OpenAPIService.getFinetuneParam(),
       ]).then(([res1, res2]: any[]) => {
         setDataSetTreeData(traveTree(res1 || [], (item: any) => {
           item.children = item?.child?.length ? item.child : undefined

@@ -16,7 +16,7 @@ import type { IOtherOptions } from '@/infrastructure/api/base'
 import { ssePost } from '@/infrastructure/api/base'
 import { fetchPublishedWorkflow, stopWorkflowRun } from '@/infrastructure/api/workflow'
 import { useFeaturesStore as useFeaturesStoreApi } from '@/app/components/base/features'
-import { fetchDebuggingList } from '@/infrastructure/api/log'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 
 /**
  * 工作流执行管理 Hook
@@ -198,7 +198,7 @@ export const useWorkflowRun = () => {
 
         onFinish: async (props) => {
           const { workflowLiveData, setWorkflowRunningData } = workflowStore.getState()
-          const debuggingResult = await fetchDebuggingList(patentAppId || appDetailValue?.id, 'single')
+          const debuggingResult = await OpenAPIService.getAppsWorkflowsDebugDetail(String(patentAppId || appDetailValue?.id), 'draft')
 
           const finalExecutionData = produceFun(workflowLiveData!, (draft) => {
             draft.result = {

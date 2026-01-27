@@ -5,7 +5,7 @@ import type { RcFile } from 'antd/es/upload/interface'
 import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons' // , QuestionCircleOutlined
 import { v4 as uuid4 } from 'uuid'
 import pLimit from 'p-limit'
-import { createModel } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import Toast from '@/app/components/base/flash-notice'
 import { useModalContext } from '@/shared/hooks/modal-context'
 import { API_PREFIX } from '@/app-specs'
@@ -29,7 +29,7 @@ const AddModal = (props: any) => {
   const [existModels, setExistModels] = useState<any>([])
   const handleOk = async () => {
     form.validateFields().then((values) => {
-      createModel({ url: '/mh/create_finetune', body: { ...values, model_type: 'local', base_model_id: id } }).then(() => {
+      OpenAPIService.postMhCreateFinetune({ ...values, model_type: 'local', base_model_id: Number(id) }).then(() => {
         Toast.notify({ type: 'success', message: '导入成功' })
         form.resetFields()
         onSuccess()

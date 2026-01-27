@@ -4,7 +4,7 @@ import { Breadcrumb, Button, Card, Tag } from 'antd'
 import Link from 'next/link'
 import styles from './index.module.scss'
 import DrawInfo from './DrawInfo'
-import { getAdjustInfo } from '@/infrastructure/api/modelAdjust'
+import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { apiPrefix } from '@/app-specs'
 
 const _tags: any = {
@@ -23,7 +23,7 @@ const AdjustDetail = (req) => {
   const token = localStorage.getItem('console_token')
   const getInfo = useCallback(async () => {
     try {
-      const res = await getAdjustInfo({ url: `/finetune/detail/${id}` })
+      const res = await OpenAPIService.getFinetuneDetail(Number(id))
       setBaseInfo(res)
     }
     catch (error) {
