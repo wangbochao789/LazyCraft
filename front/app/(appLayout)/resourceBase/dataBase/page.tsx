@@ -6,11 +6,10 @@ import { useAntdTable, useToggle, useUpdateEffect } from 'ahooks'
 import { useRouter } from 'next/navigation'
 import dayjs from 'dayjs'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
-import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
+import { Service } from '@/infrastructure/api/generated'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import { useApplicationContext } from '@/shared/hooks/app-context'
 import { noOnlySpacesRule } from '@/shared/utils'
-const { Search } = Input
 const { Column } = Table
 const Database = () => {
   const { userSpecified } = useApplicationContext()
@@ -24,13 +23,17 @@ const Database = () => {
   const [searchVal, setSearchVal] = useState('')
   const [sName, setSName] = useState('')
   const getTableData = ({ current, pageSize }): Promise<any> => {
-    return OpenAPIService.postDatabaseListPage({ page: current, limit: pageSize, db_name: sName, user_id: creator })
-      .then((res: any) => {
-        return {
-          total: res.total,
-          list: res.data,
-        }
-      })
+    return Service.postDatabaseListPage({
+      page: current,
+      limit: pageSize,
+      db_name: sName,
+      user_id: creator,
+    }).then((res: any) => {
+      return {
+        total: res?.total ?? 0,
+        list: res?.data ?? [],
+      }
+    })
   }
   const { tableProps, search, pagination, refresh, loading } = useAntdTable(getTableData, {
     defaultPageSize: 10,
@@ -42,7 +45,7 @@ const Database = () => {
   const onSubmit = async (values: any) => {
     try {
       setSubmitting(true)
-      await OpenAPIService.postDatabase(values as any)
+      await Service.postDatabase(values)
       message.success('创建数据库成功')
       toggle()
       refresh()
@@ -57,7 +60,7 @@ const Database = () => {
   }
 
   const handleDelete = async (record) => {
-    const res = await OpenAPIService.deleteDatabase(Number(record?.id))
+    const res = await Service.deleteDatabase(record?.id)
     if (res) {
       message.success('删除成功')
       search.submit()

@@ -9,7 +9,7 @@ import { useToggle } from 'ahooks'
 import { DATA_TYPE_DICT, handleTableCellValue, handleTableData, isNumberType } from '../utils'
 import useValidateSpace from '@/shared/hooks/use-validate-space'
 
-import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
+import { Service } from '@/infrastructure/api/generated'
 import { prefixUrl } from '@/shared/utils'
 
 const { Dragger } = Upload
@@ -21,7 +21,7 @@ type EditableRowProps = {
   index: number
 }
 
-const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
+const EditableRow: React.FC<EditableRowProps> = ({ index: _index, ...props }) => {
   const [form] = Form.useForm()
   return (
     <Form form={form} component={false}>
@@ -42,7 +42,7 @@ type EditableCellProps = {
 }
 
 const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
-  title,
+  title: _title,
   editable,
   children,
   dataIndex,
@@ -235,7 +235,7 @@ const EditableTable = (props: any) => {
             {el.name}
           </span>,
         dataIndex: el.name,
-        onCell: (record: any, index, r) => {
+        onCell: (record: any, index, _r) => {
           return {
             record,
             editable: true,
@@ -295,12 +295,12 @@ const EditableTable = (props: any) => {
         message.error(`${info.file.name} file upload failed.`)
       }
     },
-    onDrop(e) {
+    onDrop(_e) {
     },
   }
 
   const handleDownloadTemplate = () => {
-    OpenAPIService.getDatabaseImport(Number(database_id), Number(table_id)).then((res: any) => {
+    Service.getDatabaseImport(Number(database_id), Number(table_id)).then((res: any) => {
       // 创建一个链接元素
       const link = document.createElement('a')
       link.href = URL.createObjectURL(res) // 创建 Blob URL

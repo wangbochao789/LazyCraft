@@ -7,15 +7,14 @@ import { ReadOutlined } from '@ant-design/icons'
 import styles from './page.module.scss'
 import InfoModal from './InfoModal'
 import UploadModule from './UploadModule'
-import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
-import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
+import { Service } from '@/infrastructure/api/generated'
 import Iconfont from '@/app/components/base/iconFont'
 import TagMode from '@/app/components/tagSelect/TagMode'
 import CreatorSelect from '@/app/components/tagSelect/creatorSelect'
 import useRadioAuth from '@/shared/hooks/use-radio-auth'
 import { useApplicationContext } from '@/shared/hooks/app-context'
-import { pageCache } from '@/shared/utils'
 import ReferenceResultModal from '@/app/components/referenceResultModal'
+import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 
 const KnowledgeBase = () => {
   const router = useRouter()
@@ -23,7 +22,6 @@ const KnowledgeBase = () => {
   const authRadio = useRadioAuth()
   const [list, setList] = useState<any[]>([])
   const [data, setData] = useState({})
-  const [type, setType] = useState(pageCache.getTab({ name: pageCache.category.knowledgeBase }) || 'mine')
   const [id, setId] = useState('')
   const [infoModuleVisible, setInfoModuleVisible] = useState(false)
   const [uploadModuleVisible, setUploadModuleVisible] = useState(false)
@@ -38,18 +36,18 @@ const KnowledgeBase = () => {
   const [refType] = useState<'kb'>('kb')
 
   const getCardList = async () => {
-    const res: any = await OpenAPIService.postKbList({
+    const res = await Service.postKbList({
       page: 1,
       page_size: 999,
       search_tags: selectTags.map(item => item.name),
       search_name: sName,
       user_id: creator,
-    } as any)
-    setList(res?.data || [])
+    })
+    setList(res.data ?? [])
   }
   const handleDelete = async (item: any, e) => {
     e.stopPropagation()
-    await OpenAPIService.postKbDelete({ id: String(item.id) })
+    await Service.postKbDelete({ id: item.id })
     Toast.notify({ type: ToastTypeEnum.Success, message: '删除成功' })
     getCardList()
   }

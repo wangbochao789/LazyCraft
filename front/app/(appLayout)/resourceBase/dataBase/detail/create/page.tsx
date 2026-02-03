@@ -12,15 +12,20 @@ import { useRequest } from 'ahooks'
 import EditableTable from './editableTable'
 
 import style from './index.module.scss'
-import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
+import { Service } from '@/infrastructure/api/generated'
+
 const DatabaseDetailCreateContent = () => {
   const [form] = Form.useForm()
-  const [_formVal, _setFormVal] = useState([])
+  const [_formVal, setFormVal] = useState([])
   const { back } = useRouter()
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
-  const { data: tableList } = useRequest(() => OpenAPIService.getDatabaseTableList(Number(id), 1, 10000).then((res: any) =>
-    (res?.data || []).map(el => ({ ...el, label: el.name, value: el.name, isLeaf: false }))))
+  const { data: tableList } = useRequest(() =>
+    Service.getDatabaseTableList(Number(id), 1, 10000, '')
+      .then((res: any) =>
+        res.data.map(el => ({ ...el, label: el.name, value: el.name, isLeaf: false })),
+      ),
+  )
 
   const handleTableSubmit = async (tableData) => {
     const formValues = await form.validateFields()
@@ -30,7 +35,6 @@ const DatabaseDetailCreateContent = () => {
     }
     const submitData = {
       ...formValues,
-      database_id: id,
       columns: tableData.map((el: any) => {
         const { foreign_key_info, ...rest } = el
         return (foreign_key_info && foreign_key_info[1])
@@ -45,7 +49,7 @@ const DatabaseDetailCreateContent = () => {
           : rest
       }),
     }
-    await OpenAPIService.postDatabaseTable(Number(id), submitData as any)
+    await Service.postDatabaseTable(Number(id), submitData)
     message.success('创建成功')
     back()
   }
@@ -86,7 +90,7 @@ const DatabaseDetailCreateContent = () => {
           <span className='text-[#071127] text-lg font-medium'>数据表结构</span>
         </div>
         <Divider style={{ margin: '13px 0' }} />
-        <EditableTable isCreateMode onSave={_setFormVal} tableList={tableList} database_id={id} onSubmit={handleTableSubmit} />
+        <EditableTable isCreateMode onSave={setFormVal} tableList={tableList} database_id={id} onSubmit={handleTableSubmit} />
       </Form>
     </div>
   )

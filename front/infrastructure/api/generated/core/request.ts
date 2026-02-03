@@ -234,22 +234,28 @@ export const getResponseBody = async (response: Response): Promise<any> => {
     if (response.status !== 204) {
         try {
             const contentType = response.headers.get('Content-Type');
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const isAttachment = !!contentDisposition && contentDisposition.toLowerCase().includes('attachment');
+            if (isAttachment) {
+                return await response.blob();
+            }
             if (contentType) {
+                const lowerType = contentType.toLowerCase();
                 const jsonTypes = ['application/json', 'application/problem+json']
-                const isJSON = jsonTypes.some(type => contentType.toLowerCase().startsWith(type));
+                const isJSON = jsonTypes.some(type => lowerType.startsWith(type));
                 if (isJSON) {
                     return await response.json();
-                } else {
-                    const ct = contentType.toLowerCase();
-                    const isBinary = ct.startsWith('application/octet-stream')
-                        || ct.startsWith('application/vnd')
-                        || ct.startsWith('application/zip')
-                        || ct.startsWith('application/pdf');
-                    if (isBinary) {
-                        return await response.blob();
-                    }
-                    return await response.text();
                 }
+                const isBinary = lowerType.startsWith('application/octet-stream')
+                    || lowerType.startsWith('application/zip')
+                    || lowerType.startsWith('application/pdf')
+                    || lowerType.startsWith('application/vnd')
+                    || lowerType.startsWith('application/msword')
+                    || lowerType.startsWith('application/vnd.openxmlformats-officedocument');
+                if (isBinary) {
+                    return await response.blob();
+                }
+                return await response.text();
             }
         } catch (error) {
             console.error(error);
@@ -259,6 +265,32 @@ export const getResponseBody = async (response: Response): Promise<any> => {
 };
 
 export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): void => {
+    const notifyError = (message: string) => {
+        if (!message) {
+            return;
+        }
+        if (typeof window === 'undefined') {
+            return;
+        }
+        import('antd')
+            .then(({ message: antdMessage }) => antdMessage.error(message))
+            .catch(() => undefined);
+    };
+
+    const resolveErrorMessage = (): string => {
+        const body = result.body as any;
+        if (body?.message) {
+            return body.message;
+        }
+        if (body?.detail) {
+            return body.detail;
+        }
+        if (typeof body === 'string' && body.trim()) {
+            return body;
+        }
+        return '';
+    };
+
     const errors: Record<number, string> = {
         400: 'Bad Request',
         401: 'Unauthorized',
@@ -272,6 +304,7 @@ export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): 
 
     const error = errors[result.status];
     if (error) {
+        notifyError(resolveErrorMessage() || error);
         throw new ApiError(options, result, error);
     }
 
@@ -286,6 +319,7 @@ export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): 
             }
         })();
 
+        notifyError(resolveErrorMessage() || errorStatusText || 'Request Error');
         throw new ApiError(options, result,
             `Generic Error: status: ${errorStatus}; status text: ${errorStatusText}; body: ${errorBody}`
         );

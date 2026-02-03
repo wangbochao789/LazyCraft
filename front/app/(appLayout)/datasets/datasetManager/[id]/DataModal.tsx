@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Form, Input, Modal, Radio, Select } from 'antd'
-import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
+import { Service } from '@/infrastructure/api/generated'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
 import { tagList } from '@/app/components/tagSelect/ClassifyMode'
 import { bindTags } from '@/infrastructure/api/tagManage'
@@ -77,7 +77,7 @@ const CleanModal = (props: any) => {
           requestData.data_set_script_id = agent
         }
 
-        const res: any = await OpenAPIService.postDataVersionCleanOrAugment(requestData as any)
+        const res: any = await Service.postDataVersionCleanOrAugment(requestData)
         Toast.notify({ type: ToastTypeEnum.Success, message: '操作成功' })
         onSuccess(res.id, 'edit')
       }
@@ -120,9 +120,8 @@ const CleanModal = (props: any) => {
       return
     }
     try {
-      const res: any = await OpenAPIService.getScriptListByType(scriptType)
-      const list = Array.isArray(res) ? res : (res?.data || [])
-      setScriptList(list.map(item => ({ label: item.name, value: item.id })))
+      const res: any = await Service.getScriptListByType(scriptType)
+      setScriptList(res.map(item => ({ label: item.name, value: item.id })))
     }
     catch (error) {
       console.error('获取脚本列表失败:', error)

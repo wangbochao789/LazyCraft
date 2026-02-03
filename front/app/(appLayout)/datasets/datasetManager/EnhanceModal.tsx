@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Form, Input, Modal, Select } from 'antd'
+import { Service } from '@/infrastructure/api/generated'
 import Toast, { ToastTypeEnum } from '@/app/components/base/flash-notice'
-import { Service as OpenAPIService } from '@/infrastructure/api/generated/services/Service'
 import { categoryItems } from '@/shared/utils'
 
 const EnhanceModal = (props: any) => {
@@ -11,16 +11,15 @@ const EnhanceModal = (props: any) => {
   const handleOk = async () => {
     form.validateFields().then((values) => {
       if (data) {
-        OpenAPIService.postKbUpdate({ ...data, ...values, id: String(data.id) } as any).then((res: any) => {
+        Service.postKbUpdate({ ...data, ...values }).then((res: any) => {
           Toast.notify({ type: ToastTypeEnum.Success, message: '更新成功' })
-          onSuccess(res?.data?.id || res?.id || data.id, 'edit')
+          onSuccess(res.id, 'edit')
         })
       }
       else {
-        OpenAPIService.postKbCreate(values as any).then((res: any) => {
-          const nextId = res?.data?.id || res?.id
-          onSuccess(nextId, 'create')
-          onSuccess(nextId)
+        Service.postKbCreate(values).then((res: any) => {
+          onSuccess(res.id, 'create')
+          onSuccess(res.id)
         })
       }
     }).catch((err) => {
